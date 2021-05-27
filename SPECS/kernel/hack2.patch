@@ -1,0 +1,11 @@
+--- CBL-Mariner-Linux-Kernel-rolling-lts-mariner-5.10.28.1/arch/x86/Kconfig	2021-05-27 07:19:58.727638035 -0700
++++ CBL-Mariner-Linux-Kernel-rolling-lts-mariner-5.10.28.1/arch/x86/Kconfig	2021-05-27 07:19:41.359731636 -0700
+@@ -81,6 +81,8 @@
+ 	select ARCH_HAS_SET_DIRECT_MAP
+ 	select ARCH_HAS_STRICT_KERNEL_RWX
+ 	select ARCH_HAS_STRICT_MODULE_RWX
++	select ARCH_OPTIONAL_KERNEL_RWX
++	select ARCH_OPTIONAL_KERNEL_RWX_DEFAULT
+ 	select ARCH_HAS_SYNC_CORE_BEFORE_USERMODE
+ 	select ARCH_HAS_SYSCALL_WRAPPER
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL

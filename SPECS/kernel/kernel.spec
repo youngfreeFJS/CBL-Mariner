@@ -4,7 +4,7 @@
 Summary:        Linux Kernel
 Name:           kernel
 Version:        5.10.28.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -158,7 +158,7 @@ Patch1129:      CVE-2021-29650.nopatch
 Patch1130:      CVE-2021-30002.nopatch
 # CVE-2021-29648 - Introducing commit not in stable tree. No fix necessary at this time.
 Patch1131:      CVE-2021-29648.nopatch
-Patch1132:      hack.nopatch
+Patch1132:      hack2.patch
 BuildRequires:  audit-devel
 BuildRequires:  bash
 BuildRequires:  bc
@@ -258,6 +258,8 @@ This package contains common device tree blobs (dtb)
 
 %prep
 %setup -q -n CBL-Mariner-Linux-Kernel-rolling-lts-mariner-%{version}
+
+%patch1132  -p1
 
 %build
 make mrproper
