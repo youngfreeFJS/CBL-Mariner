@@ -1,46 +1,64 @@
-From 8929651fbc14520728f85f65913a47b2f661a281 Mon Sep 17 00:00:00 2001
+From 5dd520f066e501ca0077ebd07d88e9686e5b8df0 Mon Sep 17 00:00:00 2001
 From: Daniel Mihai <dmihai@microsoft.com>
 Date: Wed, 18 Aug 2021 17:35:05 -0700
 Subject: [PATCH] Log cipher name from ssl_cipher_get_evp
 
 ---
- ssl/ssl_ciph.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ ssl/ssl_ciph.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
 diff --git a/ssl/ssl_ciph.c b/ssl/ssl_ciph.c
-index 7feb771..a6448c1 100644
+index 7feb771..bee929a 100644
 --- a/ssl/ssl_ciph.c
 +++ b/ssl/ssl_ciph.c
-@@ -483,6 +483,28 @@ static int load_builtin_compressions(void)
+@@ -21,6 +21,8 @@
+ #include "internal/thread_once.h"
+ #include "internal/cryptlib.h"
+ 
++#include <sys/stat.h>
++
+ #define SSL_ENC_DES_IDX         0
+ #define SSL_ENC_3DES_IDX        1
+ #define SSL_ENC_RC4_IDX         2
+@@ -483,6 +485,37 @@ static int load_builtin_compressions(void)
  }
  #endif
  
++
 +void mariner_log_cipher(const SSL_CIPHER *c)
 +{
-+    FILE *f;
++    FILE *log_file;
 +    char log_line[128];
 +
-+    f = fopen("/tmp/mariner_openssl.txt", "a");
++    log_file = fopen("/tmp/mariner_openssl.txt", "a");
 +
-+    if (f == NULL) {
++    if (log_file == NULL) {
 +        return;
 +    }
 +
++    chmod("/tmp/mariner_openssl.txt",
++        S_IRUSR | S_IRGRP | S_IROTH |
++        S_IWUSR | S_IWGRP | S_IWOTH);
++
 +    if (c == NULL) {
-+        strcpy(log_line, "cipher = NULL!");
++        strcpy(log_line, "cipher == NULL!");
++    }
++    else if (c->name == NULL) {
++        strcpy(log_line, "cipher name == NULL!");
 +    }
 +    else {
 +        strncpy(log_line, c->name, OSSL_NELEM(log_line) - 1);
 +        log_line[OSSL_NELEM(log_line) - 1] = 0;
 +    }
 +
-+    fprintf(f, "%s\n", log_line);
++    fprintf(log_file, "%s\n", log_line);
++    fclose(log_file);
 +}
 +
  int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
                         const EVP_MD **md, int *mac_pkey_type,
                         size_t *mac_secret_size, SSL_COMP **comp, int use_etm)
-@@ -493,6 +515,9 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
+@@ -493,6 +526,9 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
      c = s->cipher;
      if (c == NULL)
          return 0;
