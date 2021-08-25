@@ -49,6 +49,7 @@ This package includes the following console tools:
 Summary:        Policy analysis tools for SELinux
 License:        GPLv2 AND LGPLv2+
 Requires:       python3-setuptools
+Requires:       python3-networkx
 Recommends:     libselinux-python3
 Obsoletes:      setools-libs < 4.0.0
 
