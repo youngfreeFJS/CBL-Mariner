@@ -1,0 +1,10 @@
+{
+    "packages": [
+        "iputils",
+        "nano",
+        "openssh-server",
+        "ca-certificates",
+        "pciutils",
+        "usbutils"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "Disks": [
+        {
+            "Artifacts": [
+                {
+                    "Name": "core-rootfs",
+                    "Compression": "tar.gz"
+                }
+            ]
+        }
+    ],
+    "SystemConfigs": [
+        {
+            "Name": "Standard",
+            "PackageLists": [
+                "packagelists/core-packages-rootfs.json",
+                "packagelists/devel-tools-rootfs.json"
+            ]
+        }
+    ]
+}
