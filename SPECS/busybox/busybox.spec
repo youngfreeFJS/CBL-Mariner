@@ -1,7 +1,7 @@
 Summary:        Statically linked binary providing simplified versions of system commands
 Name:           busybox
 Version:        1.32.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -24,8 +24,11 @@ Provides:       bundled(md5-drepper2)
 BuildRequires:  uclibc-devel
 %endif
 
+%package binaries
+Summary: Soft links for busybox capabilities.
+
 %package petitboot
-Summary:        Version of busybox configured for use with petitboot
+Summary: Version of busybox configured for use with petitboot
 
 %description
 Busybox is a single binary which includes versions of a large number
@@ -39,6 +42,9 @@ of system commands, including a shell.  The version contained in this
 package is a minimal configuration intended for use with the Petitboot
 bootloader used on PlayStation 3. The busybox package provides a binary
 better suited to normal use.
+
+%description binaries
+%{summary}
 
 %prep
 %setup -q
@@ -110,26 +116,43 @@ cp busybox_unstripped busybox.petitboot
 cp docs/busybox.1 docs/busybox.petitboot.1
 
 %install
-mkdir -p %{buildroot}/sbin
-install -m 755 busybox.static %{buildroot}/sbin/busybox
-install -m 755 busybox.petitboot %{buildroot}/sbin/busybox.petitboot
+mkdir -p %{buildroot}/%{_sbindir}
+install -m 755 busybox.static %{buildroot}/%{_sbindir}/busybox
+install -m 755 busybox.petitboot %{buildroot}/%{_sbindir}/busybox.petitboot
 mkdir -p %{buildroot}/%{_mandir}/man1
 install -m 644 docs/busybox.static.1 %{buildroot}/%{_mandir}/man1/busybox.1
 install -m 644 docs/busybox.petitboot.1 %{buildroot}/%{_mandir}/man1/busybox.petitboot.1
 
+# If the busybox executable is renamed to one of the commands it supports, it will act as that command automatically.
+for i in $(%{buildroot}/%{_sbindir}/busybox --list)
+do
+    ln -s busybox %{buildroot}/%{_bindir}/$i
+done
+
 %files
 %license LICENSE
 %doc README
-/sbin/busybox
+%{_sbindir}/busybox
 %{_mandir}/man1/busybox.1.gz
 
 %files petitboot
 %license LICENSE
 %doc README
-/sbin/busybox.petitboot
+%{_sbindir}/busybox.petitboot
 %{_mandir}/man1/busybox.petitboot.1.gz
 
+%files binaries
+%license LICENSE
+%doc README
+%exclude %{_sbindir}/busybox
+%exclude %{_sbindir}/busybox.petitboot
+%{_sbindir}/*
+
 %changelog
+* Fri Oct 15 2021 Mateusz Malisz <mamalisz@microsoft.com> - 1.32.0-3
+- Provide soft links to busybox to provide its capabilities explicitly.
+- Package soft links into -binaries subpackage.
+
 * Fri Mar 26 2021 Henry Beberman <henry.beberman@microsoft.com> - 1.32.0-2
 - Patch CVE-2021-28831
 
