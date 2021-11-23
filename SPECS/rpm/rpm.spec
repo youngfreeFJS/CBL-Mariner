@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        GPLv2+ AND LGPLv2+ AND BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -24,7 +24,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  libdb-devel
 BuildRequires:  libselinux-devel
 BuildRequires:  lua-devel
-BuildRequires:  nss-devel
+BuildRequires:  openssl-devel
 BuildRequires:  popt-devel
 BuildRequires:  python2-devel
 BuildRequires:  python3-devel
@@ -55,7 +55,7 @@ Requires:       elfutils-libelf
 Requires:       libcap
 Requires:       libgcc
 Requires:       mariner-rpm-macros
-Requires:       nss-libs
+Requires:       openssl-libs
 Requires:       popt
 Requires:       xz-libs
 Requires:       zlib
@@ -122,7 +122,7 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
 ./autogen.sh --noconfigure
 %configure \
-    CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
+    CPPFLAGS='-DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
         --disable-dependency-tracking \
         --disable-static \
@@ -132,7 +132,8 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --with-lua \
         --disable-silent-rules \
         --with-external-db \
-        --with-selinux
+        --with-selinux \
+        --with-crypto=openssl
 make %{?_smp_mflags}
 
 pushd python
@@ -280,6 +281,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 24 2021 Mateusz Malisz <mamalisz@microsoft.com> - 4.14.2-14
+-   Fixes
+
 *   Thu Jun 24 2021 Mateusz Malisz <mamalisz@microsoft.com> - 4.14.2-13
 -   Patch CVE-2021-20266
 
