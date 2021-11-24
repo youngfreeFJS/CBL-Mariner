@@ -4,7 +4,7 @@
 Summary:        Utilities from the general purpose cryptography library with TLS implementation
 Name:           openssl
 Version:        1.1.1k
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        OpenSSL
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -178,7 +178,7 @@ export HASHBANGPERL=%{_bindir}/perl
     no-gost \
     no-idea \
     no-mdc2 \
-    no-md2 \
+    enable-md2 \
     enable-md4 \
     no-poly1305 \
     enable-rc2 \
@@ -311,6 +311,9 @@ rm -f %{buildroot}%{_sysconfdir}/pki/tls/ct_log_list.cnf.dist
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Aug 30 2021 Mateusz Malisz <mamalisz@microsoft.com> - 1.1.1k-9
+- Enable md2 algorithm (required by RPM 4.14 with openssl)
+
 * Mon Aug 30 2021 Thomas Crain <thcrain@microsoft.com> - 1.1.1k-8
 - Fix dangling symlinks in man page packaging
 - Fix duplicate ssl suffixes in man pages
@@ -330,7 +333,7 @@ rm -f %{buildroot}%{_sysconfdir}/pki/tls/ct_log_list.cnf.dist
 * Tue Jun 15 2021 Nicolas Ontiveros <niontive@microsoft.com> - 1.1.1k-4
 - In FIPS mode, use jitterentropy for DRBG nonce.
 - In FIPS mode, concatenate Linux RNG with personalization string during DRBG instantiation
-- In FIPS mode, concatenate Linux RNG with additional input string during DRBG reseed 
+- In FIPS mode, concatenate Linux RNG with additional input string during DRBG reseed
 
 * Tue May 18 2021 Nicolas Ontiveros <niontive@microsoft.com> - 1.1.1k-3
 - In FIPS mode, use only jitterentropy for entropy pool
