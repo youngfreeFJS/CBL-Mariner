@@ -8,8 +8,8 @@
 %{!?_export_dir:%global _export_dir /bind9-export/}
 Summary:        Domain Name System software
 Name:           bind
-Version:        9.16.15
-Release:        3%{?dist}
+Version:        9.16.23
+Release:        1%{?dist}
 License:        ISC
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -33,10 +33,6 @@ Source14:       setup-named-softhsm.sh
 Source15:       named-chroot.files
 # CVE-2019-6470 is fixed by updating the dhcp package to 4.4.1 or greater
 Patch0:         CVE-2019-6470.nopatch
-# CVE-2020-8623 only impacts package built with "--enable-native-pkcs11"
-Patch1:         CVE-2020-8623.nopatch
-Patch9:         bind-9.14-config-pkcs11.patch
-Patch10:        bind-9.10-dist-native-pkcs11.patch
 
 BuildRequires:  gcc
 BuildRequires:  json-c-devel
@@ -230,14 +226,12 @@ Summary:        BIND utilities
 %{summary}.
 
 %prep
-%setup -q
+%autosetup -q
 
-%patch9 -p1 -b .config-pkcs11
 cp -r bin/named{,-pkcs11}
 cp -r bin/dnssec{,-pkcs11}
 cp -r lib/dns{,-pkcs11}
 cp -r lib/ns{,-pkcs11}
-%patch10 -p1 -b .dist_pkcs11
 
 libtoolize -c -f; aclocal -I libtool.m4 --force; autoconf -f
 
@@ -247,8 +241,7 @@ libtoolize -c -f; aclocal -I libtool.m4 --force; autoconf -f
 mkdir -p build/contrib/dlz
 cp -frp contrib/dlz/modules build/contrib/dlz/modules
 
-./configure \
-    --prefix=%{_prefix} \
+%configure
     --with-python=python3 \
     --with-libtool \
     --localstatedir=%{_var} \
@@ -256,10 +249,11 @@ cp -frp contrib/dlz/modules build/contrib/dlz/modules
     --includedir=%{_includedir}/bind9 \
     --enable-native-pkcs11 \
     --with-lmdb=yes \
-    --without-libjson --with-json-c \
+    --without-libjson \
+    --with-json-c \
     --enable-fixed-rrset \
     --with-docbook-xsl=%{_datadir}/sgml/docbook/xsl-ns-stylesheets \
-    --enable-full-report \
+    --enable-full-report
 
 %make_build
 
@@ -615,6 +609,9 @@ fi;
 %{_tmpfilesdir}/named.conf
 
 %changelog
+* Sat Oct 02 2021 Mateusz Malisz <mamalisz@microsoft.com> - 9.16.23-1
+- Update to 9.16.23-1
+
 * Sat Oct 02 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 9.16.15-3
 - Adding missing BR on 'systemd-rpm-macros'.
 
