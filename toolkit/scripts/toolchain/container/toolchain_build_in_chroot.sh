@@ -764,6 +764,7 @@ sslarch=
          no-mdc2 \
          no-sm2 \
          no-sm4 \
+         enable-md2 \
          '-DDEVRANDOM="\"/dev/urandom\""'
 perl ./configdata.pm -d
 make all -j$(nproc)
