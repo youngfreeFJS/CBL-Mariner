@@ -16,7 +16,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libselinux-devel
 BuildRequires:  libxml2-devel
-BuildRequires:  libxmlsec1-devel
+BuildRequires:  xmlsec1-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  pcre-devel
 BuildRequires:  perl-XML-Parser
@@ -26,7 +26,7 @@ BuildRequires:  rpm-devel
 BuildRequires:  swig
 BuildRequires:  util-linux-devel
 Requires:       curl
-Requires:       libxmlsec1
+Requires:       xmlsec1
 Requires:       popt
 Provides:       %{name}-engine-sce = %{version}-%{release}
 Provides:       %{name}-scanner = %{version}-%{release}
