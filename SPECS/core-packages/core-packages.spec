@@ -1,7 +1,7 @@
 Summary:        Metapackage with core sets of packages
 Name:           core-packages
 Version:        0.1
-Release:        25%{?dist}
+Release:        110%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -45,18 +45,8 @@ Requires:       which
 %package        container
 Summary:        Metapackage to install the basic set of packages used all image types.
 Requires:       bash
-Requires:       bzip2
 Requires:       ca-certificates-base
-Requires:       curl
-Requires:       e2fsprogs
-Requires:       elfutils-libelf
-Requires:       expat
 Requires:       filesystem
-Requires:       findutils
-Requires:       grep
-Requires:       gzip
-Requires:       libtool
-Requires:       lz4
 Requires:       mariner-release
 Requires:       mariner-repos
 %ifarch x86_64
@@ -64,26 +54,9 @@ Requires:       mariner-repos
 Requires:       mariner-repos-microsoft
 %endif
 Requires:       mariner-rpm-macros
-Requires:       ncurses-libs
-Requires:       net-tools
-Requires:       nspr
-Requires:       nss-libs
-Requires:       openssl
-Requires:       pkg-config
-Requires:       readline
-Requires:       rpm-libs
 Requires:       sed
-Requires:       sqlite-libs
-Requires:       sudo
-Requires:       systemd
-Requires:       tar
 Requires:       tdnf
 Requires:       tdnf-plugin-repogpgcheck
-Requires:       util-linux
-Requires:       vim
-Requires:       wget
-Requires:       xz
-Requires:       zlib
 
 %description    container
 %{summary}
