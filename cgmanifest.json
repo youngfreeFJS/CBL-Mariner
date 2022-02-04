@@ -14883,8 +14883,8 @@
         "type": "other",
         "other": {
           "name": "numpy",
-          "version": "1.22.0",
-          "downloadUrl": "https://github.com/numpy/numpy/releases/download/v1.22.0/numpy-1.22.0.tar.gz"
+          "version": "1.22.2",
+          "downloadUrl": "https://github.com/numpy/numpy/releases/download/v1.22.2/numpy-1.22.2.tar.gz"
         }
       }
     },

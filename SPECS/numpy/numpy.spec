@@ -1,6 +1,6 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           numpy
-Version:        1.22.0
+Version:        1.22.2
 Release:        1%{?dist}
 # The custom license is inside numpy/core/src/multiarray/dragon4.c.
 License:        BSD AND ZLIB custom
@@ -70,6 +70,9 @@ rm -rf test
 %{_bindir}/f2py%{python3_version}
 
 %changelog
+* Fri Jan 04 2022 Thomas Crain <thcrain@microsoft.com> - 1.22.2-1
+- Upgrade to latest upstream bugfix release
+
 * Thu Jan 06 2022 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 1.22.0-1
 - Update version to 1.22.0 fix CVE-2021-34141.
 
