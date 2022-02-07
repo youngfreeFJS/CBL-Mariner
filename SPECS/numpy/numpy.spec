@@ -54,10 +54,7 @@ This package includes a version of f2py that works properly with NumPy.
 
 %check
 pip3 install nose pytest
-pushd test
-PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python3 -c "import numpy; numpy.test()"
-popd
-rm -rf test
+PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python3 runtests.py
 
 %files -n python3-numpy
 %license LICENSE.txt
@@ -72,6 +69,7 @@ rm -rf test
 %changelog
 * Fri Jan 04 2022 Thomas Crain <thcrain@microsoft.com> - 1.22.2-1
 - Upgrade to latest upstream bugfix release
+- Fix test invocation
 
 * Thu Jan 06 2022 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 1.22.0-1
 - Update version to 1.22.0 fix CVE-2021-34141.
