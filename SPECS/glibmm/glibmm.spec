@@ -23,7 +23,7 @@ BuildRequires:  meson
 BuildRequires:  mm-common
 BuildRequires:  perl-generators
 BuildRequires:  perl-interpreter
-
+%global with_check 1
 %if %{with_check}
 BuildRequires:  glib-networking
 %endif
@@ -70,9 +70,7 @@ chmod +x %{buildroot}%{_libdir}/glibmm-%{apiver}/proc/generate_wrap_init.pl
 chmod +x %{buildroot}%{_libdir}/glibmm-%{apiver}/proc/gmmproc
 
 %check
-#need read content from /etc/fstab, which couldn't be empty
-echo '#test' > /etc/fstab
-export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
+%meson_test
 
 %files
 %defattr(-,root,root)
