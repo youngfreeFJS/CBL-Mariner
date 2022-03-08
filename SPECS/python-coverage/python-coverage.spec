@@ -1,7 +1,7 @@
 Summary:        Code coverage measurement for Python.
 Name:           python-coverage
 Version:        6.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -19,6 +19,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python3-pip
+BuildRequires:  git
 BuildRequires:  python3-pytest
 BuildRequires:  python3-six
 %endif
@@ -53,6 +54,9 @@ LANG=en_US.UTF-8 tox -e py39
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+* Tue Mar 08 2022 Nick Samson <nisamson@microsoft.com> - 6.3.2-2
+- Added git to check dependencies to fix test regression.
+
 * Tue Feb 22 2022 Nick Samson <nisamson@microsoft.com> - 6.3.2-1
 - Updated to 6.3.2. Updated python constraint.
 - Updated check section to reflect python 3.7 as min version.
