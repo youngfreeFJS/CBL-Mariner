@@ -1,0 +1,29 @@
+{
+    "Disks": [
+        {
+            "Artifacts": [
+                {
+                    "Name": "core-nodejs",
+                    "Compression": "tar.gz"
+                }
+            ]
+        }
+    ],
+    "SystemConfigs": [
+        {
+            "Name": "Standard",
+            "PackageLists": [
+                "packagelists/core-packages-container.json",
+                "packagelists/nodejs-packages-container.json"
+            ],
+            "PostInstallScripts": [
+                {
+                    "Path": "postinstallscripts/core-container/cleanup.sh"
+                },
+                {
+                    "Path": "postinstallscripts/core-container/modifyImage.sh"
+                }
+            ]
+        }
+    ]
+}
