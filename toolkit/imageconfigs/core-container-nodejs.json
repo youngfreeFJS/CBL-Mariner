@@ -18,10 +18,10 @@
             ],
             "PostInstallScripts": [
                 {
-                    "Path": "postinstallscripts/core-container/cleanup.sh"
+                    "Path": "postinstallscripts/core-container/addNonRootUser.sh"
                 },
                 {
-                    "Path": "postinstallscripts/core-container/modifyImage.sh"
+                    "Path": "postinstallscripts/core-container/cleanup.sh"
                 }
             ]
         }
