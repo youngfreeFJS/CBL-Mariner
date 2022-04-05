@@ -4,7 +4,7 @@
 Summary:        Correct, reproducible, and fast builds for everyone.
 Name:           bazel
 Version:        4.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -15,6 +15,7 @@ BuildRequires:  libstdc++
 BuildRequires:  libstdc++-devel
 BuildRequires:  msopenjdk-11
 BuildRequires:  python3
+BuildRequires:  python-unversioned-command
 BuildRequires:  unzip
 BuildRequires:  zip
 Requires:       msopenjdk-11
@@ -34,7 +35,6 @@ sed -i 's/#include <utility>/#include <utility>\n#include <limits>/g' /usr/inclu
 
 %build
 export JAVA_HOME=$(find %{_libdir}/jvm -name "msopenjdk*")
-ln -s %{_bindir}/python3 %{_bindir}/python
 
 EXTRA_BAZEL_ARGS="--host_javabase=@local_jdk//:jdk" ./compile.sh
 
@@ -49,6 +49,10 @@ cp ./scripts/packages/bazel.sh %{buildroot}/%{_bindir}/bazel
 %attr(0755,root,root) %{_bindir}/bazel-real
 
 %changelog
+* Mon Apr 04 2022 Olivia Crain <oliviacrain@microsoft.com> - 4.2.1-3
+- Remove creation of unversioned python symlink
+- Add BR on python-unversioned-command
+
 * Thu Dec 16 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 4.2.1-2
 - Removing the explicit %%clean stage.
 
