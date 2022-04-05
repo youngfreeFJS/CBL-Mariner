@@ -44,7 +44,7 @@
 %endif
 Name:           graphviz
 Version:        2.42.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Graph Visualization Tools
 License:        EPL-1.0
 Vendor:         Microsoft Corporation
@@ -261,10 +261,21 @@ sed -i '/LIBPOSTFIX="64"/s/64//' configure.ac
 sed -i '/JavaVM.framework/!s/JAVA_INCLUDES=/JAVA_INCLUDES=\"_MY_JAVA_INCLUDES_\"/g' configure
 sed -i 's|_MY_JAVA_INCLUDES_|-I%{java_home}/include/ -I%{java_home}/include/linux/|g' configure
 
-%configure --with-x --disable-static --disable-dependency-tracking \
-	--without-mylibgd --with-ipsepcola --with-pangocairo \
-	--without-gdk-pixbuf --with-visio --disable-silent-rules \
-  --without-ruby --without-python2 \
+export PYTHON=%{python3}
+%configure \
+  --with-x \
+  --disable-static \
+  --disable-dependency-tracking \
+	--without-mylibgd \
+  --with-ipsepcola \
+  --with-pangocairo \
+	--without-gdk-pixbuf \
+  --with-visio \
+  --disable-silent-rules \
+  --without-ruby \
+  --disable-python2 \
+  --disable-python \
+  --enable-python3 \
 %if ! %{LASI}
 	--without-lasi \
 %endif
@@ -513,6 +524,9 @@ php --no-php-ini \
 %{_mandir}/man3/*.3tcl*
 
 %changelog
+* Mon Apr 04 2022 Olivia Crain <oliviacrain@microsoft.com> - 2.42.4-6
+- Better enumerate python configuration options to avoid breakage with unversioned python symlink
+
 * Mon Jan 31 2022 Thomas Crain <thcrain@microsoft.com> - 2.42.4-5
 - Remove option to build with python2
 
