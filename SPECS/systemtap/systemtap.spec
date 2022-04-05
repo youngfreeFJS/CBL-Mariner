@@ -9,7 +9,7 @@
 Summary:        Programmable system-wide instrumentation system
 Name:           systemtap
 Version:        4.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -111,6 +111,7 @@ sed -i "s#"kernel"#"linux"#g" stap-prep
 sed -i "s#"devel"#"dev"#g" stap-prep
 
 %build
+export PYTHON3=%{python3}
 %configure \
 %if %{with_crash}
 	--enable-crash \
@@ -136,14 +137,16 @@ sed -i "s#"devel"#"dev"#g" stap-prep
 	--disable-grapher \
     --disable-virt \
 	--without-python2-probes \
+	--with-python3-probes
 	--with-python3 \
 	--disable-silent-rules
 
 make
 
 %install
-[ %{buildroot} != / ] && rm -rf ""
 %makeinstall
+
+%py3_shebang_fix %{buildroot}%{python3_sitelib} %{buildroot}%{_bindir}/*
 
 mv %{buildroot}%{_datadir}/systemtap/examples examples
 
@@ -352,6 +355,10 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+* Mon Apr 04 2022 Olivia Crain <oliviacrain@microsoft.com> - 4.5-2
+- Specify full path to python3 executable during configure step
+- Correct installed scripts to use versioned python shebang
+
 * Fri Jan 14 2022 Neha Agarwal <nehaagarwal@microsoft.com> - 4.5-1
 - Update to version 4.5.
 
