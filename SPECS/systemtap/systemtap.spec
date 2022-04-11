@@ -137,7 +137,7 @@ export PYTHON3=%{python3}
 	--disable-grapher \
     --disable-virt \
 	--without-python2-probes \
-	--with-python3-probes
+	--with-python3-probes \
 	--with-python3 \
 	--disable-silent-rules
 
