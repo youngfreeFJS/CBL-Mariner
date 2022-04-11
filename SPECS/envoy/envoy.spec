@@ -22,7 +22,7 @@
 Summary:        L7 proxy and communication bus
 Name:           envoy
 Version:        1.14.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -70,6 +70,7 @@ BuildRequires:  libtool
 BuildRequires:  nghttp2-devel
 BuildRequires:  ninja-build
 BuildRequires:  pkg-config
+BuildRequires:  python-unversioned-command
 BuildRequires:  python3
 BuildRequires:  python3-jinja2
 BuildRequires:  python3-markupsafe
@@ -108,8 +109,6 @@ git init
 git add .
 GIT_AUTHOR_DATE=2000-01-01T01:01:01 GIT_COMMITTER_DATE=2000-01-01T01:01:01 \
 git commit -m "Dummy commit just to satisfy bazel" &> /dev/null
-
-sudo ln -s /usr/bin/python3 /usr/bin/python
 
 # workaround for boo#1183836
 CC=gcc CXX=g++ bazel --batch build \
@@ -152,6 +151,10 @@ install -D -m0755 bazel-bin/source/exe/envoy-static %{buildroot}%{_bindir}/envoy
 %{_bindir}/envoy-proxy
 
 %changelog
+* Mon Apr 11 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.14.4-6
+- Remove creation of unversioned python symlink
+- Add explicit dependency on python-unversioned-command
+
 * Mon Mar 14 2022 Henry Li <lihl@microsoft.com> - 1.14.4-5
 - Update steps to generate prefetch vendor source tarball
 - Update 0004-build-Use-new-bazel.patch to use bazel v4.2.1
