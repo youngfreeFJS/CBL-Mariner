@@ -1,8 +1,8 @@
 # Got the intial spec from Fedora and modified it
 Summary:        JSON serializing/deserializing, done correctly and fast
 Name:           perl-JSON-XS
-Version:        3.04
-Release:        6%{?dist}
+Version:        4.03
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/JSON-XS/
@@ -37,14 +37,14 @@ chmod -c -x eg/*
 %build
 export PERL_CANARY_STABILITY_NOPROMPT=1
 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}" NO_PACKLIST=1
-make %{?_smp_mflags}
+%make_build
 
 %install
 make pure_install DESTDIR=%{buildroot}
 %{_fixperms} %{buildroot}/*
 
 %check
-make test
+%make_test
 
 %files
 %license COPYING
@@ -54,6 +54,9 @@ make test
 %{_mandir}/man[13]/*
 
 %changelog
+* Thu Apr 07 2022 Mateusz Malisz <mamalisz@microsoft.com> 4.03-1
+- Update to version 4.03
+
 * Fri Feb 04 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 3.04-6
 - Removing epoch.
 
