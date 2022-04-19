@@ -1,15 +1,16 @@
 Summary:        ALSA library
 Name:           alsa-lib
 Version:        1.2.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Applications/Internet
 URL:            https://alsa-project.org
 Source0:        https://www.alsa-project.org/files/pub/lib/%{name}-%{version}.tar.bz2
+BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 
 %description
@@ -24,29 +25,40 @@ Requires:       %{name} = %{version}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install
+find %{buildroot} -type f -name "*.la" -delete -print
 
 %files
 %defattr(-,root,root)
 %license COPYING
-%{_bindir}/*
-%{_libdir}/*
-%exclude %{_libdir}/debug/
-%{_datadir}/*
+%{_bindir}/aserver
+%{_libdir}/libasound.so.2*
+%{_libdir}/libatopology.so.2*
+%{_datadir}/alsa/
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/libasound.so
+%{_libdir}/libatopology.so
+%{_libdir}/pkgconfig/*
+%{_datadir}/aclocal/alsa.m4
 %{_includedir}/*
 
 %changelog
-* Tue Jan 4 2022 Nicolas Guibourge <nicolasg@microsoft.com> 1.2.6.1-1
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.2.6.1-2
+- Remove libtool archive files
+- Add more specificity to the %%files sections
+- Move unversioned shared libraries, pkgconfig files to devel subpackage
+- Lint spec
+
+* Tue Jan 4 2022 Nicolas Guibourge <nicolasg@microsoft.com> - 1.2.6.1-1
 - Update to version 1.2.6.1
 
 * Wed May 26 2021 Thomas Crain <thcrain@microsoft.com> - 1.2.2-2
