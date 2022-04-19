@@ -1,10 +1,9 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 # Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
 
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.9.7
-Release:          4%{?dist}
+Release:          5%{?dist}
 Group:            System Environment/Libraries
 URL:              https://github.com/cracklib/cracklib
 License:          LGPLv2+
@@ -123,6 +122,8 @@ pushd python
 python3 setup.py install --skip-build --root %{buildroot}
 popd
 
+find %{buildroot} -type f -name "*.la" -delete -print
+
 %check
 mkdir -p /usr/share/cracklib
 cp $RPM_BUILD_ROOT%{_datadir}/cracklib/* /usr/share/cracklib/
@@ -169,7 +170,6 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %doc README README-DAWG doc
 %{_includedir}/*
 %{_libdir}/libcrack.so
-%{_libdir}/libcrack.la
 
 %files -n python3-cracklib
 %defattr(-,root,root)
@@ -185,43 +185,58 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
-*   Thu Dec 16 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 2.9.7-4
--   Removing the explicit %%clean stage.
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 2.9.7-5
+- Remove libtool archive from packaging
 
-*   Wed May 19 2021 Nick Samson <nisamson@microsoft.com> - 2.9.7-3
--   Removed python2 support
-*   Sat May 09 2020 Nick Samson <nisamson@microsoft.com> - 2.9.7-2
--   Added %%license line automatically
-*   Thu Apr 09 2020 Joe Schmitt <joschmit@microsoft.com> 2.9.7-1
--   Increment version to 2.9.7.
--   Remove CVE-2016-6318 patch as its included in 2.9.7.
--   Update URL.
--   Update License.
--   Update Source0 with valid URL.
--   Update Source1 with valid URL.
--   Remove sha1 macro.
--   License verified.
-*   Tue Sep 03 2019 Mateusz Malisz <mamalisz@microsoft.com> 2.9.6-9
--   Initial CBL-Mariner import from Photon (license: Apache2).
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
--   Fix script dependency
-*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-6
--   Move python2 requires to python subpackage and added python3.
-*   Thu Apr 13 2017 Bo Gan <ganb@vmware.com> 2.9.6-5
--   Fix CVE-2016-6318, trigger for cracklib-dicts
--   Trigger for dynamic symlink for dict
-*   Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
--   Revert compressing pw_dict.pwd back. Python code
-    cracklib.VeryFascistCheck does not handle it.
-*   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-3
--   Remove any dicts from cracklib main package
--   Compress pw_dict.pwd file
--   Move doc folder to devel package
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.6-2
--   GA - Bump release of all rpms
-*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
--   Updated to version 2.9.6
-*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
--   Updated group.
+* Thu Dec 16 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 2.9.7-4
+- Removing the explicit %%clean stage.
+
+* Wed May 19 2021 Nick Samson <nisamson@microsoft.com> - 2.9.7-3
+- Removed python2 support
+
+* Sat May 09 2020 Nick Samson <nisamson@microsoft.com> - 2.9.7-2
+- Added %%license line automatically
+
+* Thu Apr 09 2020 Joe Schmitt <joschmit@microsoft.com> - 2.9.7-1
+- Increment version to 2.9.7.
+- Remove CVE-2016-6318 patch as its included in 2.9.7.
+- Update URL.
+- Update License.
+- Update Source0 with valid URL.
+- Update Source1 with valid URL.
+- Remove sha1 macro.
+- License verified.
+
+* Tue Sep 03 2019 Mateusz Malisz <mamalisz@microsoft.com> - 2.9.6-9
+- Initial CBL-Mariner import from Photon (license: Apache2).
+
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> - 2.9.6-8
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+
+* Sun Jun 04 2017 Bo Gan <ganb@vmware.com> - 2.9.6-7
+- Fix script dependency
+
+* Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> - 2.9.6-6
+- Move python2 requires to python subpackage and added python3.
+
+* Thu Apr 13 2017 Bo Gan <ganb@vmware.com> - 2.9.6-5
+- Fix CVE-2016-6318, trigger for cracklib-dicts
+- Trigger for dynamic symlink for dict
+
+* Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> - 2.9.6-4
+- Revert compressing pw_dict.pwd back. Python code
+  cracklib.VeryFascistCheck does not handle it.
+
+* Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> - 2.9.6-3
+- Remove any dicts from cracklib main package
+- Compress pw_dict.pwd file
+- Move doc folder to devel package
+
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> - 2.9.6-2
+- GA - Bump release of all rpms
+
+* Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> - 2.9.6-1
+- Updated to version 2.9.6
+
+* Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> - 2.9.2-2
+- Updated group.
