@@ -1,7 +1,7 @@
 Summary:        TCG Software Stack (TSS)
 Name:           trousers
 Version:        0.3.14
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -43,6 +43,7 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
+find %{buildroot} -type f -name "*.la" -delete -print
 
 %post
 mkdir -p %{_sharedstatedir}/tpm
@@ -83,7 +84,6 @@ fi
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/libtspi.la
 %{_libdir}/libtspi.so
 %{_libdir}/libtspi.so.1
 %{_mandir}/man3
@@ -95,6 +95,9 @@ fi
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 0.3.14-8
+- Remove libtool archive files from packaging
+
 * Tue Oct 27 2020 Thomas Crain <thcrain@microsoft.com> - 0.3.14-7
 - Added nopatch file for CVE-2020-24332.
 
