@@ -5,7 +5,7 @@
 Summary:        User space components of the Ceph file system
 Name:           ceph
 Version:        16.2.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2 and LGPLv3 and CC-BY-SA and GPLv2 and Boost and BSD and MIT and Public Domain and GPLv3 and ASL-2.0
 URL:            https://ceph.io/
 Vendor:         Microsoft Corporation
@@ -99,7 +99,6 @@ BuildRequires:  lsb-release
 BuildRequires:  lz4-devel >= 1.7
 BuildRequires:  make
 BuildRequires:  ncurses-devel
-BuildRequires:  nss-devel
 BuildRequires:  parted
 BuildRequires:  patch
 BuildRequires:  perl
@@ -178,10 +177,6 @@ BuildRequires:  xmlsec1
 BuildRequires:  xmlsec1-devel
 BuildRequires:  xmlsec1-openssl
 BuildRequires:  xmlsec1-openssl-devel
-
-%ifarch x86_64
-BuildRequires:  xmlsec1-nss
-%endif
 %endif
 
 %if 0%{with seastar}
@@ -1805,6 +1800,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 16.2.5-5
+- Remove outdated dependencies on nss package (removed circa v15.1.0)
+
 * Wed Mar 9 2022 Mateusz Malisz <mamalisz@microsoft> - 16.2.5-4
 - Add libevent as a build requires to fix build error/warning for some hostnames
 
