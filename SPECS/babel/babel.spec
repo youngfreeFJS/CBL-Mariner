@@ -1,7 +1,7 @@
 Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
 Name:           babel
 Version:        2.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -12,7 +12,6 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pytz
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -55,6 +54,9 @@ pip3 install pytest freezegun funcsigs pathlib2 pluggy utils
 %{python3_sitelib}/*
 
 %changelog
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 2.9.1-2
+- Remove references to python3-xml as subpackage was folded into python3-libs
+
 * Tue Mar 08 2022 Andrew Phelps <anphel@microsoft.com> - 2.9.1-1
 - Upgrade to version 2.9.1
 

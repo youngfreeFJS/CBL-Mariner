@@ -2,7 +2,7 @@
 Summary:        Cloud instance init scripts
 Name:           cloud-init
 Version:        22.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -15,19 +15,17 @@ Patch0:         mariner-22.1.patch
 BuildRequires:  automake
 BuildRequires:  dbus
 BuildRequires:  iproute
-BuildRequires:  python3
 BuildRequires:  python3-PyYAML
 BuildRequires:  python3-certifi
 BuildRequires:  python3-chardet
 BuildRequires:  python3-configobj
+BuildRequires:  python3-devel
 BuildRequires:  python3-idna
 BuildRequires:  python3-ipaddr
 BuildRequires:  python3-jinja2
-BuildRequires:  python3-libs
 BuildRequires:  python3-requests
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
-BuildRequires:  python3-xml
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
 Requires:       dhcp-client
@@ -39,7 +37,6 @@ Requires:       python3-configobj
 Requires:       python3-jinja2
 Requires:       python3-jsonpatch
 Requires:       python3-jsonschema
-Requires:       python3-libs
 Requires:       python3-markupsafe
 Requires:       python3-netifaces
 Requires:       python3-oauthlib
@@ -47,7 +44,6 @@ Requires:       python3-prettytable
 Requires:       python3-requests
 Requires:       python3-setuptools
 Requires:       python3-six
-Requires:       python3-xml
 Requires:       systemd
 BuildArch:      noarch
 %if %{with_check}
@@ -142,6 +138,10 @@ make check %{?_smp_mflags}
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/10-azure-kvp.cfg
 
 %changelog
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 22.1-3
+- Remove references to python3-xml as subpackage was folded into python3-libs
+- Consolidate python build requirements
+
 * Mon Mar 28 2022 Henry Beberman <henry.beberman@microsoft.com> - 22.1-2
 - Add netplan defaults to Mariner distro config patch
 

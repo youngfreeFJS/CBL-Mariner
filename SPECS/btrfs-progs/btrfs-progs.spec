@@ -1,6 +1,6 @@
 Name:       btrfs-progs
 Version:    5.16
-Release:    101%{?dist}
+Release:    102%{?dist}
 Summary:    Userspace programs for btrfs
 Group:      System Environment/Base
 License:    GPLv2+
@@ -16,7 +16,6 @@ BuildRequires:  xmlto
 BuildRequires:  asciidoc
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:   e2fsprogs
 Requires:   lzo
 
@@ -77,7 +76,10 @@ make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libd
 
 
 %changelog
-* Thu Jan 13 2022 Cameron Baird <cameronbaird@microsoft.com> - 5.16-1
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 5.16-102
+- Remove references to python3-xml as subpackage was folded into python3-libs
+
+* Thu Jan 13 2022 Cameron Baird <cameronbaird@microsoft.com> - 5.16-101
 - Update to 5.16
 
 * Thu Dec 16 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 4.19-4

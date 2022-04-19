@@ -1,7 +1,7 @@
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 Name:           apparmor
 Version:        3.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -39,11 +39,8 @@ BuildRequires:  perl-interpreter
 BuildRequires:  perl(Pod::Checker)
 BuildRequires:  perl(Pod::Html)
 BuildRequires:  perl(ExtUtils::MakeMaker)
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 BuildRequires:  swig
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  which
@@ -353,6 +350,10 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 3.04-2
+- Remove references to python3-xml as subpackage was folded into python3-libs
+- Consolidate python build requirements
+
 * Wed Mar 09 2022 Andrew Phelps <anphel@microsoft.com> - 3.04-1
 - Upgrade to version 3.04
 
