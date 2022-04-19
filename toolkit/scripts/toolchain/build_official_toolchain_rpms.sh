@@ -309,8 +309,7 @@ build_rpm_in_chroot_no_install zip
 chroot_and_install_rpms zip
 build_rpm_in_chroot_no_install unzip
 chroot_and_install_rpms unzip
-build_rpm_in_chroot_no_install gperf
-chroot_and_install_rpms gperf
+
 
 # Python3 needs to be installed for RPM to build
 build_rpm_in_chroot_no_install python3
@@ -503,8 +502,9 @@ chroot_and_install_rpms python3-markupsafe
 build_rpm_in_chroot_no_install python-jinja2
 copy_rpm_subpackage python3-jinja2
 
-# systemd-bootstrap requires libcap, xz, kbd, kmod, util-linux, meson, intltool, python3-jinja2
-# gperf is also needed, but is installed earlier
+# systemd-bootstrap requires gperf, libcap, xz, kbd, kmod, util-linux, meson, intltool, python3-jinja
+build_rpm_in_chroot_no_install gperf
+chroot_and_install_rpms gperf
 chroot_and_install_rpms libcap
 chroot_and_install_rpms lz4
 chroot_and_install_rpms xz
