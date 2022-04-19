@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.18.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -46,6 +46,7 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
+find %{buildroot} -type f -name "*.la" -delete -print
 
 %check
 make  %{?_smp_mflags} check
@@ -79,9 +80,11 @@ make  %{?_smp_mflags} check
 %{_includedir}/libmm-glib/*
 %{_libdir}/pkgconfig/ModemManager.pc
 %{_libdir}/pkgconfig/mm-glib.pc
-%{_libdir}/libmm-glib.la
 
 %changelog
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.18.6-4
+- Remove libtool archive from packaging
+
 * Tue Mar 22 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.18.6-3
 - Adding missing systemd service file to the default package.
 
