@@ -516,9 +516,6 @@ chroot_and_install_rpms intltool
 chroot_and_install_rpms python3-jinja2
 build_rpm_in_chroot_no_install systemd-bootstrap
 
-# Removed 'lvm2', might not need: ncurses
-chroot_and_install_rpms ncurses
-
 # p11-kit needs libtasn1, systemd-bootstrap
 chroot_and_install_rpms libtasn1
 chroot_and_install_rpms systemd-bootstrap
