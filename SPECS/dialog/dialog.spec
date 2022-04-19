@@ -1,22 +1,21 @@
 %global dialogsubversion 20180621
-
-Summary:       A utility for creating TTY dialog boxes
-Name:          dialog
-Version:       1.3
-Release:       4%{?dist}
-License:       LGPLv2+
-URL:           https://invisible-island.net/dialog/dialog.html
-Group:         Applications/System
-Vendor:        Microsoft Corporation
-Distribution:  Mariner
-Source0:       ftp://ftp.invisible-island.net/dialog/%{name}-%{version}-%{dialogsubversion}.tgz
-BuildRequires: ncurses-devel
-BuildRequires: gettext
-BuildRequires: findutils
-BuildRequires: libtool
-Patch1:        dialog-incdir.patch
-Patch2:        dialog-multilib.patch
-Patch3:        dialog-libs.patch
+Summary:        A utility for creating TTY dialog boxes
+Name:           dialog
+Version:        1.3
+Release:        5%{?dist}
+License:        LGPLv2+
+URL:            https://invisible-island.net/dialog/dialog.html
+Group:          Applications/System
+Vendor:         Microsoft Corporation
+Distribution:   Mariner
+Source0:        https://invisible-mirror.net/archives/%{name}/%{name}-%{version}-%{dialogsubversion}.tgz
+Patch1:         %{name}-incdir.patch
+Patch2:         %{name}-multilib.patch
+Patch3:         %{name}-libs.patch
+BuildRequires:  ncurses-devel
+BuildRequires:  gettext
+BuildRequires:  findutils
+BuildRequires:  libtool
 
 %description
 Dialog is a utility that allows you to show dialog boxes (containing
@@ -27,22 +26,20 @@ gauge.
 
 Install dialog if you would like to create TTY dialog boxes.
 
-%package       devel
-Summary:       Development files for building applications with the dialog library
-Group:         Development/Libraries
-Requires:      %{name} = %{version}-%{release} ncurses-devel
+%package        devel
+Summary:        Development files for building applications with the dialog library
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+Requires:       ncurses-devel
 
-%description   devel
+%description    devel
 Dialog is a utility that allows you to show dialog boxes (containing
 questions or messages) in TTY (text mode) interfaces. This package
 contains the files needed for developing applications, which use the
 dialog library.
 
 %prep
-%setup -q -n %{name}-%{version}-%{dialogsubversion}
-%patch1 -p1 -b .incdir
-%patch2 -p1 -b .multilib
-%patch3 -p1 -b .libs
+%autosetup -p1 -n %{name}-%{version}-%{dialogsubversion}
 
 %build
 %configure \
@@ -50,7 +47,7 @@ dialog library.
         --with-libtool \
         --with-ncursesw \
         --includedir=%{_includedir}/dialog
-make %{?_smp_mflags}
+%make_build
 
 %install
 # prepare packaged samples
@@ -60,32 +57,36 @@ cp -a samples _samples
 rm -rf _samples/samples/install
 find _samples -type f -print0 | xargs -0 chmod a-x
 
-make DESTDIR=%{buildroot} install
+%make_install
+find %{buildroot} -type f -name "*.la" -delete -print
+find %{buildroot} -type f -name "*.a" -delete -print
 
 # configure incorrectly use '-m 644' for library, fix it
 chmod +x %{buildroot}%{_libdir}/*
 
 %find_lang %{name}
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files -f %{name}.lang
 %license COPYING
 %doc COPYING dialog.lsm README _samples/samples
 %{_bindir}/dialog
-%{_libdir}/libdialog.so.*
+%{_libdir}/libdialog.so.15*
 %{_mandir}/man1/dialog.*
 
 %files devel
 %{_bindir}/dialog-config
 %{_includedir}/dialog
 %{_libdir}/libdialog.so
-%{_libdir}/libdialog.la
-%exclude %{_libdir}/libdialog.a
 %{_mandir}/man3/dialog.*
 
 %changelog
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.3-5
+- Remove libtool archives from packaging
+- Switch from FTP to HTTPS source
+- Lint spec
+
 * Tue Oct 19 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.3-4
 - Converting the 'Release' tag to the '[number].[distribution]' format.
 
