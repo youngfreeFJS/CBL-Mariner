@@ -369,10 +369,6 @@ chroot_and_install_rpms libssh2
 chroot_and_install_rpms krb5
 build_rpm_in_chroot_no_install curl
 
-# python3-setuptools needs python3-xml
-# python3-xml is built by building python3
-chroot_and_install_rpms python3-xml
-
 # cracklib needs python3-setuptools
 chroot_and_install_rpms python3-setuptools
 build_rpm_in_chroot_no_install cracklib
@@ -398,7 +394,7 @@ build_rpm_in_chroot_no_install gtest
 
 build_rpm_in_chroot_no_install libsolv
 
-# glib needs perl-XML-Parser, python3-xml, gtk-doc, meson, libselinux
+# glib needs perl-XML-Parser, python3, gtk-doc, meson, libselinux
 chroot_and_install_rpms perl-XML-Parser
 
 # itstool needs python3-libxml2
@@ -500,7 +496,7 @@ chroot_and_install_rpms debugedit
 build_rpm_in_chroot_no_install rpm
 
 # python-jinja2 needs python3-markupsafe
-# python3-setuptools, python3-xml are also needed but already installed
+# python3-setuptools is also needed but already installed
 build_rpm_in_chroot_no_install python-markupsafe
 copy_rpm_subpackage python3-markupsafe
 chroot_and_install_rpms python3-markupsafe
@@ -528,11 +524,9 @@ chroot_and_install_rpms libtasn1
 chroot_and_install_rpms systemd-bootstrap
 build_rpm_in_chroot_no_install p11-kit
 
-# asciidoc needs python3-xml
-build_rpm_in_chroot_no_install asciidoc
-
 # ca-certificates needs p11-kit and asciidoc
 chroot_and_install_rpms p11-kit
+build_rpm_in_chroot_no_install asciidoc
 chroot_and_install_rpms asciidoc
 build_rpm_in_chroot_no_install ca-certificates
 
