@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -65,6 +65,7 @@ make  %{?_smp_mflags} swig-pl
 
 %install
 make -j1 DESTDIR=%{buildroot} install
+find %{buildroot} -type f -name "*.la" -delete -print
 %find_lang %{name}
 
 # For Perl bindings
@@ -88,10 +89,8 @@ sudo -u test make check && userdel test -r -f
 
 %files devel
 %{_includedir}/*
-%{_libdir}/libsvn_*.*a
 %{_libdir}/libsvn_*.so
 %{_datadir}/pkgconfig/*.pc
-%exclude %{_libdir}/debug/
 
 %files perl
 %defattr(-,root,root)
@@ -102,6 +101,9 @@ sudo -u test make check && userdel test -r -f
 %{_mandir}/man3/SVN*
 
 %changelog
+* Tue Apr 19 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.14.1-3
+- Remove libtool archive files from packaging
+
 * Mon Jan 31 2022 Thomas Crain <thcrain@microsoft.com> - 1.14.1-2
 - Use python3 during %%check section instead of python2
 
