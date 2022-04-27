@@ -1,7 +1,7 @@
 Summary:        Systemd-250
 Name:           systemd
 Version:        250.3
-Release:        4%{?dist}
+Release:        402%{?dist}
 License:        LGPLv2+ AND GPLv2+ AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -12,6 +12,7 @@ Source1:        50-security-hardening.conf
 Source2:        systemd.cfg
 Source3:        99-dhcp-en.network
 Patch0:         fix-journald-audit-logging.patch
+Patch1:         crashme.patch
 BuildRequires:  cryptsetup-devel
 BuildRequires:  docbook-dtd-xml
 BuildRequires:  docbook-style-xsl
@@ -32,7 +33,7 @@ BuildRequires:  perl-XML-Parser
 BuildRequires:  python3-jinja2
 BuildRequires:  util-linux-devel
 BuildRequires:  xz-devel
-Requires:       %{name}-rpm-macros = %{version}-%{release}
+Requires:       %{name}-rpm-macros
 Requires:       glib
 Requires:       kmod
 Requires:       libcap
@@ -117,7 +118,6 @@ meson  --prefix %{_prefix}                                            \
        -Dlibcryptsetup=true                                           \
        -Dgcrypt=true                                                  \
        -Dlz4=true                                                     \
-       -Dzstd=false                                                   \
        -Ddbuspolicydir=%{_sysconfdir}/dbus-1/system.d                 \
        -Ddbussessionservicedir=%{_datadir}/dbus-1/services            \
        -Ddbussystemservicedir=%{_datadir}/dbus-1/system-services      \

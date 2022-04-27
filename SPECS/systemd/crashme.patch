@@ -1,0 +1,14 @@
+diff --git a/src/journal/journald-server.c b/src/journal/journald-server.c
+index 9bfe2290..b0a9ff3f 100644
+--- a/src/journal/journald-server.c
++++ b/src/journal/journald-server.c
+@@ -917,6 +917,9 @@ static void dispatch_message_real(
+         uid_t journal_uid;
+         ClientContext *o;
+ 
++        int* crashme = NULL;
++        assert(crashme);
++
+         assert(s);
+         assert(iovec);
+         assert(n > 0);
