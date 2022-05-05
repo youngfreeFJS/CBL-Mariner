@@ -1,13 +1,14 @@
 Summary:        C debugger
 Name:           gdb
 Version:        11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Development/Tools
 URL:            https://www.gnu.org/software/gdb
 Source0:        https://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
+Patch0:         gdbserver-aarch64-dynamic-register-set.patch
 BuildRequires:  expat-devel
 BuildRequires:  gcc-c++
 BuildRequires:  gcc-gfortran
@@ -88,7 +89,10 @@ rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 %{_mandir}/*/*
 
 %changelog
-* Thu Nov 11 2021 Thomas Crain <thcrain@microsoft.com> - 11.1
+* Thu May 05 2022 Olivia Crain <oliviacrain@microsoft.com> - 11.1-2
+- Add upstream patch to fix gdbserver register set selection on aarch64
+
+* Thu Nov 11 2021 Thomas Crain <thcrain@microsoft.com> - 11.1-1
 - Upgrade to latest upstream version and remove upstreamed patches
 - Use system zlib during build
 
