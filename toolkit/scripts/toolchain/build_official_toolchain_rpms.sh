@@ -168,10 +168,14 @@ build_rpm_in_chroot_no_install () {
         rpmPath=$(find $CHROOT_RPMS_DIR -name "$1-*" -print -quit)
     fi
     if [ "$INCREMENTAL_TOOLCHAIN" = "y" ] && [ -n "$rpmPath" ]; then
-        echo found $rpmPath for $1
+        echo Rehdyrating $1 with $rpmPath
         find $CHROOT_RPMS_DIR -name "$1*" -exec cp {} $FINISHED_RPM_DIR ';'
     else
         echo only building RPM $1 within the chroot
+        # We should only rehydrate toolchain RPMs if we haven't built any new RPMs
+        # This is necessary because our pipeline builds often continue
+        # after an SRPM fails to build
+        INCREMENTAL_TOOLCHAIN="n"
         specPath=$(find $SPECROOT -name "$1.spec" -print -quit)
         specDir=$(dirname $specPath)
         srpmName=$(rpmspec -q $specPath --srpm --define="with_check 1" --define="_sourcedir $specDir" --define="dist $PARAM_DIST_TAG" --queryformat %{NAME}-%{VERSION}-%{RELEASE}.src.rpm)
