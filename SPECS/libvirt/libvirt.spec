@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        6.1.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPL
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -18,6 +18,7 @@ Patch4:         CVE-2021-3631.patch
 Patch5:         CVE-2021-3667.patch
 BuildRequires:  cyrus-sasl
 BuildRequires:  device-mapper-devel
+BuildRequires:  dnsmasq
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  gnutls-devel
 BuildRequires:  libcap-ng-devel
@@ -35,6 +36,7 @@ BuildRequires:  rpcsvc-proto
 BuildRequires:  systemd-devel
 Requires:       cyrus-sasl
 Requires:       device-mapper
+Requires:       dnsmasq
 Requires:       e2fsprogs
 Requires:       gnutls
 Requires:       libcap-ng
@@ -134,6 +136,9 @@ make check
 %{_mandir}/*
 
 %changelog
+* Fri May 06 2022 Olivia Crain <oliviacrain@microsoft.com> - 6.1.0-6
+- Add dnsmasq as both a build-time and run-time requirement
+
 * Wed Mar 16 2022 Muhammad Falak <mwani@microsoft.com> - 6.1.0-5
 - Patch CVE-2021-3631 & CVE-2021-3667
 
