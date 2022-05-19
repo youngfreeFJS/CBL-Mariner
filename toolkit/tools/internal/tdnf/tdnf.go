@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/exe"
+	"microsoft.com/pkggen/internal/exe"
 )
 
 const (
