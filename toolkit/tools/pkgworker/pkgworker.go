@@ -22,6 +22,7 @@ import (
 	"microsoft.com/pkggen/internal/safechroot"
 	"microsoft.com/pkggen/internal/shell"
 	"microsoft.com/pkggen/internal/sliceutils"
+	"microsoft.com/pkggen/internal/tdnf"
 )
 
 const (
@@ -244,6 +245,10 @@ func tdnfInstall(packages []string) (err error) {
 		packageMatchGroup       = 1
 	)
 
+	var (
+		releaseverCliArg string
+	)
+
 	if len(packages) == 0 {
 		return
 	}
@@ -256,7 +261,12 @@ func tdnfInstall(packages []string) (err error) {
 		packages[i] = filepath.Base(strings.TrimSuffix(packages[i], ".rpm"))
 	}
 
-	installArgs := []string{"install", "-y", "--releasever", "2.0"}
+	releaseverCliArg, err = tdnf.GetReleaseverCliArg()
+	if err != nil {
+		return
+	}
+
+	installArgs := []string{"install", "-y", releaseverCliArg}
 	installArgs = append(installArgs, packages...)
 	stdout, stderr, err := shell.Execute("tdnf", installArgs...)
 	foundNoMatchingPackages := false
