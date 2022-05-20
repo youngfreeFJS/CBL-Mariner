@@ -2,7 +2,7 @@
     "Disks": [
         {
             "PartitionTableType": "gpt",
-            "MaxSize": 4096,
+            "MaxSize": 65536,
             "Artifacts": [
                 {
                     "Name": "core",
@@ -17,12 +17,12 @@
                         "boot"
                     ],
                     "Start": 1,
-                    "End": 9,
+                    "End": 1024,
                     "FsType": "fat32"
                 },
                 {
                     "ID": "rootfs",
-                    "Start": 9,
+                    "Start": 1024,
                     "End": 0,
                     "FsType": "ext4"
                 }
