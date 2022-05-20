@@ -1,0 +1,1 @@
+echo "Please drop your preinstall scripts in thie directory"
