@@ -29,7 +29,7 @@ var (
 
 	validRepoContent = []string{
 		"[mariner-official-base]",
-		"name=mariner-official-base $releasever $basearch",
+		"name=mariner-official-base",
 		"baseurl=https://packages.microsoft.com/cbl-mariner/$releasever/prod/base/$basearch",
 		"gpgkey=file:///etc/pki/rpm-gpg/MICROSOFT-RPM-GPG-KEY file:///etc/pki/rpm-gpg/MICROSOFT-METADATA-GPG-KEY",
 		"enabled=1",

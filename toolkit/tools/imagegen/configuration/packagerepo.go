@@ -116,7 +116,7 @@ func createCustomRepoFile(fileName string, packageRepo PackageRepo) (err error) 
 	}
 
 	// Write the repo Name field
-	repoName := "name=" + packageRepo.Name + " $releasever $basearch\n"
+	repoName := "name=" + packageRepo.Name + "\n"
 	err = file.Append(repoName, fileName)
 	if err != nil {
 		logger.Log.Errorf("Failed to write repo name %s", repoName)
