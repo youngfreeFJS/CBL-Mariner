@@ -17,12 +17,12 @@
                         "boot"
                     ],
                     "Start": 1,
-                    "End": 9,
+                    "End": 64,
                     "FsType": "fat32"
                 },
                 {
                     "ID": "rootfs",
-                    "Start": 9,
+                    "Start": 64,
                     "End": 0,
                     "FsType": "ext4"
                 }
