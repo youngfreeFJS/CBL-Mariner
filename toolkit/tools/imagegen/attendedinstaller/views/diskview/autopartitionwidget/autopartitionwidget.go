@@ -136,7 +136,7 @@ func (ap *AutoPartitionWidget) mustUpdateConfiguration(sysConfig *configuration.
 		bootPartitionName     = "esp"
 		bootPartitionFsType   = "fat32"
 		bootPartitionStartMiB = 1
-		bootPartitionEndMiB   = 9
+		bootPartitionEndMiB   = 64
 
 		bootDirPartitionName     = "boot"
 		bootDirPartitionFsType   = "ext4"
