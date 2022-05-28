@@ -145,11 +145,11 @@ func (s *SystemConfig) IsValid() (err error) {
 	repoNames := make(map[string]bool)
 	for _, packageRepo := range s.PackageRepos {
 		if err = packageRepo.IsValid(); err != nil {
-			return fmt.Errorf("invalid [PackageRepo]: %w", err)
+			return fmt.Errorf("invalid [PackageRepo]: %s. Error: %w", packageRepo.Name, err)
 		}
 
-		if _, ok := repoNames[packageRepo.Name]; ok {
-			return fmt.Errorf("invalid [PackageRepos]: duplicate package repo names")
+		if repoNames[packageRepo.Name] {
+			return fmt.Errorf("invalid [PackageRepos]: duplicate package repo names (%s)", packageRepo.Name)
 		}
 		repoNames[packageRepo.Name] = true
 	}

@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -16,7 +17,6 @@ import (
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/logger"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/network"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/safechroot"
-	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/shell"
 )
 
 // PackageRepo defines the RPM repo to pull packages from during the installation
@@ -48,107 +48,14 @@ func (p *PackageRepo) UnmarshalJSON(b []byte) (err error) {
 
 // IsValid returns an error if the PackageRepo struct is not valid
 func (p *PackageRepo) IsValid() (err error) {
-	err = p.NameIsValid()
+	err = p.nameIsValid()
 	if err != nil {
 		return
 	}
 
-	err = p.RepoUrlIsValid()
+	err = p.repoUrlIsValid()
 	if err != nil {
 		return
-	}
-
-	return
-}
-
-// NameIsValid returns an error if the package repo name is empty
-func (p *PackageRepo) NameIsValid() (err error) {
-	if strings.TrimSpace(p.Name) == "" {
-		return fmt.Errorf("invalid value for package repo name (%s), name cannot be empty", p.Name)
-	}
-	return
-}
-
-// RepoUrlIsValid returns an error if the package url is invalid
-func (p *PackageRepo) RepoUrlIsValid() (err error) {
-	if strings.TrimSpace(p.BaseUrl) == "" {
-		return fmt.Errorf("invalid value for package repo URL (%s), URL cannot be empty", p.BaseUrl)
-	}
-
-	_, err = url.ParseRequestURI(p.BaseUrl)
-	if err != nil {
-		return
-	}
-	return
-}
-
-func writeAdditionalFieldstoRepoFile(fileName string) (err error) {
-	const (
-		gpgKey    = "gpgkey=file:///etc/pki/rpm-gpg/MICROSOFT-RPM-GPG-KEY file:///etc/pki/rpm-gpg/MICROSOFT-METADATA-GPG-KEY\n"
-		enable    = "enabled=1\n"
-		gpgCheck  = "gpgcheck=0\n"
-		skip      = "skip_if_unavailable=True\n"
-		sslVerify = "sslverify=0\n"
-	)
-
-	additionalFields := gpgKey + enable + gpgCheck + skip + sslVerify
-	err = file.Append(additionalFields, fileName)
-	if err != nil {
-		logger.Log.Errorf("Failed to write additional fields")
-	}
-
-	return
-}
-
-func createCustomRepoFile(fileName string, packageRepo PackageRepo) (err error) {
-	err = file.Create(fileName, 0644)
-	if err != nil {
-		logger.Log.Errorf("Error creating file %s", fileName)
-		return
-	}
-
-	// Write the repo identifier field
-	repoId := "[" + packageRepo.Name + "]\n"
-	err = file.Append(repoId, fileName)
-	if err != nil {
-		logger.Log.Errorf("Failed to write repo identifier %s", repoId)
-		return
-	}
-
-	// Write the repo Name field
-	repoName := "name=" + packageRepo.Name + "\n"
-	err = file.Append(repoName, fileName)
-	if err != nil {
-		logger.Log.Errorf("Failed to write repo name %s", repoName)
-		return
-	}
-
-	// Write the repo URL field
-	repoUrl := "baseurl=" + packageRepo.BaseUrl + "\n"
-	err = file.Append(repoUrl, fileName)
-	if err != nil {
-		logger.Log.Errorf("Failed to write repo URL %s", repoUrl)
-		return
-	}
-
-	err = writeAdditionalFieldstoRepoFile(fileName)
-	return
-}
-
-func createCustomPackageRepo(installChroot *safechroot.Chroot, packageRepo PackageRepo, repoFileDir string) (err error) {
-
-	dstRepoPath := filepath.Join(repoFileDir, packageRepo.Name + ".repo")
-
-	// Create repo file
-	err = createCustomRepoFile(dstRepoPath, packageRepo)
-	if err != nil {
-		return
-	}
-
-	// Check the repo file needs to be installed in the image
-	if packageRepo.Install {
-		installRepoFile := filepath.Join(installChroot.RootDir(), dstRepoPath)
-		err = file.Copy(dstRepoPath, installRepoFile)
 	}
 
 	return
@@ -164,28 +71,16 @@ func UpdatePackageRepo(installChroot *safechroot.Chroot, config SystemConfig) (e
 	)
 
 	if exists, ferr := file.DirExists(repoFileDir); ferr != nil {
-		logger.Log.Errorf("Error accessing repo file directory.")
+		logger.Log.Errorf("Error accessing repo file directory %s.", repoFileDir)
 		err = ferr
 		return
 	} else if !exists {
-		err = fmt.Errorf("%s: no such directory", repoFileDir)
+		err = fmt.Errorf("Could not find the repo file directory %s to update package repo", repoFileDir)
 		return
 	}
 
 	// Remove mariner-iso.repo
-	if exists, ferr := file.PathExists(localRepoFile); ferr != nil {
-		logger.Log.Errorf("Error accessing /etc/yum.repos.d/mariner-iso.repo")
-		err = ferr
-		return
-	} else if !exists {
-		err = fmt.Errorf("%s: no such file or directory", localRepoFile)
-		return
-	}
-
-	err = shell.ExecuteLive(squashErrors, "rm", localRepoFile)
-	if err != nil {
-		return
-	}
+	os.Remove(localRepoFile)
 
 	// Loop through the PackageRepos field to determine if any customized package repos are specified.
 	// If specified, create new repo files for them
@@ -199,5 +94,114 @@ func UpdatePackageRepo(installChroot *safechroot.Chroot, config SystemConfig) (e
 	// It is possible that network access may not be up at this point,
 	// so check network access
 	err = network.CheckNetworkAccess()
+	return
+}
+
+// nameIsValid returns an error if the package repo name is empty
+func (p *PackageRepo) nameIsValid() (err error) {
+	if strings.TrimSpace(p.Name) == "" {
+		return fmt.Errorf("invalid value for package repo name (%s), name cannot be empty", p.Name)
+	}
+	return
+}
+
+// repoUrlIsValid returns an error if the package url is invalid
+func (p *PackageRepo) repoUrlIsValid() (err error) {
+	if strings.TrimSpace(p.BaseUrl) == "" {
+		return fmt.Errorf("invalid value for package repo URL (%s), URL cannot be empty", p.BaseUrl)
+	}
+
+	_, err = url.ParseRequestURI(p.BaseUrl)
+	return
+}
+
+func writeAdditionalFields(stringBuilder *strings.Builder) (err error) {
+	const (
+		gpgKey       = "gpgkey=file:///etc/pki/rpm-gpg/MICROSOFT-RPM-GPG-KEY file:///etc/pki/rpm-gpg/MICROSOFT-METADATA-GPG-KEY\n"
+		enable       = "enabled=1\n"
+		gpgCheck     = "gpgcheck=1\n"
+		repogpgCheck = "repo_gpgcheck=1\n"
+		skip         = "skip_if_unavailable=True\n"
+		sslVerify    = "sslverify=1\n"
+	)
+
+	additionalFields := gpgKey + enable + gpgCheck + repogpgCheck + skip + sslVerify
+	_, err = stringBuilder.WriteString(additionalFields)
+	if err != nil {
+		logger.Log.Errorf("Error writing additional fields: %s. Error: %s", additionalFields, err)
+	}
+
+	return
+}
+
+func createCustomRepoFile(fileName string, packageRepo PackageRepo) (err error) {
+	var stringBuilder strings.Builder
+
+	err = file.Create(fileName, 0644)
+	if err != nil {
+		logger.Log.Errorf("Error creating file (%s)", fileName)
+		return
+	}
+
+	// Write the repo identifier field
+	repoId := fmt.Sprintf("[%s]\n", packageRepo.Name)
+	_, err = stringBuilder.WriteString(repoId)
+	if err != nil {
+		logger.Log.Errorf("Error writing repo ID: %s. Error: %s", repoId, err)
+		return
+	}
+
+	// Write the repo Name field
+	repoName := fmt.Sprintf("name=%s\n", packageRepo.Name)
+	_, err = stringBuilder.WriteString(repoName)
+	if err != nil {
+		logger.Log.Errorf("Error writing repo Name: %s. Error: %s", repoName, err)
+		return
+	}
+
+	// Write the repo URL field
+	repoUrl := fmt.Sprintf("baseurl=%s\n", packageRepo.BaseUrl)
+	_, err = stringBuilder.WriteString(repoUrl)
+	if err != nil {
+		logger.Log.Errorf("Error writing repo URL: %s. Error: %s", repoUrl, err)
+		return
+	}
+
+	// Write additional fields, gpg key etc.
+	err = writeAdditionalFields(&stringBuilder)
+	if err != nil {
+		return
+	}
+
+	err = file.Append(stringBuilder.String(), fileName)
+	return
+}
+
+func createCustomPackageRepo(installChroot *safechroot.Chroot, packageRepo PackageRepo, repoFileDir string) (err error) {
+
+	dstRepoPath := filepath.Join(repoFileDir, packageRepo.Name+".repo")
+
+	defer func() {
+		// Delete the repo file on failure
+		if err != nil {
+			err = os.Remove(dstRepoPath)
+			if err != nil {
+				logger.Log.Errorf("Failed to clean up repo file: %s. Error: %s", dstRepoPath, err)
+			}
+		}
+	}()
+
+	// Create repo file
+	err = createCustomRepoFile(dstRepoPath, packageRepo)
+	if err != nil {
+		return
+	}
+
+	// Check the repo file needs to be installed in the image
+	if packageRepo.Install {
+		installRepoFile := filepath.Join(installChroot.RootDir(), dstRepoPath)
+		err = file.Copy(dstRepoPath, installRepoFile)
+	}
+
 	return
 }
