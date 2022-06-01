@@ -1,7 +1,7 @@
 Summary:        A highly-available key value store for shared configuration
 Name:           etcd
 Version:        3.4.13
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -93,6 +93,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/etcd-dump-*
 
 %changelog
+* Wed Jun 01 2022 Olivia Crain <oliviacrain@microsoft.com> - 3.4.13-11
+- Bump release to force rebuild with Go 1.17.11
+
 * Fri Apr 29 2022 chalamalasetty <chalamalasetty@live.com> - 3.4.13-10
 - Bumping 'Release' to rebuild with updated Golang version 1.16.15-2.
 
