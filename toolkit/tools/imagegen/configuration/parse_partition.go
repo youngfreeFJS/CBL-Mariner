@@ -89,7 +89,7 @@ func processDisk(inputDiskValue string) (err error) {
 			disks = append(disks, Disk{})
 		}
 
-		disks[latestDiskIndex].PartitionTableType = PartitionTableTypeGpt
+		disks[latestDiskIndex].PartitionTableType = PartitionTableTypeMbr
 
 		// Set TargetDisk and TargetDiskType for unattended installation
 		disks[latestDiskIndex].TargetDisk.Type = "path"
