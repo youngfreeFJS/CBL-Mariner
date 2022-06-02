@@ -136,7 +136,7 @@ func filterExternalPackagesOnly(packageVersionsInConfig []*pkgjson.PackageVer, i
 	}
 
 	for _, pkgVer := range packageVersionsInConfig {
-		pkgNode, _ := dependencyGraph.FindBestPkgNode(pkgVer)
+		pkgNode, _ := dependencyGraph.FindBestPkgNode(pkgVer, pkggraph.PreferHighestVersion)
 
 		// There are two ways an external package will be represented by pkgNode.
 		// 1) pkgNode may be nil. This is possible if the package is never consumed during the build phase,

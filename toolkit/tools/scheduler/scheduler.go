@@ -30,6 +30,12 @@ const (
 	defaultBuildAttempts = "1"
 )
 
+const (
+	nodeResolutionPreferLocalString          = "local"
+	nodeResolutionPreferRemoteString         = "remote"
+	nodeResolutionPreferHighestVersionString = "none"
+)
+
 // schedulerChannels represents the communication channels used by a build agent.
 // Unlike BuildChannels, schedulerChannels holds bidirectional channels that
 // only the top-level scheduler should have. BuildChannels contains directional channels.
@@ -74,6 +80,9 @@ var (
 	buildAgentProgram    = app.Flag("build-agent-program", "Path to the build agent that will be invoked to build packages.").String()
 	workers              = app.Flag("workers", "Number of concurrent build agents to spawn. If set to 0, will automatically set to the logical CPU count.").Default(defaultWorkerCount).Int()
 
+	validNodeResolutionPreferenceFlags = []string{nodeResolutionPreferHighestVersionString, nodeResolutionPreferLocalString, nodeResolutionPreferRemoteString}
+	nodeResolutionPreference           = app.Flag("node-resolution-preference", "Prefer nodes from certain origins when resolving package graph nodes").Default(nodeResolutionPreferHighestVersionString).PlaceHolder(exe.PlaceHolderize(validNodeResolutionPreferenceFlags)).Enum(validNodeResolutionPreferenceFlags...)
+
 	ignoredPackages = app.Flag("ignored-packages", "Space separated list of specs ignoring rebuilds if their dependencies have been updated. Will still build if all of the spec's RPMs have not been built.").String()
 
 	pkgsToBuild   = app.Flag("packages", "Space separated list of top-level packages that should be built. Omit this argument to build all packages.").String()
@@ -111,7 +120,7 @@ func main() {
 		logger.Log.Fatalf("Can't ignore and force a rebuild of a package at the same time. Abusing packages: %v", ignoredAndRebuiltPackages)
 	}
 
-	packageVersToBuild, err := schedulerutils.CalculatePackagesToBuild(packagesNamesToBuild, packagesNamesToRebuild, *inputGraphFile, *imageConfig, *baseDirPath)
+	packageVersToBuild, err := schedulerutils.CalculatePackagesToBuild(packagesNamesToBuild, packagesNamesToRebuild, *inputGraphFile, *imageConfig, *baseDirPath, *nodeResolutionPreference)
 	if err != nil {
 		logger.Log.Fatalf("Unable to generate package build list, error: %s", err)
 	}

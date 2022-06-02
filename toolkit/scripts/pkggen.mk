@@ -139,6 +139,13 @@ $(preprocessed_file): $(cached_file) $(go-graphPreprocessor)
 
 ######## PACKAGE BUILD ########
 
+# PKGGRAPH_NODE_RESOLUTION_PREFERENCE determines how we resolve unresolved pkggraph nodes that match both local and remote packages 
+# Options for PKGGRAPH_NODE_RESOLUTION_PREFERENCE:
+# local          - Resolve to the highest version available locally, if available locally
+# remote         - Resolve to the highest version available from a remote source, if available from such a source
+# none (default) - Resolve to the highest version of a package available, regardless of whether the node is considered local or remote
+PKGGRAPH_NODE_RESOLUTION_PREFERENCE ?= none
+
 pkggen_archive	= $(OUT_DIR)/rpms.tar.gz
 srpms_archive  	= $(OUT_DIR)/srpms.tar.gz
 
@@ -194,6 +201,7 @@ $(STATUS_FLAGS_DIR)/build-rpms.flag: $(preprocessed_file) $(chroot_worker) $(go-
 		--rebuild-packages="$(PACKAGE_REBUILD_LIST)" \
 		--image-config-file="$(CONFIG_FILE)" \
 		--reserved-file-list-file="$(TOOLCHAIN_MANIFEST)" \
+		--node-resolution-preference="$(PKGGRAPH_NODE_RESOLUTION_PREFERENCE)" \
 		$(if $(CONFIG_FILE),--base-dir="$(CONFIG_BASE_DIR)") \
 		$(if $(filter y,$(RUN_CHECK)),--run-check) \
 		$(if $(filter y,$(STOP_ON_PKG_FAIL)),--stop-on-failure) \

@@ -260,6 +260,10 @@ sudo make build-packages PACKAGE_BUILD_LIST="nano" PACKAGE_REBUILD_LIST="nano" P
 
 Any build which requires the ignored packages will still attempt to use them during a build, so ensure they are available in the `../out/RPMS` folder.
 
+### Resolving Package Names
+
+In certain cases, a package will both be available locally and from a remote source
+
 #### Source Hashes
 
 The build system also enforces hash checking for sources when packaging SRPMs. For a given `*.spec` file a hash of each source is recorded in `*.signatures.json`. The build system will attempt to find a source which matches the recorded hash. If you change a source the signature file can be updated by setting `SRPM_FILE_SIGNATURE_HANDLING=update`.
@@ -618,6 +622,7 @@ To reproduce an ISO build, run the same make invocation as before, but set:
 | DOWNLOAD_SRPMS                | n                                                                                                      | Pack SRPMs from local SPECs or download published ones?
 | USE_PREVIEW_REPO              | n                                                                                                      | Pull missing packages from the upstream preview repository in addition to the base repository?
 | DISABLE_UPSTREAM_REPOS        | n                                                                                                      | Only pull missing packages from local repositories? This does not affect hydrating the toolchain from `$(PACKAGE_URL_LIST)`.
+| PKGGRAPH_NODE_RESOLUTION_PREFERENCE        | none                                                                                                   | Only pull missing packages from local repositories? This does not affect hydrating the toolchain from `$(PACKAGE_URL_LIST)`.
 
 ---
 

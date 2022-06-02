@@ -58,6 +58,14 @@ const (
 	TypeMAX      NodeType = TypePureMeta // Max allowable type
 )
 
+type NodeResolutionPreference int
+
+const (
+	PreferHighestVersion NodeResolutionPreference = iota
+	PreferRemoteNode     NodeResolutionPreference = iota
+	PreferLocalNode      NodeResolutionPreference = iota
+)
+
 // Dot encoding/decoding keys
 const (
 	dotKeyNodeInBase64 = "NodeInBase64"
@@ -495,17 +503,23 @@ func (g *PkgGraph) RemovePkgNode(pkgNode *PkgNode) {
 }
 
 // FindDoubleConditionalPkgNodeFromPkg has the same behavior as FindConditionalPkgNodeFromPkg but supports two conditionals
-func (g *PkgGraph) FindDoubleConditionalPkgNodeFromPkg(pkgVer *pkgjson.PackageVer) (lookupEntry *LookupNode, err error) {
+func (g *PkgGraph) FindDoubleConditionalPkgNodeFromPkg(pkgVer *pkgjson.PackageVer, nodeResolutionPreference NodeResolutionPreference) (lookupEntry *LookupNode, err error) {
 	var (
 		requestInterval, nodeInterval pkgjson.PackageVerInterval
-		bestLocalNode                 *LookupNode
+		bestPreferredNode             *LookupNode
 	)
+
 	requestInterval, err = pkgVer.Interval()
 	if err != nil {
 		return
 	}
 
-	bestLocalNode = nil
+	// bestPreferredNode will track the highest version node of a certain type according to nodeResolutionPreference:
+	// PreferLocalNode      -> tracks best local node
+	// PreferRemoteNode     -> tracks best remote node
+	// PreferHighestVersion -> tracks best remote node
+	bestPreferredNode = nil
+
 	packageNodes := g.lookupTable()[pkgVer.Name]
 	for _, node := range packageNodes {
 		if node.RunNode == nil {
@@ -519,20 +533,40 @@ func (g *PkgGraph) FindDoubleConditionalPkgNodeFromPkg(pkgVer *pkgjson.PackageVe
 		}
 
 		if nodeInterval.Satisfies(&requestInterval) {
-			// Only local packages will have a build node
-			if node.BuildNode != nil {
-				bestLocalNode = node
+			// If we have a preference for the origin of a package, save the best
+			// Local nodes have non-nil build nodes, Remote nodes have nil build nodes
+			if node.BuildNode != nil && nodeResolutionPreference == PreferLocalNode {
+				bestPreferredNode = node
+			} else if node.BuildNode == nil && (nodeResolutionPreference == PreferRemoteNode || nodeResolutionPreference == PreferHighestVersion) {
+				bestPreferredNode = node
 			}
+
 			// Keep going, we want the highest version which satisfies both conditionals
 			lookupEntry = node
 		}
 	}
 
-	// If the pkgVer resolves to a remote node, and that node
-	// is never found during the build, we have no way to
-	// fall back to the local package at this time.
-	if bestLocalNode != nil && bestLocalNode != lookupEntry {
-		logger.Log.Warnf("Resolving '%s' to remote node '%s' instead of local node '%s'", pkgVer, lookupEntry.RunNode.String(), bestLocalNode.RunNode.String())
+	if bestPreferredNode != nil && bestPreferredNode != lookupEntry {
+		if nodeResolutionPreference == PreferHighestVersion {
+			// If pkgVer resolves to a remote node, and that node is never found during the build, we have no way to
+			// fall back to the local package at this time.
+			logger.Log.Warnf("Resolving '%s' to remote node '%s' instead of local node '%s'",
+				pkgVer,
+				lookupEntry.RunNode.String(),
+				bestPreferredNode.RunNode.String())
+		} else if nodeResolutionPreference == PreferLocalNode {
+			logger.Log.Debugf("Resolving '%s' to local node '%s' instead of higher version remote node '%s' due to resolution preference",
+				pkgVer,
+				bestPreferredNode.RunNode.String(),
+				lookupEntry.RunNode.String())
+			lookupEntry = bestPreferredNode
+		} else if nodeResolutionPreference == PreferRemoteNode {
+			logger.Log.Debugf("Resolving '%s' to remote node '%s' instead of higher version local node '%s' due to resolution preference",
+				pkgVer,
+				bestPreferredNode.RunNode.String(),
+				lookupEntry.RunNode.String())
+			lookupEntry = bestPreferredNode
+		}
 	}
 	return
 }
@@ -573,8 +607,8 @@ func (g *PkgGraph) FindExactPkgNodeFromPkg(pkgVer *pkgjson.PackageVer) (lookupEn
 // PackageVer structure has already been created. Returns nil if no lookup entry
 // is found.
 // Condition = "" is equivalent to Condition = "=".
-func (g *PkgGraph) FindBestPkgNode(pkgVer *pkgjson.PackageVer) (lookupEntry *LookupNode, err error) {
-	lookupEntry, err = g.FindDoubleConditionalPkgNodeFromPkg(pkgVer)
+func (g *PkgGraph) FindBestPkgNode(pkgVer *pkgjson.PackageVer, nodeResolutionPreference NodeResolutionPreference) (lookupEntry *LookupNode, err error) {
+	lookupEntry, err = g.FindDoubleConditionalPkgNodeFromPkg(pkgVer, nodeResolutionPreference)
 	return
 }
 
