@@ -142,12 +142,11 @@ func writeAdditionalFields(stringBuilder *strings.Builder) (err error) {
 		gpgKey       = "gpgkey=file:///etc/pki/rpm-gpg/MICROSOFT-RPM-GPG-KEY file:///etc/pki/rpm-gpg/MICROSOFT-METADATA-GPG-KEY\n"
 		enable       = "enabled=1\n"
 		gpgCheck     = "gpgcheck=0\n"
-		repogpgCheck = "repo_gpgcheck=0\n"
 		skip         = "skip_if_unavailable=True\n"
 		sslVerify    = "sslverify=0\n"
 	)
 
-	additionalFields := []string{gpgKey, enable, gpgCheck, repogpgCheck, skip, sslVerify}
+	additionalFields := []string{gpgKey, enable, gpgCheck, skip, sslVerify}
 
 	for _, additionalField := range additionalFields {
 		_, err = stringBuilder.WriteString(additionalField)

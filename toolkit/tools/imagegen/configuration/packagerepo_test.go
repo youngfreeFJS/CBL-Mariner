@@ -35,7 +35,6 @@ var (
 		"gpgkey=file:///etc/pki/rpm-gpg/MICROSOFT-RPM-GPG-KEY file:///etc/pki/rpm-gpg/MICROSOFT-METADATA-GPG-KEY",
 		"enabled=1",
 		"gpgcheck=0",
-		"repo_gpgcheck=0",
 		"skip_if_unavailable=True",
 		"sslverify=0",
 	}
