@@ -30,8 +30,8 @@ type SystemConfig struct {
 	PartitionSettings  []PartitionSetting `json:"PartitionSettings"`
 	PreInstallScripts  []InstallScript    `json:"PreInstallScripts"`
 	PostInstallScripts []InstallScript    `json:"PostInstallScripts"`
-	Networks           []Network          `json:"Networks"`
 	PackageRepos       []PackageRepo      `json:"PackageRepos"`
+	Networks           []Network          `json:"Networks"`
 	Groups             []Group            `json:"Groups"`
 	Users              []User             `json:"Users"`
 	Encryption         RootEncryption     `json:"Encryption"`

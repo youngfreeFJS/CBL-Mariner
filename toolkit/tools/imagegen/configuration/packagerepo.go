@@ -17,6 +17,10 @@ import (
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/logger"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/network"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/safechroot"
+<<<<<<< HEAD
+=======
+	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/shell"
+>>>>>>> 2954a840c... [main] Add custom package repo definitions in image configuration (#2925)
 )
 
 // PackageRepo defines the RPM repo to pull packages from during the installation
@@ -82,6 +86,21 @@ func UpdatePackageRepo(installChroot *safechroot.Chroot, config SystemConfig) (e
 	// Remove mariner-iso.repo
 	os.Remove(localRepoFile)
 
+<<<<<<< HEAD
+=======
+	// Clean up all newly created package repo files in case there's any
+	// repo file creation error
+	defer func() {
+		// Delete all files under /etc/yum.repos.d/
+		if err != nil {
+			err = shell.ExecuteLive(squashErrors, "rm", fmt.Sprintf("%s/*", repoFileDir))
+			if err != nil {
+				logger.Log.Errorf("Failed to clean up repo files under %s. Error: %s", repoFileDir, err)
+			}
+		}
+	}()
+
+>>>>>>> 2954a840c... [main] Add custom package repo definitions in image configuration (#2925)
 	// Loop through the PackageRepos field to determine if any customized package repos are specified.
 	// If specified, create new repo files for them
 	for _, packageRepo := range config.PackageRepos {
@@ -93,7 +112,17 @@ func UpdatePackageRepo(installChroot *safechroot.Chroot, config SystemConfig) (e
 
 	// It is possible that network access may not be up at this point,
 	// so check network access
+<<<<<<< HEAD
 	err = network.CheckNetworkAccess()
+=======
+	err, hasNetworkAccess := network.CheckNetworkAccess()
+	if err != nil {
+		return
+	}
+	if !hasNetworkAccess {
+		err = fmt.Errorf("no network access in the system")
+	}
+>>>>>>> 2954a840c... [main] Add custom package repo definitions in image configuration (#2925)
 	return
 }
 
@@ -112,6 +141,12 @@ func (p *PackageRepo) repoUrlIsValid() (err error) {
 	}
 
 	_, err = url.ParseRequestURI(p.BaseUrl)
+<<<<<<< HEAD
+=======
+	if err != nil {
+		logger.Log.Errorf("Failed to parse input URL %s, Error: %s", p.BaseUrl, err)
+	}
+>>>>>>> 2954a840c... [main] Add custom package repo definitions in image configuration (#2925)
 	return
 }
 
@@ -125,10 +160,21 @@ func writeAdditionalFields(stringBuilder *strings.Builder) (err error) {
 		sslVerify    = "sslverify=1\n"
 	)
 
+<<<<<<< HEAD
 	additionalFields := gpgKey + enable + gpgCheck + repogpgCheck + skip + sslVerify
 	_, err = stringBuilder.WriteString(additionalFields)
 	if err != nil {
 		logger.Log.Errorf("Error writing additional fields: %s. Error: %s", additionalFields, err)
+=======
+	additionalFields := []string{gpgKey, enable, gpgCheck, repogpgCheck, skip, sslVerify}
+
+	for _, additionalField := range additionalFields {
+		_, err = stringBuilder.WriteString(additionalField)
+		if err != nil {
+			logger.Log.Errorf("Error writing additional field '%s' out of all fields: %s. Error: %s", additionalField, additionalFields, err)
+			return
+		}
+>>>>>>> 2954a840c... [main] Add custom package repo definitions in image configuration (#2925)
 	}
 
 	return
@@ -143,6 +189,19 @@ func createCustomRepoFile(fileName string, packageRepo PackageRepo) (err error) 
 		return
 	}
 
+<<<<<<< HEAD
+=======
+	defer func() {
+		// Delete the repo file on failure
+		if err != nil {
+			err = os.Remove(fileName)
+			if err != nil {
+				logger.Log.Errorf("Failed to clean up repo file: %s. Error: %s", fileName, err)
+			}
+		}
+	}()
+
+>>>>>>> 2954a840c... [main] Add custom package repo definitions in image configuration (#2925)
 	// Write the repo identifier field
 	repoId := fmt.Sprintf("[%s]\n", packageRepo.Name)
 	_, err = stringBuilder.WriteString(repoId)
@@ -178,6 +237,7 @@ func createCustomRepoFile(fileName string, packageRepo PackageRepo) (err error) 
 }
 
 func createCustomPackageRepo(installChroot *safechroot.Chroot, packageRepo PackageRepo, repoFileDir string) (err error) {
+<<<<<<< HEAD
 
 	dstRepoPath := filepath.Join(repoFileDir, packageRepo.Name+".repo")
 
@@ -191,6 +251,10 @@ func createCustomPackageRepo(installChroot *safechroot.Chroot, packageRepo Packa
 		}
 	}()
 
+=======
+	dstRepoPath := filepath.Join(repoFileDir, packageRepo.Name+".repo")
+
+>>>>>>> 2954a840c... [main] Add custom package repo definitions in image configuration (#2925)
 	// Create repo file
 	err = createCustomRepoFile(dstRepoPath, packageRepo)
 	if err != nil {
