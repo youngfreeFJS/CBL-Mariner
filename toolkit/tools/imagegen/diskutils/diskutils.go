@@ -49,6 +49,17 @@ const (
 	mappingFilePath = "/dev/mapper/"
 )
 
+const (
+	// maxPrimaryPartitionsForMBR is the maximum number of primary partitions
+	// allowed in the case of MBR partition
+	maxPrimaryPartitionsForMBR = 4
+)
+
+const (
+	// oneMiBtoBytes is the conversion between 1 MiB to bytes
+	oneMiBtoBytes = 1048576
+)
+
 // Unit to byte conversion values
 // See https://www.gnu.org/software/parted/manual/parted.html#unit
 const (
@@ -336,10 +347,24 @@ func CreatePartitions(diskDevPath string, disk configuration.Disk, rootEncryptio
 		return
 	}
 
+	usingExtendedPartition := (len(disk.Partitions) > maxPrimaryPartitionsForMBR) && (partitionTableType == configuration.PartitionTableTypeMbr)
+
 	// Partitions assumed to be defined in sorted order
 	for idx, partition := range disk.Partitions {
-		partitionNumber := idx + 1
-		partDevPath, err := CreateSinglePartition(diskDevPath, partitionNumber, partitionTableType.String(), partition)
+		partType, partitionNumber := obtainPartitionDetail(idx, usingExtendedPartition)
+		// Insert an extended partition
+		if partType == "extended" {
+			err = createExtendedPartition(diskDevPath, partitionTableType.String(), disk.Partitions, partIDToFsTypeMap, partDevPathMap)
+			if err != nil {
+				return
+			}
+
+			// Update partType and partitionNumber
+			partType = "logical"
+			partitionNumber = partitionNumber + 1
+		}
+
+		partDevPath, err := CreateSinglePartition(diskDevPath, partitionNumber, partitionTableType.String(), partition, partType)
 		if err != nil {
 			logger.Log.Warnf("Failed to create single partition")
 			return partDevPathMap, partIDToFsTypeMap, encryptedRoot, readOnlyRoot, err
@@ -375,26 +400,47 @@ func CreatePartitions(diskDevPath string, disk configuration.Disk, rootEncryptio
 }
 
 // CreateSinglePartition creates a single partition based on the partition config
-func CreateSinglePartition(diskDevPath string, partitionNumber int, partitionTableType string, partition configuration.Partition) (partDevPath string, err error) {
+func CreateSinglePartition(diskDevPath string, partitionNumber int, partitionTableType string, partition configuration.Partition, partType string) (partDevPath string, err error) {
 	const (
 		fillToEndOption  = "100%"
-		mibFmt           = "%dMiB"
+		sFmt             = "%ds"
 		timeoutInSeconds = "5"
 	)
-	start := partition.Start
-	end := partition.End
+
+	logicalSectorSize, physicalSectorSize, err := getSectorSize(diskDevPath)
+	if err != nil {
+		return
+	}
+
+	start := partition.Start * oneMiBtoBytes / logicalSectorSize
+	end := partition.End * oneMiBtoBytes / logicalSectorSize - 1
+	if partition.End == 0 {
+		end = 0
+	}
+
+	if partType == "logical" {
+		start = start + 1
+		if end != 0 {
+			end = end + 1
+		}
+	}
+
+	// Check wehther the start sector is 4K-aligned
+	start = alignSectorAddress(start, logicalSectorSize, physicalSectorSize)
+
+	logger.Log.Debugf("Input partition start: %d, aligned start sector: %d", partition.Start, start)
+	logger.Log.Debugf("Input partition end: %d, end sector: %d", partition.End, end)
 
 	fsType := partition.FsType
 
-	// Currently assumes we only make primary partitions.
 	if end == 0 {
-		_, stderr, err := shell.Execute("flock", "--timeout", timeoutInSeconds, diskDevPath, "parted", diskDevPath, "--script", "mkpart", "primary", fsType, fmt.Sprintf(mibFmt, start), fillToEndOption)
+		_, stderr, err := shell.Execute("flock", "--timeout", timeoutInSeconds, diskDevPath, "parted", diskDevPath, "--script", "mkpart", partType, fsType, fmt.Sprintf(sFmt, start), fillToEndOption)
 		if err != nil {
 			logger.Log.Warnf("Failed to create partition using parted: %v", stderr)
 			return "", err
 		}
 	} else {
-		_, stderr, err := shell.Execute("flock", "--timeout", timeoutInSeconds, diskDevPath, "parted", diskDevPath, "--script", "mkpart", "primary", fsType, fmt.Sprintf(mibFmt, start), fmt.Sprintf(mibFmt, end))
+		_, stderr, err := shell.Execute("flock", "--timeout", timeoutInSeconds, diskDevPath, "parted", diskDevPath, "--script", "mkpart", partType, fsType, fmt.Sprintf(sFmt, start), fmt.Sprintf(sFmt, end))
 		if err != nil {
 			logger.Log.Warnf("Failed to create partition using parted: %v", stderr)
 			return "", err
@@ -651,6 +697,23 @@ func BootPartitionConfig(bootType string) (mountPoint, mountOptions string, flag
 	return
 }
 
+func createExtendedPartition(diskDevPath string, partitionTableType string, partitions []configuration.Partition, partIDToFsTypeMap, partDevPathMap map[string]string) (err error) {
+	// Create a new partition object for extended partition
+	extendedPartition := configuration.Partition{}
+	extendedPartition.ID = "extended"
+	extendedPartition.Start = partitions[maxPrimaryPartitionsForMBR-1].Start
+	extendedPartition.End = partitions[len(partitions)-1].End
+
+	partDevPath, err := CreateSinglePartition(diskDevPath, maxPrimaryPartitionsForMBR, partitionTableType, extendedPartition, "extended")
+	if err != nil {
+		logger.Log.Warnf("Failed to create extended partition")
+		return
+	}
+	partIDToFsTypeMap[extendedPartition.ID] = ""
+	partDevPathMap[extendedPartition.ID] = partDevPath
+	return
+}
+
 func getPartUUID(device string) (uuid string, err error) {
 	stdout, _, err := shell.Execute("blkid", device, "-s", "UUID", "-o", "value")
 	if err != nil {
@@ -658,5 +721,83 @@ func getPartUUID(device string) (uuid string, err error) {
 	}
 	logger.Log.Trace(stdout)
 	uuid = strings.TrimSpace(stdout)
+	return
+}
+
+func checkSectorSizeFile(sectorFile string) (sectorSize uint64, err error) {
+	if exists, ferr := file.PathExists(sectorFile); ferr != nil {
+		logger.Log.Errorf("Error accessing sector size file %s", sectorFile)
+		err = ferr
+		return
+	} else if !exists {
+		err = fmt.Errorf("could not find the hw sector size file %s to obtain the sector size of the system", sectorFile)
+		return
+	}
+
+	fileContent, err := file.ReadLines(sectorFile)
+	if err != nil {
+		logger.Log.Errorf("Failed to read from %s: %s", sectorFile, err)
+		return
+	}
+
+	// sector file should only have one line, return error if not
+	if len(fileContent) != 1 {
+		err = fmt.Errorf("%s has more than one line", sectorFile)
+		return
+	}
+
+	sectorSize, err = strconv.ParseUint(fileContent[0], 10, 64)
+	return
+}
+
+func getSectorSize(diskDevPath string) (logicalSectorSize, physicalSectorSize uint64, err error) {
+	// Grab the specific disk name from /dev/xxx
+	diskName := diskDevPath[5:len(diskDevPath)]
+
+	hw_sector_size_file := fmt.Sprintf("/sys/block/%s/queue/hw_sector_size", diskName)
+	physical_sector_size_file := fmt.Sprintf("/sys/block/%s/queue/physical_block_size", diskName)
+
+	logicalSectorSize, err = checkSectorSizeFile(hw_sector_size_file)
+	if err != nil {
+		return
+	}
+
+	physicalSectorSize, err = checkSectorSizeFile(physical_sector_size_file)
+	return
+}
+
+func alignSectorAddress(sectorAddr, logicalSectorSize, physicalSectorSize uint64) (alignedSector uint64) {
+	// Check if sectorAddr indicates the start of the first partition, which is 1MiB
+	if sectorAddr == (oneMiBtoBytes / logicalSectorSize) {
+		alignedSector = sectorAddr
+	} else if (sectorAddr % physicalSectorSize) == 0 {
+		alignedSector = sectorAddr
+	} else {
+		alignedSector = (sectorAddr/physicalSectorSize + 1) * physicalSectorSize
+	}
+
+	return
+}
+
+func obtainPartitionDetail(partitionIndex int, hasExtendedPartition bool) (partType string, partitionNumber int) {
+	const (
+		primaryPartition  = "primary"
+		extendedPartition = "extended"
+		logicalPartition  = "logical"
+	)
+
+	if hasExtendedPartition && partitionIndex >= (maxPrimaryPartitionsForMBR-1) {
+		if partitionIndex == (maxPrimaryPartitionsForMBR - 1) {
+			partType = extendedPartition
+			partitionNumber = partitionIndex + 1
+		} else {
+			partType = logicalPartition
+			partitionNumber = partitionIndex + 2
+		}
+	} else {
+		partType = primaryPartition
+		partitionNumber = partitionIndex + 1
+	}
+
 	return
 }
