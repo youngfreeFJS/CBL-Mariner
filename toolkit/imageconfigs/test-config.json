@@ -29,18 +29,19 @@
             "KernelOptions": {
                 "default": "kernel"
             },
-            "Hostname": "cbl-mariner",
+            "Hostname": "linkedin-test",
             "Networks":[
                 {
-                    "BootProto": "dhcp ",
-                    "GateWay":   "192.168.20.4",
-                    "Ip":        "192.169.20.148",
-                    "NetMask":   "255.255.255.0",
-                    "OnBoot":    false,
+                    "BootProto": "static",
+                    "GateWay":   "10.154.212.129",
+                    "Ip":        "10.154.212.158",
+                    "NetMask":   "255.255.255.192",
+                    "OnBoot":    true,
                     "NameServer": [
-                        "192.168.30.23"
+                        "10.255.33.53",
+                        "10.255.32.53"
                     ],
-                    "Device": "eth0"
+                    "Device": "bootif"
                 }
             ]
         }

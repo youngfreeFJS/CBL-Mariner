@@ -34,10 +34,10 @@ var (
 		"baseurl=https://packages.microsoft.com/cbl-mariner/$releasever/prod/base/$basearch",
 		"gpgkey=file:///etc/pki/rpm-gpg/MICROSOFT-RPM-GPG-KEY file:///etc/pki/rpm-gpg/MICROSOFT-METADATA-GPG-KEY",
 		"enabled=1",
-		"gpgcheck=1",
-		"repo_gpgcheck=1",
+		"gpgcheck=0",
+		"repo_gpgcheck=0",
 		"skip_if_unavailable=True",
-		"sslverify=1",
+		"sslverify=0",
 	}
 )
 
