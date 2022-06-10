@@ -186,7 +186,7 @@ func findBootIfValue() (deviceAddr string) {
 			// by dashes instead of colons. Therefore, we're reading from the 10th spot of the
 			// string to obtain the MAC address and then replace the dashes with colons
 			rawMACaddr := kernelArg[startIndex:len(kernelArg)]
-			deviceAddr = strings.Replace(rawMACaddr, "-", ":", -1)
+			deviceAddr = strings.TrimSpace(strings.Replace(rawMACaddr, "-", ":", -1))
 			return
 		}
 	}
@@ -210,7 +210,6 @@ func checkNetworkDeviceAvailability(networkData Network) (deviceName string, err
 			return
 		} else {
 			ifaceAddr := strings.TrimSpace(iface.HardwareAddr.String())
-
 			if strings.Contains(networkData.Device, ":") {
 				if ifaceAddr != "" && strings.EqualFold(ifaceAddr, networkData.Device) {
 					deviceName = iface.Name

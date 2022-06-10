@@ -13,11 +13,6 @@
                 {
                     "Name":    "mariner-official-base-test",
                     "BaseUrl": "https://packages.microsoft.com/cbl-mariner/$releasever/prod/base/$basearch",
-                    "Install": false
-                },
-                {
-                    "Name":    "mariner-official-preview-test",
-                    "BaseUrl": "https://packages.microsoft.com/cbl-mariner/$releasever/preview/base/$basearch",
                     "Install": true
                 }
             ],
@@ -29,7 +24,7 @@
             "KernelOptions": {
                 "default": "kernel"
             },
-            "Hostname": "linkedin-test",
+            "Hostname": "ltx1-app43728.prod.linkedin.com",
             "Networks":[
                 {
                     "BootProto": "static",
