@@ -111,7 +111,7 @@ func UpdatePackageRepo(installChroot *safechroot.Chroot, config SystemConfig) (e
 		return
 	}
 	if !hasNetworkAccess {
-		logger.Log.Warnf("no network access in the system")
+		logger.Log.Warnf("No outbound network access in the system. Expected if system is only configured with internal network access")
 	}
 	return
 }
