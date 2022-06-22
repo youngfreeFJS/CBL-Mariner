@@ -66,21 +66,15 @@ func DownloadFile(url, dst string, caCerts *x509.CertPool, tlsCerts []tls.Certif
 }
 
 // CheckNetworkAccess checks whether the installer environment has network access
-func CheckNetworkAccess() (err error, hasNetworkAccess bool) {
+func CheckNetworkAccess() (hasNetworkAccess bool) {
 	const (
-		retryAttempts = 10
+		retryAttempts = 5
 		retryDuration = time.Second
 		squashErrors  = false
 	)
 
-	err = retry.Run(func() error {
-		// err := shell.ExecuteLive(squashErrors, "systemctl", "restart", "systemd-networkd-wait-online")
-		// if err != nil {
-		// 	return err
-		// }
-
-		// err = shell.ExecuteLive(squashErrors, "systemctl", "is-active", "systemd-networkd-wait-online")
-		err = shell.ExecuteLive(squashErrors, "ping", "-c", "1", "www.microsoft.com")
+	err := retry.Run(func() error {
+		err := shell.ExecuteLive(squashErrors, "ping", "-c", "1", "www.microsoft.com")
 		hasNetworkAccess = err == nil
 		if !hasNetworkAccess {
 			logger.Log.Warnf("No network access yet")
