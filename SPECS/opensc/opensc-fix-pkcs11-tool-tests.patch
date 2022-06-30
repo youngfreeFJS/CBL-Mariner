@@ -1,0 +1,67 @@
+Source: https://github.com/OpenSC/OpenSC/pull/2388
+
+From 088a8a1302f8b6ff3224bf12526f14a8722afd8f Mon Sep 17 00:00:00 2001
+From: Doug Engert <deengert@gmail.com>
+Date: Tue, 17 Aug 2021 12:31:56 -0500
+Subject: [PATCH] Fix pkcs11-tool and test-pkcs11-tool-test-threads.sh
+
+test-pkcs11-tool-test-threads.sh had the wrong parameters
+for one of the tests. And extra "OS" was left in the parameter
+
+pkcs11-tool when testing threads could segfault if no reader present.
+Error checking for slot index improved.
+
+Fixes:#2381
+
+ On branch pkcs11-tool-and-test
+ Changes to be committed:
+	modified:   pkcs11-tool.c
+	modified:   ../../tests/test-pkcs11-tool-test-threads.sh
+---
+ src/tools/pkcs11-tool.c                | 6 ++++--
+ tests/test-pkcs11-tool-test-threads.sh | 6 +++---
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/src/tools/pkcs11-tool.c b/src/tools/pkcs11-tool.c
+index f87ce02556..67dfc89619 100644
+--- a/src/tools/pkcs11-tool.c
++++ b/src/tools/pkcs11-tool.c
+@@ -7506,10 +7506,12 @@ static void * test_threads_run(void * pttd)
+ 		/* Tn Get token from slot_index n C_GetTokenInfo, where n is 0 to 9 */
+ 		else if (*pctest == 'T' && *(pctest + 1) >= '0' && *(pctest + 1) <= '9') {
+ 			fprintf(stderr, "Test thread %d C_GetTokenInfo from slot_index %d using show_token\n", ttd->tnum, (*(pctest + 1) - '0'));
+-			if (l_slots) {
++			if (l_slots && (CK_ULONG)(*(pctest + 1) - '0') < l_p11_num_slots) {
+ 				show_token(l_p11_slots[(*(pctest + 1) - '0')]);
+ 			} else {
+-				show_token(p11_slots[(*(pctest + 1) - '0')]);
++				fprintf(stderr, "Test thread %d slot not available, unable to call C_GetTokenInfo\n", ttd->tnum);
++				rv = CKR_TOKEN_NOT_PRESENT;
++				break;
+ 			}
+ 		}
+ 
+diff --git a/tests/test-pkcs11-tool-test-threads.sh b/tests/test-pkcs11-tool-test-threads.sh
+index 6b74eb36c9..d4c576e9a2 100755
+--- a/tests/test-pkcs11-tool-test-threads.sh
++++ b/tests/test-pkcs11-tool-test-threads.sh
+@@ -14,16 +14,16 @@ fi
+ card_setup
+ 
+ echo "======================================================="
+-echo "Test pkcs11 threads OSILGISLT0 "
++echo "Test pkcs11 threads IN "
+ echo "======================================================="
+ $PKCS11_TOOL --test-threads IN -L
+ assert $? "Failed running tests"
+ 
+ 
+ echo "======================================================="
+-echo "Test pkcs11 threads OSILGISLT0 "
++echo "Test pkcs11 threads ILGISLT0 "
+ echo "======================================================="
+-$PKCS11_TOOL --test-threads OSILGISLT0 -L
++$PKCS11_TOOL --test-threads ILGISLT0 -L
+ assert $? "Failed running tests"
+ 
+ echo "======================================================="

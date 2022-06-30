@@ -3,15 +3,15 @@
 Summary:        Smart card library and applications
 Name:           opensc
 Version:        0.22.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 URL:            https://github.com/OpenSC/OpenSC
 Source0:        https://github.com/OpenSC/OpenSC/releases/download/%{version}/%{name}-%{version}.tar.gz
 Source1:        opensc.module
-
-Patch1:         opensc-0.19.0-pinpad.patch
+Patch0:         %{name}-fix-pkcs11-tool-tests.patch
+Patch1:         %{name}-0.19.0-pinpad.patch
 BuildRequires:  pcsc-lite-devel
 BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
@@ -43,8 +43,7 @@ every software/card that does so, too.
 
 
 %prep
-%setup -q
-%patch1 -p1 -b .pinpad
+%autosetup -p1
 
 # The test-pkcs11-tool-allowed-mechanisms already works in Fedora
 sed -i -e '/XFAIL_TESTS/,$ {
@@ -174,6 +173,9 @@ rm %{buildroot}%{_mandir}/man1/opensc-notify.1*
 %{_mandir}/man5/*
 
 %changelog
+* Thu Jun 30 2022 Olivia Crain <oliviacrain@microsoft.com> - 0.22.0-2
+- Add upstream patch to fix pkcs11-tool tests
+
 * Wed Jun 01 2022 Nicolas Guibourge <nicolasg@microsoft.com> - 0.22.0-1
 - Upgrade to 0.22.0 to fix CVE-2020-26570, CVE-2020-26571, CVE-2020-26572, CVE-2021-42778, CVE-2021-42779, CVE-2021-42780, CVE-2021-42781, CVE-2021-42782
 
