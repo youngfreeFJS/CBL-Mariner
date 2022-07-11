@@ -8,7 +8,6 @@ Distribution:   Mariner
 Group:          System Environment/Security
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
-Patch0:         fix-tcapsh-static-test-build.patch
 
 %description
 The libcap package implements the user-space interfaces to the POSIX 1003.1e capabilities available
@@ -29,9 +28,19 @@ for developing applications that use libcap.
 
 %build
 sed -i 's:LIBDIR:PAM_&:g' pam_cap/Makefile
-make %{?_smp_mflags}
+# libcap apparently doesn't play well with %%{_smp_mflags}
+make DYNAMIC=yes
+
 %install
-make prefix=%{_prefix}	SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} LIBDIR=%{_libdir} install
+make \
+  prefix=%{_prefix} \
+  SBINDIR=%{_sbindir} \
+  PAM_LIBDIR=%{_libdir} \
+  RAISE_SETFCAP=no \
+  DESTDIR=%{buildroot} \
+  LIBDIR=%{_libdir} \
+  DYNAMIC=yes \
+  install
 chmod -v 755 %{buildroot}%{_libdir}/libcap.so
 
 %check
@@ -51,16 +60,14 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%exclude %{_libdir}/libcap.a
-%exclude %{_libdir}/libpsx.a
 %{_libdir}/pkgconfig/*
 %{_libdir}/libcap.so
 %{_libdir}/libpsx.so
 %{_mandir}/man3/*
 
 %changelog
-* Mon Jul 10 2022 Olivia Crain <oliviacrain@microsoft.com> - 2.60-2
-- Add upstream patch to fix static test binary build
+* Mon Jul 11 2022 Olivia Crain <oliviacrain@microsoft.com> - 2.60-2
+- Fix tests
 
 * Sat Nov 20 2021 Chris Co <chrco@microsoft.com> - 2.60-1
 - Update version to 2.60
