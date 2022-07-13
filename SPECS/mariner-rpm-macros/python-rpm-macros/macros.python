@@ -1,0 +1,39 @@
+%python_provide() %{lua:
+  local python = require "mariner.srpm.python"
+  function string.starts(String,Start)
+    return string.sub(String,1,string.len(Start))==Start
+  end
+  local package = rpm.expand("%{?1}")
+  local vr = rpm.expand("%{?epoch:%{epoch}:}%{version}-%{release}")
+  local provides = python.python_altprovides(package, vr)
+  local default_python3_pkgversion = rpm.expand("%{__default_python3_pkgversion}")
+  if (string.starts(package, "python3-")) then
+    for i, provide in ipairs(provides) do
+      print("\\nProvides: " .. provide)
+    end
+    --Obsoleting the previous default python package (if it doesn't have isa)
+    if (string.sub(package, "-1") ~= ")") then
+      print("\\nObsoletes: python-")
+      print(string.sub(package,9,string.len(package)))
+      print(" < " .. vr)
+    end
+  elseif (string.starts(package, "python" .. default_python3_pkgversion .. "-")) then
+    for i, provide in ipairs(provides) do
+      print("\\nProvides: " .. provide)
+    end
+    --Obsoleting the previous default python package (if it doesn't have isa)
+    if (string.sub(package, "-1") ~= ")") then
+      print("\\nObsoletes: python-")
+      print(string.sub(package,8+string.len(default_python3_pkgversion),string.len(package)))
+      print(" < " .. vr)
+    end
+  elseif (string.starts(package, "python")) then
+    --No unversioned provides as other python3 cases are not the default
+  elseif (string.starts(package, "pypy")) then
+    --No unversioned provides as pypy is not default either
+  else
+    print("%python_provide: ERROR: ")
+    print(package)
+    print(" not recognized.")
+  end
+}

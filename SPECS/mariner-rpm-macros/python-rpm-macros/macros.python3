@@ -2,7 +2,9 @@
 %python3_sitearch %(%{__python3} -Ic "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
 %python3_version %(%{__python3} -Ic "import sys; sys.stdout.write('{0.major}.{0.minor}'.format(sys.version_info))")
 %python3_version_nodots %(%{__python3} -Ic "import sys; sys.stdout.write('{0.major}{0.minor}'.format(sys.version_info))")
-%python3_platform %(%{__python3} -Ic "import sysconfig; print(sysconfig.get_platform())")
+%python3_platform %(RPM_BUILD_ROOT= %{__python3} -Ic "import sysconfig; print(sysconfig.get_platform())")
+%python3_platform_triplet %(RPM_BUILD_ROOT= %{__python3} -Ic "import sysconfig; print(sysconfig.get_config_var('MULTIARCH'))")
+%python3_ext_suffix %(RPM_BUILD_ROOT= %{__python3} -Ic "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
 %py3dir %{_builddir}/python3-%{name}-%{version}-%{release}
 
 %py3_shbang_opts -s
@@ -40,8 +42,39 @@
 }
 
 %py3_install_wheel() %{expand:\\\
-  pip%{python3_version} install -I dist/%{1} --root %{buildroot} --no-deps
+  pip%{python3_version} install -I dist/%{1} --root %{buildroot} --no-deps --no-index --no-warn-script-location
   rm -rfv %{buildroot}%{_bindir}/__pycache__
+  for distinfo in %{buildroot}%{python3_sitelib}/*.dist-info %{buildroot}%{python3_sitearch}/*.dist-info; do
+    if [ -f ${distinfo}/direct_url.json ]; then
+      rm -fv ${distinfo}/direct_url.json
+      sed -i '/direct_url.json/d' ${distinfo}/RECORD
+    fi
+  done
+}
+
+# With $PATH and $PYTHONPATH set to the %%buildroot,
+# try to import the Python 3 module(s) given as command-line args or read from file (-f).
+# Respect the custom values of %%py3_shebang_flags or set nothing if it's undefined.
+# Filter and check import on only top-level modules using -t flag.
+# Exclude unwanted modules by passing their globs to -e option.
+# Useful as a smoke test in %%check when running tests is not feasible.
+# Use spaces or commas as separators if providing list directly.
+# Use newlines as separators if providing list in a file.
+%py3_check_import(e:tf:) %{expand:\\\
+  PATH="%{buildroot}%{_bindir}:$PATH"\\\
+  PYTHONPATH="${PYTHONPATH:-%{buildroot}%{python3_sitearch}:%{buildroot}%{python3_sitelib}}"\\\
+  _PYTHONSITE="%{buildroot}%{python3_sitearch}:%{buildroot}%{python3_sitelib}"\\\
+  PYTHONDONTWRITEBYTECODE=1\\\
+  %{lua:
+  local command = "%{__python3} "
+  if rpm.expand("%{?py3_shebang_flags}") ~= "" then
+    command = command .. "-%{py3_shebang_flags}"
+  end
+  command = command .. " %{_rpmconfigdir}/redhat/import_all_modules.py "
+  -- handle multiline arguments correctly, see https://bugzilla.redhat.com/2018809
+  local args=rpm.expand('%{?**}'):gsub("[%s\\\\]*%s+", " ")
+  print(command .. args)
+  }
 }
 
 # This only supports Python 3.5+ and will never work with Python 2.
@@ -60,10 +93,11 @@
 }
 
 # This is intended for Python 3 only, hence also no Python version in the name.
-%__pytest /usr/bin/pytest
+%__pytest /usr/bin/pytest%(test %{python3_pkgversion} == 3 || echo -%{python3_version})
 %pytest %{expand:\\\
   CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
   PATH="%{buildroot}%{_bindir}:$PATH"\\\
   PYTHONPATH="${PYTHONPATH:-%{buildroot}%{python3_sitearch}:%{buildroot}%{python3_sitelib}}"\\\
   PYTHONDONTWRITEBYTECODE=1\\\
+  %{?__pytest_addopts:PYTEST_ADDOPTS="${PYTEST_ADDOPTS:-} %{__pytest_addopts}"}\\\
   %__pytest}

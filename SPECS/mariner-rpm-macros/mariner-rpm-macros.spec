@@ -6,7 +6,7 @@
 Summary:        Mariner specific rpm macro files
 Name:           mariner-rpm-macros
 Version:        2.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        GPL+ AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -29,8 +29,6 @@ Source14:       gpgverify
 Source15:       pythondist.attr
 Source16:       brp-python-bytecompile
 Source17:       macros.pybytecompile
-# Use an enhanced copy of Python's compileall module for Python >= 3.4
-Source18:       https://github.com/fedora-python/compileall2/raw/v0.7.1/compileall2.py
 Source19:       macros.forge
 Source20:       common.lua
 Source21:       forge.lua
@@ -47,7 +45,7 @@ Provides:       openblas-srpm-macros
 Provides:       ocaml-srpm-macros
 Provides:       perl-srpm-macros
 Provides:       python-srpm-macros
-Provides:       python-rpm-macros
+Provides:       python3-rpm-generators
 Provides:       python3-rpm-macros
 Provides:       rust-srpm-macros
 BuildArch:      noarch

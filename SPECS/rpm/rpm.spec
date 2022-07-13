@@ -1,7 +1,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.17.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+ AND LGPLv2+ AND BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -10,11 +10,6 @@ URL:            https://rpm.org
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
 Source1:        brp-strip-debug-symbols
 Source2:        brp-strip-unneeded
-# The license for the files below is the same as for RPM as they have originally came from rpm.
-# The git repo is hosted by centos. The version below is centos 8 stable.
-Source3:        https://git.centos.org/rpms/python-rpm-generators/raw/c8s/f/SOURCES/python.attr
-Source4:        https://git.centos.org/rpms/python-rpm-generators/raw/c8s/f/SOURCES/pythondeps.sh
-Source5:        https://git.centos.org/rpms/python-rpm-generators/raw/c8s/f/SOURCES/pythondistdeps.py
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  debugedit
@@ -145,12 +140,6 @@ pushd python
 %py3_build
 popd
 
-# Set provided python versions
-sed -i 's/@MAJORVER-PROVIDES-VERSIONS@/%{python3_version}/' %{SOURCE3}
-
-# Fix the interpreter path for python replacing the first line
-sed -i '1 s:.*:#!/usr/bin/python3:' %{SOURCE5}
-
 %check
 make check TESTSUITEFLAGS=-j%{_smp_build_ncpus}
 check_result=$?
@@ -171,9 +160,6 @@ find %{buildroot} -name 'perl*' -delete
 install -dm 755 %{buildroot}%{_sysconfdir}/rpm
 install -vm755 %{SOURCE1} %{buildroot}%{_libdir}/rpm/
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
-install -vm644 %{SOURCE3} %{buildroot}%{_fileattrsdir}/
-install -vm755 %{SOURCE4} %{buildroot}%{_libdir}/rpm/
-install -vm755 %{SOURCE5} %{buildroot}%{_libdir}/rpm/
 
 
 pushd python
@@ -247,9 +233,6 @@ popd
 %{_libdir}/rpm/mkinstalldirs
 %{_libdir}/rpm/pkgconfigdeps.sh
 %{_libdir}/rpm/*.prov
-%{_libdir}/rpm/pythondistdeps.py
-
-%{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/ocamldeps.sh
 %{_libdir}/rpm/rpmdeps
 # Because of no doxygen dependency, we do not produce manpages that require it.
@@ -276,6 +259,9 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jul 12 2022 Olivia Crain <oliviacrain@microsoft.com> - 4.17.0-9
+- Move python-related files sourced from python-rpm-generators to mariner-rpms-macros package
+
 * Tue May 24 2022 Jon Slobodzian <joslobo@microsoft.com> - 4.17.0-8
 - Move lua runtime dependency from main rpm package.  Move to rpm-build.
 - Move python files to rpm-build package.  This removes the implied dependency on python3 by the rpm package.
