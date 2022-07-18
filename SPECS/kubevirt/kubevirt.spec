@@ -16,6 +16,7 @@
 #
 
 
+%global debug_package %{nil}
 Summary:        Container native virtualization
 Name:           kubevirt
 Version:        0.51.0
@@ -27,7 +28,6 @@ Group:          System/Management
 URL:            https://github.com/kubevirt/kubevirt
 Source0:        https://github.com/kubevirt/kubevirt/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Source1:        disks-images-provider.yaml
-%global debug_package %{nil}
 BuildRequires:  glibc-devel
 BuildRequires:  golang
 BuildRequires:  golang-packaging
@@ -151,7 +151,8 @@ install -p -m 0644 cmd/virt-handler/nsswitch.conf %{buildroot}%{_datadir}/kube-v
 install -p -m 0644 cmd/virt-handler/ipv4-nat.nft %{buildroot}%{_datadir}/kube-virt/virt-handler/
 install -p -m 0644 cmd/virt-handler/ipv6-nat.nft %{buildroot}%{_datadir}/kube-virt/virt-handler/
 
-%files -n kubevirt
+%files
+#Deliberately empty
 
 %files virtctl
 %license LICENSE
