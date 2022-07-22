@@ -2,7 +2,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.0.0050
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Vim
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -196,6 +196,9 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Fri Jul 22 2022 Olivia Crain <oliviacrain@microsoft.com> - 9.0.0050-3
+- Test bump
+
 * Mon Jul 18 2022 Aadhar Agarwal <aadagarwal@microsoft.com> - 9.0.0050-2
 - Add sed requires as vim has an implicit dependency on sed in the post-install script.
 

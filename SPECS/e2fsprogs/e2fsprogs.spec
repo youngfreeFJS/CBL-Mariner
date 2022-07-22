@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.46.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2 AND LGPLv2 AND BSD AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -143,6 +143,9 @@ done
 %defattr(-,root,root)
 
 %changelog
+* Fri Jul 22 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.46.5-3
+- Test bump
+
 * Mon Jul 18 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.46.5-2
 - Running package tests in a single thread and printing logs for failures.
 
