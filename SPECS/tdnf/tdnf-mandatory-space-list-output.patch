@@ -1,0 +1,26 @@
+From: Pawel <pawelwi@microsoft.com>
+Date: Mon, 28 Dec 2020 14:18:43 -0800
+Subject: [PATCH] Mandatory space in list output
+
+diff --git a/tools/cli/lib/api.c b/tools/cli/lib/api.c
+index f277b7c..7b7602c 100644
+--- a/tools/cli/lib/api.c
++++ b/tools/cli/lib/api.c
+@@ -172,7 +172,7 @@ TDNFCliListCommand(
+         if(snprintf(
+             szNameAndArch,
+             MAX_COL_LEN,
+-            "%s.%s",
++            "%s.%s ",
+             pPkg->pszName,
+             pPkg->pszArch) < 0)
+         {
+@@ -184,7 +184,7 @@ TDNFCliListCommand(
+         if(snprintf(
+             szVersionAndRelease,
+             MAX_COL_LEN,
+-            "%s-%s",
++            "%s-%s ",
+             pPkg->pszVersion,
+             pPkg->pszRelease) < 0)
+         {
