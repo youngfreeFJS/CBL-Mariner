@@ -258,8 +258,8 @@ func createAllSRPMsWrapper(specsDir, distTag, buildDir, outDir, workerTar string
 	}
 
 	// If this is container build then the bind mounts will not have been created.
-	// Copy the chroot output to host output folder.
-	if !buildpipeline.IsRegularBuild() {
+	// If SRPMs were built in a chroot, copy the chroot output to host output folder.
+	if !buildpipeline.IsRegularBuild() && chroot != nil {
 		srpmsInChroot := filepath.Join(chroot.RootDir(), outDir)
 		err = directory.CopyContents(srpmsInChroot, originalOutDir)
 	}
