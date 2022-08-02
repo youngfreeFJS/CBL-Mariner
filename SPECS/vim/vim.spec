@@ -2,7 +2,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.0.0050
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Vim
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -191,6 +191,9 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Thu Jul 14 2022 Olivia Crain <oliviacrain@microsoft.com> - 9.0.0050-2
+- Bump
+
 * Wed Jul 13 2022 Mandeep Plaha <mandeepplaha@microsoft.com> - 9.0.0050-1
 - Upgrade to 9.0.0050 to fix CVEs: 2022-2257, 2022-2264, 2022-2284, 2022-2285, 2022-2286, 2022-2287
 
