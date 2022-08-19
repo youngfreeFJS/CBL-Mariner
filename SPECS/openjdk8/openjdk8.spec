@@ -1,7 +1,7 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
-%define _jdk_update 332
-%define _jdk_build 02
+%define _jdk_update 342
+%define _jdk_build 07
 %define _jdk_version 1.8.0
 
 %ifarch x86_64
@@ -16,13 +16,13 @@
 Name:           openjdk8
 Summary:        OpenJDK
 Version:        %{_jdk_version}.%{_jdk_update}
-Release:        1%{?dist}
+Release:        6%{?dist}
 License:        ASL 1.1 AND ASL 2.0 AND BSD AND BSD WITH advertising AND GPL+ AND GPLv2 AND GPLv2 WITH exceptions AND IJG AND LGPLv2+ AND MIT AND MPLv2.0 AND Public Domain AND W3C AND zlib
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Development/Tools
 URL:            https://openjdk.java.net
-Source0:        https://github.com/adoptium/jdk8u/archive/jdk8u%{_jdk_update}-b%{_jdk_build}.tar.gz#/openjdk-%{version}.tar.gz
+Source0:        https://github.com/adoptium/jdk8u/archive/jdk8u%{_jdk_update}-b%{_jdk_build}.tar.gz
 Patch0:         Awt_build_headless_only.patch
 Patch1:         check-system-ca-certs-332.patch
 BuildRequires:  alsa-lib
@@ -275,6 +275,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Fri Aug 05 2022 Max Brodeur-Urbas <maxbr@microsoft.com> - 1.8.0.342-1
+-   Update to 1.8.0.342 to address the below CVEs:
+-   CVE-2022-34169, CVE-2022-21540, CVE-2022-21541
 *   Mon Feb 28 2022 Nicolas Guibourge <nicolasg@microsoft.com> - 1.8.0.332-1
 -   Update to 1.8.0.332 to address the below CVEs:
 -   CVE-2022-21248 CVE-2022-21282 CVE-2022-21283 CVE-2022-21293

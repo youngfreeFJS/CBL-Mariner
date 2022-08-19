@@ -1,6 +1,6 @@
-diff -ru jdk8u-jdk8u332-b02-orig/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java jdk8u-jdk8u332-b02/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java
---- jdk8u-jdk8u332-b02-orig/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java	2022-02-05 08:34:22.000000000 -0800
-+++ jdk8u-jdk8u332-b02/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java	2022-03-01 10:57:41.837189086 -0800
+diff -ru jdk8u-jdk8u342-b07-orig/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java jdk8u-jdk8u342-b07/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java
+--- jdk8u-jdk8u342-b07-orig/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java	2022-02-05 08:34:22.000000000 -0800
++++ jdk8u-jdk8u342-b07/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java	2022-03-01 10:57:41.837189086 -0800
 @@ -68,7 +68,7 @@
       * The preference of the default trusted KeyStore is:
       *    javax.net.ssl.trustStore
@@ -31,9 +31,9 @@ diff -ru jdk8u-jdk8u332-b02-orig/jdk/src/share/classes/sun/security/ssl/TrustSto
                          for (String fileName : fileNames) {
                              File f = new File(fileName);
                              if (f.isFile() && f.canRead()) {
-diff -ru jdk8u-jdk8u332-b02-orig/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java jdk8u-jdk8u332-b02/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java
---- jdk8u-jdk8u332-b02-orig/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java	2022-02-05 08:34:22.000000000 -0800
-+++ jdk8u-jdk8u332-b02/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java	2022-03-01 11:01:37.427001700 -0800
+diff -ru jdk8u-jdk8u342-b07-orig/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java jdk8u-jdk8u342-b07/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java
+--- jdk8u-jdk8u342-b07-orig/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java	2022-02-05 08:34:22.000000000 -0800
++++ jdk8u-jdk8u342-b07/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java	2022-03-01 11:01:37.427001700 -0800
 @@ -103,9 +103,14 @@
          throws Exception
      {

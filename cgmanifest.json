@@ -4855,8 +4855,8 @@
         "type": "other",
         "other": {
           "name": "openjdk8",
-          "version": "1.8.0.332",
-          "downloadUrl": "https://github.com/adoptium/jdk8u/archive/jdk8u332-b02.tar.gz"
+          "version": "1.8.0.342",
+          "downloadUrl": "https://github.com/adoptium/jdk8u/archive/jdk8u342-b07.tar.gz"
         }
       }
     },
