@@ -22,7 +22,7 @@ Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Development/Tools
 URL:            https://openjdk.java.net
-Source0:        https://github.com/adoptium/jdk8u/archive/jdk8u%{_jdk_update}-b%{_jdk_build}.tar.gz
+Source0:        https://github.com/adoptium/jdk8u/archive/jdk8u%{_jdk_update}-b%{_jdk_build}.tar.gz#/openjdk-%{version}.tar.gz
 Patch0:         Awt_build_headless_only.patch
 Patch1:         check-system-ca-certs-332.patch
 BuildRequires:  alsa-lib
