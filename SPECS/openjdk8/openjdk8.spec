@@ -137,7 +137,6 @@ make DESTDIR=%{buildroot} install \
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 install -vdm755 %{buildroot}%{_bindir}
-find %{_prefix}/local/jvm/openjdk-%{_jdk_version}-internal/jre/lib/%{arch_name} -iname \*.diz -delete
 mv %{_prefix}/local/jvm/openjdk-%{_jdk_version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}/
 
 %post
@@ -259,7 +258,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/bin/tnameserv
 %{_libdir}/jvm/OpenJDK-%{version}/bin/unpack200
 %{_libdir}/jvm/OpenJDK-%{version}/lib/%{arch_name}/jli/
-%exclude %{_libdir}/jvm/OpenJDK-%{version}/lib/%{arch_name}/*.diz
 
 %files sample
 %defattr(-,root,root)
