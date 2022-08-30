@@ -1,7 +1,7 @@
 Summary:        Library to program and control the FTDI USB controller
 Name:           libftdi
 Version:        1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD and GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -65,6 +65,7 @@ Libftdi library C++ binding development headers and libraries
 for building C++ applications with libftdi.
 
 %prep
+echo $(rpm -q --queryformat '%%{VERSION}-%%{RELEASE}' libusb)
 %autosetup -p1 -n %{name}1-%{version}
 
 # switch to uaccess control
@@ -136,6 +137,9 @@ rm -f %{buildroot}%{_docdir}/libftdipp1/example.conf
 %ldconfig_scriptlets c++
 
 %changelog
+* Tue Aug 30 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.5-3
+- Test bump
+
 * Fri Jul 08 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.5-2
 - Disabling doc building due to unstable builds.
 

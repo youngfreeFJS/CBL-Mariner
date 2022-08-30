@@ -1,7 +1,7 @@
 Summary:        A library which allows userspace access to USB devices
 Name:           libusb
 Version:        1.0.24
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -59,6 +59,9 @@ popd
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Aug 30 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.0.24-3
+- Test bump
+
 * Fri Sep 10 2021 Thomas Crain <thcrain@microsoft.com> - 1.0.24-2
 - Remove libtool archive files from final packaging
 

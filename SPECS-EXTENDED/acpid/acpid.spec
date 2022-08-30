@@ -10,7 +10,7 @@ Distribution:   Mariner
 Summary: ACPI Event Daemon
 Name: acpid
 Version: 2.0.32
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2+
 Source: http://downloads.sourceforge.net/acpid2/%{name}-%{version}.tar.xz
 Source2: acpid.video.conf
@@ -101,6 +101,9 @@ fi
 	/bin/systemctl try-restart acpid.service >/dev/null 2>&1 || :
 
 %changelog
+* Tue Aug 30 2022 Olivia Crain <oliviacrain@microsoft.com> - 2.0.32-4
+- Test bump
+
 * Fri Oct 15 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 2.0.32-3
 - Initial CBL-Mariner import from Fedora 32 (license: MIT).
 
