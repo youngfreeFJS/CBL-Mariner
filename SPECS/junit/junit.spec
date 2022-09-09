@@ -18,7 +18,7 @@
 Summary:        Java regression test package
 Name:           junit
 Version:        4.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        EPL-1.0
 Group:          Development/Libraries/Java
 Vendor:         Microsoft Corporation
@@ -71,25 +71,10 @@ find . -type f -name "*.jar" -or -name "*.class" | xargs -t rm -rf
 ln -s $(build-classpath hamcrest/all) lib/hamcrest-core-1.3.jar
 
 %build
-export CLASSPATH=$(build-classpath hamcrest/all)
-ant jars javadoc -Dversion-status=
+%mvn_build
 
 %install
-# jars
-install -d -m 755 %{buildroot}%{_javadir}
-install -m 644 %{name}%{version}/%{name}-%{version}.jar %{buildroot}%{_javadir}/%{name}.jar
-# compat symlink
-ln -sf %{_javadir}/%{name}.jar %{buildroot}%{_javadir}/%{name}4.jar
-
-# pom
-install -d -m 755 %{buildroot}%{_mavenpomdir}
-install -m 644 pom.xml %{buildroot}%{_mavenpomdir}/%{name}.pom
-%add_maven_depmap %{name}.pom %{name}.jar
-
-# javadoc
-install -d -m 755 %{buildroot}%{_javadocdir}/%{name}
-cp -pr %{name}%{version}/javadoc/* %{buildroot}%{_javadocdir}/%{name}
-%fdupes -s %{buildroot}%{_javadocdir}/%{name}
+%mvn_install
 
 %check
 cat > test.java <<EOF
@@ -111,15 +96,17 @@ java -cp %{buildroot}/%{_javadir}/%{name}.jar: test 2>&1 | \
 %doc CODING_STYLE.txt README.md acknowledgements.txt
 %{_javadir}/%{name}4.jar
 
-%files javadoc
+%files javadoc -f .mfiles-javadoc
 %license LICENSE-junit.txt
-%{_javadocdir}/%{name}
 
 %files manual
 %license LICENSE-junit.txt
 %doc doc/*
 
 %changelog
+* Thu Sep 08 2022 Mateusz Malisz <mamalisz@microsoft.com> - 4.13-5
+- Use %%mvn macros instead to fix some provides.
+
 * Fri Apr 01 2022 Henry Li <lihl@microsoft.com> - 4.13-4
 - Remove target to upload docs to sourceforge from build.xml
 
