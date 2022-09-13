@@ -17,9 +17,9 @@ BuildRequires:  krb5-devel
 BuildRequires:  libcmocka-devel
 BuildRequires:  nmap-ncat
 BuildRequires:  nss_wrapper
-BuildRequires:  openssh-devel
+BuildRequires:  openssl-devel
 BuildRequires:  openssh-server
-BuildRequires:  openssl-clients
+BuildRequires:  openssh-clients
 BuildRequires:  pam_wrapper
 BuildRequires:  pkgconfig
 BuildRequires:  socket_wrapper
