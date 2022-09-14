@@ -4,7 +4,7 @@
 Summary:        Linux Kernel
 Name:           kernel
 Version:        5.10.134.1
-Release:        2%{?dist}
+Release:        10%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -636,6 +636,9 @@ ln -sf linux-%{uname_r}.cfg /boot/mariner.cfg
 %{_sysconfdir}/bash_completion.d/bpftool
 
 %changelog
+* Wed Sep 14 2022 Anirudh Gopal <angop@microsoft.com> - 5.10.134.1-10
+- Enable CONFIG_SCSCI_LOGGING for ASE debugging
+
 * Thu Sep 01 2022 Chris Co <chrco@microsoft.com> - 5.10.134.1-2
 - Enable 32-bit time syscall support
 

@@ -1,7 +1,7 @@
 Summary:        Linux API header files
 Name:           kernel-headers
 Version:        5.10.134.1
-Release:        2%{?dist}
+Release:        10%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -36,6 +36,9 @@ cp -rv usr/include/* /%{buildroot}%{_includedir}
 %{_includedir}/*
 
 %changelog
+* Wed Sep 14 2022 Anirudh Gopal <angop@microsoft.com> - 5.10.134.1-10
+- Bump release number to match kernel release
+
 * Thu Sep 01 2022 Chris Co <chrco@microsoft.com> - 5.10.134.1-2
 - Bump release number to match kernel release
 
