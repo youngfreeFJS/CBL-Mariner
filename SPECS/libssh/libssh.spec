@@ -92,7 +92,7 @@ pushd %{buildroot}%{_libdir}
 for i in libssh.so*;
 do
     _target="${i}"
-    _link_name="${i%{libssh}*}libssh_threads${i##*libssh}"
+    _link_name="${i%libssh*}libssh_threads${i##*libssh}"
     if [ -L "${i}" ]; then
         _target="$(readlink ${i})"
     fi
