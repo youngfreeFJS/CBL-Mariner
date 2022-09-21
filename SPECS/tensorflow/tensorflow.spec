@@ -1,28 +1,27 @@
-Summary:        Array processing for numbers, strings, records, and objects
+Summary:        TensorFlow is an open source machine learning framework for everyone.
 Name:           tensorflow
-Version:        1.22.3
-Release:        2%{?dist}
-# The custom license is inside numpy/core/src/multiarray/dragon4.c.
-License:        BSD AND ZLIB custom
+Version:        2.8.3
+Release:        1%{?dist}
+License:        #####
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Development/Languages/Python
-URL:            https://numpy.org/
-Source0:        https://github.com/numpy/numpy/releases/download/v%{version}/%{name}-%{version}.tar.gz
+URL:            https://www.tensorflow.org/
+Source0:        https://github.com/tensorflow/tensorflow/archive/refs/tags/v%{Version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildRequires:  build-essential
-BuildRequires:  git
 BuildRequires:  python3-devel
 BuildRequires:  python3-requests
 BuildRequires:  python3-packaging
 BuildRequires:  python3-wheel
 BuildRequires:  bazel
 BuildRequires:  binutils
+BuildRequires: pyproject-rpm-macros
 %if %{with_check}
 BuildRequires:  python3-pip
 %endif
 
 %description
-NumPy is a general-purpose array-processing package designed to efficiently manipulate large multi-dimensional arrays of arbitrary records without sacrificing too much speed for small multi-dimensional arrays. NumPy is built on the Numeric code base and adds features introduced by numarray as well as an extended C-API and the ability to create arrays of arbitrary type which also makes NumPy suitable for interfacing with general-purpose data-base applications.
+TensorFlow is an open source machine learning framework for everyone.
 
 %package -n     python3-tensorflow-cpu
 Summary:        python-tensorflow-cpu
@@ -36,28 +35,33 @@ Python 3 version.
 %autosetup -p1
 
 %build
-bazel build 
-
+echo $PWD
+bazel build //tensorflow/tools/pip_package:build_pip_package
+./bazel-bin/tensorflow/tools/pip_package/build_pip_package %{builddir}
 
 %install
-pip3 install --root %{buildroot}
-
+echo $PWD
+pushd %{builddir}
+echo $PWD
+echo $(ls)
+#find the wheel
+#%py3_install_wheel
+#or 
+%pyproject_install
+#or
+ 
 %check
 pip3 install nose pytest
 mkdir -pv test
 cd test
-PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} %python3 -c "import numpy; numpy.test()"
+#PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} %python3 -c "import numpy; numpy.test()"
 
-%files -n python3-numpy
-%license LICENSE.txt
+%files -n python3-tensorflow
+%license LICENSE
 %{python3_sitelib}/*
 
-%files -n python3-numpy-f2py
-%{_bindir}/f2py
-%{_bindir}/f2py3
-%{_bindir}/f2py%{python3_version}
 
 %changelog
-* Thu Mar 02 2022 Riken Maharjan <rmaharjan@microsoft> - 1.8.2-1
+* Thu Mar 02 2022 Riken Maharjan <rmaharjan@microsoft> - 2.8.3-1
 - License verified
 - Original version for CBL-Mariner
