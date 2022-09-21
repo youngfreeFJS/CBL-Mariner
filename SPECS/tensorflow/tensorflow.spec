@@ -56,7 +56,7 @@ mkdir -pv test
 cd test
 #PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} %python3 -c "import numpy; numpy.test()"
 
-%files -n python3-tensorflow
+%files -n python3-tensorflow-cpu
 %license LICENSE
 %{python3_sitelib}/*
 
