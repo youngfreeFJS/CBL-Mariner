@@ -8,6 +8,7 @@ License:        gpl2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Applications/System
+Source0:        https://github.com/madler/pigz/archive/v2.6.tar.gz#/pigz-2.6.tar.gz
 Source1:        tcpdump-service.service
 Requires:       tcpdump
 
