@@ -8,17 +8,18 @@ License:        gpl2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Applications/System
-Source0:        tcpdump-service.service
+Source0:        https://github.com/madler/pigz/archive/v%{version}.tar.gz#/pigz-%{version}.tar.gz
+Source1:        tcpdump-service.service
 Requires:       tcpdump
 
 %description
 tcpdump-service calls tcpdump on startup, preserves logs at /home/azureuser/tcpdumpfile.pcap
 
 %prep
-%autosetup
+%autosetup -n pigz-%{version}
 
 %install
-install -p -m 644 %{Source0} %{_unitdir}
+install -p -m 644 %{SOURCE1} %{_unitdir}
 
 %preun
 %systemd_preun tcpdump-service.service
