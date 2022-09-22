@@ -16,7 +16,7 @@ Requires:       tcpdump
 tcpdump-service calls tcpdump on startup, preserves logs at /home/azureuser/tcpdumpfile.pcap
 
 %prep
-%autosetup -n pigz-%{version}
+%autosetup -n pigz-2.6
 
 %install
 install -p -m 644 %{SOURCE1} %{_unitdir}
