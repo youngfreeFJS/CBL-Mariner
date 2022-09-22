@@ -1,0 +1,11 @@
+[Unit]
+Description=tcpdump instance
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/tcpdump -i any -w /home/azureuser/tcpdumpfile.pcap
+Type=exec
+Restart=no
+
+[Install]
+WantedBy=default.target
