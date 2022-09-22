@@ -11,6 +11,9 @@ Group:          Applications/System
 Source0:        tcpdump-service.service
 Requires:       tcpdump
 
+%description
+tcpdump-service calls tcpdump on startup, preserves logs at /home/azureuser/tcpdumpfile.pcap
+
 %prep
 %autosetup
 
