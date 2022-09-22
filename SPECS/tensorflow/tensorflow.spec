@@ -62,6 +62,6 @@ cd test
 
 
 %changelog
-* Thu Mar 02 2022 Riken Maharjan <rmaharjan@microsoft> - 2.8.3-1
+* Thu Sep 22 2022 Riken Maharjan <rmaharjan@microsoft> - 2.8.3-1
 - License verified
 - Original version for CBL-Mariner
