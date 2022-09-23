@@ -19,7 +19,8 @@ tcpdump-service calls tcpdump on startup, preserves logs at /home/azureuser/tcpd
 %autosetup -n pigz-2.6
 
 %install
-install -p -m 644 %{SOURCE1} %{_unitdir}
+mkdir -p %{buildroot}%{_unitdir}
+install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 
 %preun
 %systemd_preun tcpdump-service.service
