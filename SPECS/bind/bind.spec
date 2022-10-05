@@ -431,7 +431,9 @@ fi;
 %dir %{_libdir}/named
 %{_libdir}/named/*.so
 %config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/sysconfig/named
+%config(noreplace) %attr(0644,root,named) %{_sysconfdir}/named.root.key
 %config(noreplace) %{_sysconfdir}/logrotate.d/named
+%{_sysconfdir}/rwtab.d/named
 %{_sbindir}/named-journalprint
 %{_sbindir}/named-checkconf
 %{_bindir}/named-rrchecker
@@ -460,6 +462,9 @@ fi;
 %dir %{_localstatedir}/named/dynamic
 %ghost %{_localstatedir}/log/named.log
 %defattr(0640,root,named,0750)
+%dir %{_sysconfdir}/named
+%config(noreplace) %verify(not link) %{_sysconfdir}/named.conf
+%config(noreplace) %verify(not link) %{_sysconfdir}/named.rfc1912.zones
 %config %verify(not link) %{_localstatedir}/named/named.ca
 %config %verify(not link) %{_localstatedir}/named/named.localhost
 %config %verify(not link) %{_localstatedir}/named/named.loopback
