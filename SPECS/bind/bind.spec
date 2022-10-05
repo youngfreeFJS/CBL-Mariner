@@ -10,7 +10,7 @@
 Summary:        Domain Name System software
 Name:           bind
 Version:        9.16.29
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -606,10 +606,12 @@ fi;
 %{_mandir}/man8/named-checkzone.8*
 %{_mandir}/man8/named-compilezone.8*
 %{_mandir}/man8/named-nzd2nzf.8*
-%{_sysconfdir}/*
 %{_tmpfilesdir}/named.conf
 
 %changelog
+* Tue Oct 05 2022 Nan Liu <liunan@microsoft.com> - 9.16.29-2
+- Remove /etc/logrotate.d/named from bind-utils.
+
 * Wed Jun 08 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 9.16.29-1
 - Updating to 9.16.29 to fix CVE-2021-25219.
 
