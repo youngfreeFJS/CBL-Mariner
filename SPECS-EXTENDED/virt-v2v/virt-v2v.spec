@@ -1,7 +1,7 @@
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 # If we should verify tarball signature with GPGv2.
-%global verify_tarball_signature 1
+%global verify_tarball_signature 0
 
 # If there are patches which touch autotools files, set this to 1.
 %global patches_touch_autotools %{nil}
@@ -11,7 +11,7 @@ Distribution:   Mariner
 
 Name:          virt-v2v
 Version:       1.42.0
-Release:       6%{?dist}
+Release:       7%{?dist}
 Summary:       Convert a virtual machine to run on KVM
 
 License:       GPLv2+
@@ -228,7 +228,10 @@ rm -r $RPM_BUILD_ROOT%{_libdir}/ocaml/stublibs/dllv2v_test_harness*
 
 
 %changelog
-* Thu Oct 28 2021 Muhammad Falak <mwani@microsft.com> - 1.42.0-6
+* Sat Oct 08 2022 Muhammad Falak <mwani@microsoft.com> - 1.42.0-7
+- Drop gpg verification for source
+
+* Thu Oct 28 2021 Muhammad Falak <mwani@microsoft.com> - 1.42.0-6
 - Remove epoch
 
 * Fri Oct 15 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 1:1.42.0-5
