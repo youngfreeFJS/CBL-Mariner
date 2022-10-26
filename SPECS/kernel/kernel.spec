@@ -327,8 +327,7 @@ ln -sf linux-%{uname_r}.cfg /boot/mariner.cfg
 /lib/modules/%{uname_r}/*
 /lib/modules/%{uname_r}/.vmlinuz.hmac
 %exclude /lib/modules/%{uname_r}/build
-/lib/modules/%{uname_r}/kernel/drivers/gpu/drm/vgem/vgem.ko.xz
-%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/*
+%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
 %exclude /lib/modules/%{uname_r}/kernel/drivers/accessibility
 %exclude /lib/modules/%{uname_r}/kernel/sound
 
@@ -345,9 +344,15 @@ ln -sf linux-%{uname_r}.cfg /boot/mariner.cfg
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/drivers/accessibility
 
+%files drivers-gpu
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/kernel/drivers/gpu
+
 %files drivers-sound
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/sound
+
+
 
 %files tools
 %defattr(-,root,root)
