@@ -12,7 +12,8 @@ BuildRequires:  cmake
 BuildRequires:  libffi-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  ninja-build
-BuildRequires:  python3-devel
+BuildRequires:  python3-devel	
+BuildRequires:  python3-setuptools
 Requires:       libxml2
 
 %description
@@ -25,6 +26,13 @@ Requires:       %{name} = %{version}-%{release}
 %description devel
 The llvm-devel package contains libraries, header files and documentation
 for developing applications that use llvm.
+
+%package -n python3-clang
+Summary:	Python bindings to parts of the Clang library
+Group:		Development/Python
+
+%description -n python3-clang
+Python bindings to parts of the Clang library
 
 %prep
 %setup -q -n %{name}-%{version}.src
@@ -84,6 +92,9 @@ ninja check-all
 %{_libdir}/*.a
 %{_libdir}/cmake/*
 %{_includedir}/*
+
+%files -n python3-clang
+%{python_sitelib}/clang
 
 %changelog
 * Wed Feb 09 2022 Chris Co <chrco@microsoft.com> - 12.0.1-4
