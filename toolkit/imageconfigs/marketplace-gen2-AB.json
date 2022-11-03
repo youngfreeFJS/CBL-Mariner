@@ -1,0 +1,99 @@
+{
+    "Disks": [
+        {
+            "PartitionTableType": "gpt",
+            "MaxSize": 20000,
+            "Artifacts": [
+                {
+                    "Name": "cblmariner-gen2",
+                    "Type": "vhd"
+                }
+            ],
+            "Partitions": [
+                {
+                    "ID": "efi",
+                    "Flags": [
+                        "esp",
+                        "boot"
+                    ],
+                    "Start": 1,
+                    "End": 9,
+                    "FsType": "fat32"
+                },
+                {
+                    "ID": "boot",
+                    "Start": 9,
+                    "End": 509,
+                    "FsType": "ext4"
+                },
+                {
+                    "ID": "rootfs_a",
+                    "Start": 509,
+                    "End": 8009,
+                    "FsType": "ext4"
+                },
+                {
+                    "ID": "rootfs_b",
+                    "Start": 8009,
+                    "End": 16009,
+                    "FsType": "ext4"
+                },
+                {
+                    "ID": "data",
+                    "Start": 16009,
+                    "End": 0,
+                    "FsType": "ext4"
+                }
+            ]
+        }
+    ],
+    "SystemConfigs": [
+        {
+            "Name": "Standard",
+            "BootType": "efi",
+            "PartitionSettings": [
+                {
+                    "ID": "efi",
+                    "MountPoint": "/boot/efi",
+                    "MountOptions" : "umask=0077"
+                },
+                {
+                    "ID": "boot",
+                    "MountPoint": "/boot"
+                },
+                {
+                    "ID": "rootfs_a",
+                    "MountPoint": "/"
+                }
+            ],
+            "PackageLists": [
+                "packagelists/core-packages-image.json",
+                "packagelists/marketplace-tools-packages.json",
+                "packagelists/azurevm-packages.json"
+            ],
+            "AdditionalFiles": {
+                "additionalconfigs/cloud-init.cfg": "/etc/cloud/cloud.cfg",
+                "additionalconfigs/chrony.cfg": "/etc/chrony.conf"
+            },
+            "PostInstallScripts": [
+                {
+                    "Path": "additionalconfigs/configure-image.sh"
+                }
+            ],
+            "KernelOptions": {
+                "default": "kernel"
+            },
+            "KernelCommandLine": {
+                "ExtraCommandLine": "console=ttyS0"
+            },
+            "Hostname": "cbl-mariner",
+            "Users": [
+                {
+                    "Name": "root",
+                    "Password": "mariner",
+                    "PasswordHashed": false
+                }
+            ]
+        }
+    ]
+}
