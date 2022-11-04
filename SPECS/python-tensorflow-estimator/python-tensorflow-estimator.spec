@@ -15,7 +15,7 @@ Source0:        https://github.com/tensorflow/estimator/archive/v%{version}.tar.
 BuildArch:      noarch
 
 BuildRequires:  bazel
-BuildRequires:  python-setuptools
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-pip
 BuildRequires:  python3-wheel
 
