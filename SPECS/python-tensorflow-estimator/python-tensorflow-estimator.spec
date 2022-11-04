@@ -4,7 +4,7 @@ A high-level TensorFlow API that greatly simplifies machine learning programming
 
 Summary:        A high-level TensorFlow API that greatly simplifies machine learning programming
 Name:           python-%{pypi_name}
-Version:        2.0.1
+Version:        2.10
 Release:        3%{?dist}
 License:        MIT
 Vendor:         Microsoft Corporation
@@ -28,17 +28,13 @@ Summary:        %{summary}
 %description -n python3-%{pypi_name} %{_description}
 
 %prep
-%autosetup -p1 -n %{pypi_name}-%{version}
+%autosetup -p1 -n estimator-%{version}
 
 %build
-cd estimator-%{version}
-
 bazel build //tensorflow_estimator/tools/pip_package:build_pip_package
 bazel-bin/tensorflow_estimator/tools/pip_package/build_pip_package /tmp/estimator_pkg
 
 %install
-
-cd estimator-%{version}
 WHEEL_PACKAGE=$(find /tmp/estimator_pkg -name "tensor*.whl")
 pip3 install --ignore-installed --upgrade --root %{WHEEL_PACKAGE} --no-dependencies
 
