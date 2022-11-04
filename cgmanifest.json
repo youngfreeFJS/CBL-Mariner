@@ -22443,6 +22443,16 @@
       "component": {
         "type": "other",
         "other": {
+          "name": "python-tensorflow-estimator",
+          "version": "2.10",
+          "downloadUrl": "https://github.com/tensorflow/estimator/archive/v2.10.tar.gz"
+        }
+      }
+    },
+    {
+      "component": {
+        "type": "other",
+        "other": {
           "name": "python-testrepository",
           "version": "0.0.20",
           "downloadUrl": "http://pypi.python.org/packages/source/t/testrepository/testrepository-0.0.20.tar.gz"
