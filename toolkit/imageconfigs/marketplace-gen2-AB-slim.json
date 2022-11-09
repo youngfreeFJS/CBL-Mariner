@@ -2,14 +2,14 @@
     "Disks": [
         {
             "PartitionTableType": "gpt",
-            "MaxSize": 95000,
+            "MaxSize": 30000,
             "Artifacts": [
                 {
-                    "Name": "ab",
+                    "Name": "ab-slim",
                     "Type": "vhd"
                 },
                 {
-                    "Name": "ab-converted",
+                    "Name": "ab-slim-converted",
                     "Type": "vhdx"
                 }
             ],
@@ -33,18 +33,18 @@
                 {
                     "ID": "rootfs_a",
                     "Start": 509,
-                    "End": 28009,
+                    "End": 14009,
                     "FsType": "ext4"
                 },
                 {
                     "ID": "rootfs_b",
-                    "Start": 28009,
-                    "End": 56009,
+                    "Start": 14009,
+                    "End": 16009,
                     "FsType": "ext4"
                 },
                 {
                     "ID": "data",
-                    "Start": 56009,
+                    "Start": 16009,
                     "End": 0,
                     "FsType": "ext4"
                 }
