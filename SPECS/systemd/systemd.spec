@@ -1,7 +1,7 @@
 Summary:        Systemd-250
 Name:           systemd
 Version:        250.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPLv2+ AND GPLv2+ AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -261,6 +261,9 @@ systemctl preset-all
 %files lang -f %{name}.lang
 
 %changelog
+* Wed Nov 09 2022 Adit Jha <aditjha@microsoft.com> - 250.3-10
+- Bumping release number to test systemd changes
+
 * Tue Oct 04 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 250.3-9
 - Fixing default log location.
 
