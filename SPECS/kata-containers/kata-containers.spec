@@ -38,8 +38,8 @@
 
 Summary:        Kata Containers version 2.x repository
 Name:           kata-containers
-Version:        2.5.0
-Release:        8%{?dist}
+Version:        3.0.0
+Release:        1%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 URL:            https://github.com/%{name}/%{name}
@@ -54,7 +54,10 @@ Patch1:         0002-Merged-PR-9671-Wait-for-a-possibly-slow-Guest.patch
 Patch2:         0003-Merged-PR-9805-Add-support-for-MSHV.patch
 Patch3:         0004-Merged-PR-9806-Fix-enable_debug-for-hypervisor.clh.patch
 Patch4:         0005-Merged-PR-9956-shim-avoid-memory-hotplug-timeout.patch
-Patch5:         kata-ch.patch
+Patch5:         runtime-Support-for-AMD-SEV-SNP-VMs.patch
+Patch6:         runtime-clh-Use-the-new-API-to-boot-with-TDX-firmware-td-shim.patch
+#Patch7:         runtime-clh-Re-generate-the-client-code.patch
+Patch8:         versions-Update-Cloud-Hypervisor.patch
 
 BuildRequires:  golang
 BuildRequires:  git-core
