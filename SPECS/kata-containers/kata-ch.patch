@@ -1,0 +1,534 @@
+From 9d286af7b4543b0af9e6db53c6c84e0731f61c09 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabiano=20Fid=C3=AAncio?= <fabiano.fidencio@intel.com>
+Date: Fri, 21 Oct 2022 11:20:32 -0700
+Subject: [PATCH] versions: Update Cloud Hypervisor to b4e39427080
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+An API change, done a long time ago, has been exposed on Cloud
+Hypervisor and we should update it on the Kata Containers side to ensure
+it doesn't affect Cloud Hypervisor CI and because the change is needed
+for an upcoming work to get QAT working with Cloud Hypervisor.
+
+Fixes: #5492
+
+Signed-off-by: Fabiano Fidêncio <fabiano.fidencio@intel.com>
+---
+ src/runtime/virtcontainers/clh.go             |   9 +-
+ src/runtime/virtcontainers/clh_test.go        |   2 +-
+ .../client/.openapi-generator/FILES           |   2 -
+ .../pkg/cloud-hypervisor/client/README.md     |   1 -
+ .../cloud-hypervisor/client/api/openapi.yaml  |  16 +-
+ .../cloud-hypervisor/client/api_default.go    | 154 +++++++-------
+ .../client/docs/DefaultApi.md                 |   8 +-
+ .../client/docs/VmAddDevice.md                | 108 ----------
+ .../client/model_vm_add_device.go             | 189 ------------------
+ .../cloud-hypervisor/cloud-hypervisor.yaml    |  13 +-
+ versions.yaml                                 |   2 +-
+ 11 files changed, 84 insertions(+), 420 deletions(-)
+ delete mode 100644 src/runtime/virtcontainers/pkg/cloud-hypervisor/client/docs/VmAddDevice.md
+ delete mode 100644 src/runtime/virtcontainers/pkg/cloud-hypervisor/client/model_vm_add_device.go
+
+diff --git a/src/runtime/virtcontainers/clh.go b/src/runtime/virtcontainers/clh.go
+index 9d40c882c1..93a19facd5 100644
+--- a/src/runtime/virtcontainers/clh.go
++++ b/src/runtime/virtcontainers/clh.go
+@@ -100,7 +100,7 @@ type clhClient interface {
+ 	// Add/remove CPUs to/from the VM
+ 	VmResizePut(ctx context.Context, vmResize chclient.VmResize) (*http.Response, error)
+ 	// Add VFIO PCI device to the VM
+-	VmAddDevicePut(ctx context.Context, vmAddDevice chclient.VmAddDevice) (chclient.PciDeviceInfo, *http.Response, error)
++	VmAddDevicePut(ctx context.Context, deviceConfig chclient.DeviceConfig) (chclient.PciDeviceInfo, *http.Response, error)
+ 	// Add a new disk device to the VM
+ 	VmAddDiskPut(ctx context.Context, diskConfig chclient.DiskConfig) (chclient.PciDeviceInfo, *http.Response, error)
+ 	// Remove a device from the VM
+@@ -136,8 +136,8 @@ func (c *clhClientApi) VmResizePut(ctx context.Context, vmResize chclient.VmResi
+ 	return c.ApiInternal.VmResizePut(ctx).VmResize(vmResize).Execute()
+ }
+ 
+-func (c *clhClientApi) VmAddDevicePut(ctx context.Context, vmAddDevice chclient.VmAddDevice) (chclient.PciDeviceInfo, *http.Response, error) {
+-	return c.ApiInternal.VmAddDevicePut(ctx).VmAddDevice(vmAddDevice).Execute()
++func (c *clhClientApi) VmAddDevicePut(ctx context.Context, deviceConfig chclient.DeviceConfig) (chclient.PciDeviceInfo, *http.Response, error) {
++	return c.ApiInternal.VmAddDevicePut(ctx).DeviceConfig(deviceConfig).Execute()
+ }
+ 
+ func (c *clhClientApi) VmAddDiskPut(ctx context.Context, diskConfig chclient.DiskConfig) (chclient.PciDeviceInfo, *http.Response, error) {
+@@ -808,8 +808,7 @@ func (clh *cloudHypervisor) hotPlugVFIODevice(device *config.VFIODev) error {
+ 	defer cancel()
+ 
+ 	// Create the clh device config via the constructor to ensure default values are properly assigned
+-	clhDevice := *chclient.NewVmAddDevice()
+-	clhDevice.Path = &device.SysfsDev
++	clhDevice := *chclient.NewDeviceConfig(device.SysfsDev)
+ 	pciInfo, _, err := cl.VmAddDevicePut(ctx, clhDevice)
+ 	if err != nil {
+ 		return fmt.Errorf("Failed to hotplug device %+v %s", device, openAPIClientError(err))
+diff --git a/src/runtime/virtcontainers/clh_test.go b/src/runtime/virtcontainers/clh_test.go
+index 58b1b7fe9a..d36ace88fb 100644
+--- a/src/runtime/virtcontainers/clh_test.go
++++ b/src/runtime/virtcontainers/clh_test.go
+@@ -104,7 +104,7 @@ func (c *clhClientMock) VmResizePut(ctx context.Context, vmResize chclient.VmRes
+ }
+ 
+ //nolint:golint
+-func (c *clhClientMock) VmAddDevicePut(ctx context.Context, vmAddDevice chclient.VmAddDevice) (chclient.PciDeviceInfo, *http.Response, error) {
++func (c *clhClientMock) VmAddDevicePut(ctx context.Context, deviceConfig chclient.DeviceConfig) (chclient.PciDeviceInfo, *http.Response, error) {
+ 	return chclient.PciDeviceInfo{}, nil, nil
+ }
+ 
+diff --git a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/.openapi-generator/FILES b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/.openapi-generator/FILES
+index 60eb887203..6369a3a413 100644
+--- a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/.openapi-generator/FILES
++++ b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/.openapi-generator/FILES
+@@ -37,7 +37,6 @@ docs/SgxEpcConfig.md
+ docs/TdxConfig.md
+ docs/TokenBucket.md
+ docs/VdpaConfig.md
+-docs/VmAddDevice.md
+ docs/VmConfig.md
+ docs/VmCoredumpData.md
+ docs/VmInfo.md
+@@ -80,7 +79,6 @@ model_sgx_epc_config.go
+ model_tdx_config.go
+ model_token_bucket.go
+ model_vdpa_config.go
+-model_vm_add_device.go
+ model_vm_config.go
+ model_vm_coredump_data.go
+ model_vm_info.go
+diff --git a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/README.md b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/README.md
+index 04b5c9f0cf..a33f74c7ed 100644
+--- a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/README.md
++++ b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/README.md
+@@ -139,7 +139,6 @@ Class | Method | HTTP request | Description
+  - [TdxConfig](docs/TdxConfig.md)
+  - [TokenBucket](docs/TokenBucket.md)
+  - [VdpaConfig](docs/VdpaConfig.md)
+- - [VmAddDevice](docs/VmAddDevice.md)
+  - [VmConfig](docs/VmConfig.md)
+  - [VmCoredumpData](docs/VmCoredumpData.md)
+  - [VmInfo](docs/VmInfo.md)
+diff --git a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/api/openapi.yaml b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/api/openapi.yaml
+index fbffa9053d..61e57e3727 100644
+--- a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/api/openapi.yaml
++++ b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/api/openapi.yaml
+@@ -171,7 +171,7 @@ paths:
+         content:
+           application/json:
+             schema:
+-              $ref: '#/components/schemas/VmAddDevice'
++              $ref: '#/components/schemas/DeviceConfig'
+         description: The path of the new device
+         required: true
+       responses:
+@@ -1808,20 +1808,6 @@ components:
+           format: int64
+           type: integer
+       type: object
+-    VmAddDevice:
+-      example:
+-        path: path
+-        iommu: false
+-        id: id
+-      properties:
+-        path:
+-          type: string
+-        iommu:
+-          default: false
+-          type: boolean
+-        id:
+-          type: string
+-      type: object
+     VmRemoveDevice:
+       example:
+         id: id
+diff --git a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/docs/DefaultApi.md b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/docs/DefaultApi.md
+index 1391a0b277..d610977193 100644
+--- a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/docs/DefaultApi.md
++++ b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/docs/DefaultApi.md
+@@ -554,7 +554,7 @@ No authorization required
+ 
+ ## VmAddDevicePut
+ 
+-> PciDeviceInfo VmAddDevicePut(ctx).VmAddDevice(vmAddDevice).Execute()
++> PciDeviceInfo VmAddDevicePut(ctx).DeviceConfig(deviceConfig).Execute()
+ 
+ Add a new device to the VM
+ 
+@@ -571,11 +571,11 @@ import (
+ )
+ 
+ func main() {
+-    vmAddDevice := *openapiclient.NewVmAddDevice() // VmAddDevice | The path of the new device
++    deviceConfig := *openapiclient.NewDeviceConfig("Path_example") // DeviceConfig | The path of the new device
+ 
+     configuration := openapiclient.NewConfiguration()
+     api_client := openapiclient.NewAPIClient(configuration)
+-    resp, r, err := api_client.DefaultApi.VmAddDevicePut(context.Background()).VmAddDevice(vmAddDevice).Execute()
++    resp, r, err := api_client.DefaultApi.VmAddDevicePut(context.Background()).DeviceConfig(deviceConfig).Execute()
+     if err != nil {
+         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.VmAddDevicePut``: %v\n", err)
+         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+@@ -596,7 +596,7 @@ Other parameters are passed through a pointer to a apiVmAddDevicePutRequest stru
+ 
+ Name | Type | Description  | Notes
+ ------------- | ------------- | ------------- | -------------
+- **vmAddDevice** | [**VmAddDevice**](VmAddDevice.md) | The path of the new device | 
++ **deviceConfig** | [**DeviceConfig**](DeviceConfig.md) | The path of the new device | 
+ 
+ ### Return type
+ 
+diff --git a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/docs/VmAddDevice.md b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/docs/VmAddDevice.md
+deleted file mode 100644
+index aaef7b32cb..0000000000
+--- a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/docs/VmAddDevice.md
++++ /dev/null
+@@ -1,108 +0,0 @@
+-# VmAddDevice
+-
+-## Properties
+-
+-Name | Type | Description | Notes
+------------- | ------------- | ------------- | -------------
+-**Path** | Pointer to **string** |  | [optional] 
+-**Iommu** | Pointer to **bool** |  | [optional] [default to false]
+-**Id** | Pointer to **string** |  | [optional] 
+-
+-## Methods
+-
+-### NewVmAddDevice
+-
+-`func NewVmAddDevice() *VmAddDevice`
+-
+-NewVmAddDevice instantiates a new VmAddDevice object
+-This constructor will assign default values to properties that have it defined,
+-and makes sure properties required by API are set, but the set of arguments
+-will change when the set of required properties is changed
+-
+-### NewVmAddDeviceWithDefaults
+-
+-`func NewVmAddDeviceWithDefaults() *VmAddDevice`
+-
+-NewVmAddDeviceWithDefaults instantiates a new VmAddDevice object
+-This constructor will only assign default values to properties that have it defined,
+-but it doesn't guarantee that properties required by API are set
+-
+-### GetPath
+-
+-`func (o *VmAddDevice) GetPath() string`
+-
+-GetPath returns the Path field if non-nil, zero value otherwise.
+-
+-### GetPathOk
+-
+-`func (o *VmAddDevice) GetPathOk() (*string, bool)`
+-
+-GetPathOk returns a tuple with the Path field if it's non-nil, zero value otherwise
+-and a boolean to check if the value has been set.
+-
+-### SetPath
+-
+-`func (o *VmAddDevice) SetPath(v string)`
+-
+-SetPath sets Path field to given value.
+-
+-### HasPath
+-
+-`func (o *VmAddDevice) HasPath() bool`
+-
+-HasPath returns a boolean if a field has been set.
+-
+-### GetIommu
+-
+-`func (o *VmAddDevice) GetIommu() bool`
+-
+-GetIommu returns the Iommu field if non-nil, zero value otherwise.
+-
+-### GetIommuOk
+-
+-`func (o *VmAddDevice) GetIommuOk() (*bool, bool)`
+-
+-GetIommuOk returns a tuple with the Iommu field if it's non-nil, zero value otherwise
+-and a boolean to check if the value has been set.
+-
+-### SetIommu
+-
+-`func (o *VmAddDevice) SetIommu(v bool)`
+-
+-SetIommu sets Iommu field to given value.
+-
+-### HasIommu
+-
+-`func (o *VmAddDevice) HasIommu() bool`
+-
+-HasIommu returns a boolean if a field has been set.
+-
+-### GetId
+-
+-`func (o *VmAddDevice) GetId() string`
+-
+-GetId returns the Id field if non-nil, zero value otherwise.
+-
+-### GetIdOk
+-
+-`func (o *VmAddDevice) GetIdOk() (*string, bool)`
+-
+-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+-and a boolean to check if the value has been set.
+-
+-### SetId
+-
+-`func (o *VmAddDevice) SetId(v string)`
+-
+-SetId sets Id field to given value.
+-
+-### HasId
+-
+-`func (o *VmAddDevice) HasId() bool`
+-
+-HasId returns a boolean if a field has been set.
+-
+-
+-[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+-
+-
+diff --git a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/model_vm_add_device.go b/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/model_vm_add_device.go
+deleted file mode 100644
+index acc3c177d9..0000000000
+--- a/src/runtime/virtcontainers/pkg/cloud-hypervisor/client/model_vm_add_device.go
++++ /dev/null
+@@ -1,189 +0,0 @@
+-/*
+-Cloud Hypervisor API
+-
+-Local HTTP based API for managing and inspecting a cloud-hypervisor virtual machine.
+-
+-API version: 0.3.0
+-*/
+-
+-// Code generated by OpenAPI Generator (https://openapi-generator.tech); DO NOT EDIT.
+-
+-package openapi
+-
+-import (
+-	"encoding/json"
+-)
+-
+-// VmAddDevice struct for VmAddDevice
+-type VmAddDevice struct {
+-	Path  *string `json:"path,omitempty"`
+-	Iommu *bool   `json:"iommu,omitempty"`
+-	Id    *string `json:"id,omitempty"`
+-}
+-
+-// NewVmAddDevice instantiates a new VmAddDevice object
+-// This constructor will assign default values to properties that have it defined,
+-// and makes sure properties required by API are set, but the set of arguments
+-// will change when the set of required properties is changed
+-func NewVmAddDevice() *VmAddDevice {
+-	this := VmAddDevice{}
+-	var iommu bool = false
+-	this.Iommu = &iommu
+-	return &this
+-}
+-
+-// NewVmAddDeviceWithDefaults instantiates a new VmAddDevice object
+-// This constructor will only assign default values to properties that have it defined,
+-// but it doesn't guarantee that properties required by API are set
+-func NewVmAddDeviceWithDefaults() *VmAddDevice {
+-	this := VmAddDevice{}
+-	var iommu bool = false
+-	this.Iommu = &iommu
+-	return &this
+-}
+-
+-// GetPath returns the Path field value if set, zero value otherwise.
+-func (o *VmAddDevice) GetPath() string {
+-	if o == nil || o.Path == nil {
+-		var ret string
+-		return ret
+-	}
+-	return *o.Path
+-}
+-
+-// GetPathOk returns a tuple with the Path field value if set, nil otherwise
+-// and a boolean to check if the value has been set.
+-func (o *VmAddDevice) GetPathOk() (*string, bool) {
+-	if o == nil || o.Path == nil {
+-		return nil, false
+-	}
+-	return o.Path, true
+-}
+-
+-// HasPath returns a boolean if a field has been set.
+-func (o *VmAddDevice) HasPath() bool {
+-	if o != nil && o.Path != nil {
+-		return true
+-	}
+-
+-	return false
+-}
+-
+-// SetPath gets a reference to the given string and assigns it to the Path field.
+-func (o *VmAddDevice) SetPath(v string) {
+-	o.Path = &v
+-}
+-
+-// GetIommu returns the Iommu field value if set, zero value otherwise.
+-func (o *VmAddDevice) GetIommu() bool {
+-	if o == nil || o.Iommu == nil {
+-		var ret bool
+-		return ret
+-	}
+-	return *o.Iommu
+-}
+-
+-// GetIommuOk returns a tuple with the Iommu field value if set, nil otherwise
+-// and a boolean to check if the value has been set.
+-func (o *VmAddDevice) GetIommuOk() (*bool, bool) {
+-	if o == nil || o.Iommu == nil {
+-		return nil, false
+-	}
+-	return o.Iommu, true
+-}
+-
+-// HasIommu returns a boolean if a field has been set.
+-func (o *VmAddDevice) HasIommu() bool {
+-	if o != nil && o.Iommu != nil {
+-		return true
+-	}
+-
+-	return false
+-}
+-
+-// SetIommu gets a reference to the given bool and assigns it to the Iommu field.
+-func (o *VmAddDevice) SetIommu(v bool) {
+-	o.Iommu = &v
+-}
+-
+-// GetId returns the Id field value if set, zero value otherwise.
+-func (o *VmAddDevice) GetId() string {
+-	if o == nil || o.Id == nil {
+-		var ret string
+-		return ret
+-	}
+-	return *o.Id
+-}
+-
+-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+-// and a boolean to check if the value has been set.
+-func (o *VmAddDevice) GetIdOk() (*string, bool) {
+-	if o == nil || o.Id == nil {
+-		return nil, false
+-	}
+-	return o.Id, true
+-}
+-
+-// HasId returns a boolean if a field has been set.
+-func (o *VmAddDevice) HasId() bool {
+-	if o != nil && o.Id != nil {
+-		return true
+-	}
+-
+-	return false
+-}
+-
+-// SetId gets a reference to the given string and assigns it to the Id field.
+-func (o *VmAddDevice) SetId(v string) {
+-	o.Id = &v
+-}
+-
+-func (o VmAddDevice) MarshalJSON() ([]byte, error) {
+-	toSerialize := map[string]interface{}{}
+-	if o.Path != nil {
+-		toSerialize["path"] = o.Path
+-	}
+-	if o.Iommu != nil {
+-		toSerialize["iommu"] = o.Iommu
+-	}
+-	if o.Id != nil {
+-		toSerialize["id"] = o.Id
+-	}
+-	return json.Marshal(toSerialize)
+-}
+-
+-type NullableVmAddDevice struct {
+-	value *VmAddDevice
+-	isSet bool
+-}
+-
+-func (v NullableVmAddDevice) Get() *VmAddDevice {
+-	return v.value
+-}
+-
+-func (v *NullableVmAddDevice) Set(val *VmAddDevice) {
+-	v.value = val
+-	v.isSet = true
+-}
+-
+-func (v NullableVmAddDevice) IsSet() bool {
+-	return v.isSet
+-}
+-
+-func (v *NullableVmAddDevice) Unset() {
+-	v.value = nil
+-	v.isSet = false
+-}
+-
+-func NewNullableVmAddDevice(val *VmAddDevice) *NullableVmAddDevice {
+-	return &NullableVmAddDevice{value: val, isSet: true}
+-}
+-
+-func (v NullableVmAddDevice) MarshalJSON() ([]byte, error) {
+-	return json.Marshal(v.value)
+-}
+-
+-func (v *NullableVmAddDevice) UnmarshalJSON(src []byte) error {
+-	v.isSet = true
+-	return json.Unmarshal(src, &v.value)
+-}
+diff --git a/src/runtime/virtcontainers/pkg/cloud-hypervisor/cloud-hypervisor.yaml b/src/runtime/virtcontainers/pkg/cloud-hypervisor/cloud-hypervisor.yaml
+index 705293f..6897575 100644
+--- a/src/runtime/virtcontainers/pkg/cloud-hypervisor/cloud-hypervisor.yaml
++++ b/src/runtime/virtcontainers/pkg/cloud-hypervisor/cloud-hypervisor.yaml
+@@ -186,7 +186,7 @@ paths:
+         content:
+           application/json:
+             schema:
+-              $ref: '#/components/schemas/VmAddDevice'
++              $ref: '#/components/schemas/DeviceConfig'
+         required: true
+       responses:
+         200:
+@@ -1096,17 +1096,6 @@ components:
+           type: integer
+           format: int64
+
+-    VmAddDevice:
+-      type: object
+-      properties:
+-        path:
+-          type: string
+-        iommu:
+-          type: boolean
+-          default: false
+-        id:
+-          type: string
+-
+     VmRemoveDevice:
+       type: object
+       properties:
+diff --git a/versions.yaml b/versions.yaml
+index a4836a11ce..fdc48d84e3 100644
+--- a/versions.yaml
++++ b/versions.yaml
+@@ -75,7 +75,7 @@ assets:
+       url: "https://github.com/cloud-hypervisor/cloud-hypervisor"
+       uscan-url: >-
+         https://github.com/cloud-hypervisor/cloud-hypervisor/tags.*/v?(\d\S+)\.tar\.gz
+-      version: "v25.0"
++      version: "b4e39427080293c674b8db627ee6daf1f1b56806"
+ 
+     firecracker:
+       description: "Firecracker micro-VMM"
