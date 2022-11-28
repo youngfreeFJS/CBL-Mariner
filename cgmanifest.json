@@ -13923,6 +13923,16 @@
       "component": {
         "type": "other",
         "other": {
+          "name": "ORBit2",
+          "version": "2.14.19",
+          "downloadUrl": "https://download.gnome.org/sources/ORBit2/2.14/ORBit2-2.14.19.tar.gz"
+        }
+      }
+    },
+    {
+      "component": {
+        "type": "other",
+        "other": {
           "name": "orc",
           "version": "0.4.31",
           "downloadUrl": "http://gstreamer.freedesktop.org/src/orc/orc-0.4.31.tar.xz"
