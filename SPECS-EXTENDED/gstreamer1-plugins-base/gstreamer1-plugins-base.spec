@@ -143,12 +143,12 @@ EOF
 %find_lang gst-plugins-base-%{majorminor}
 
 # Clean out files that should not be part of the rpm.
-find %{buildroot} -type f -name "*.la" -delete -print
+find %{buildroot} -name '*.la' -exec rm -fv {} ';'
+
+%ldconfig_scriptlets
 
 %check
 %meson_test
-
-%ldconfig_scriptlets
 
 %files -f gst-plugins-base-%{majorminor}.lang
 %license COPYING
@@ -408,7 +408,6 @@ find %{buildroot} -type f -name "*.la" -delete -print
 %changelog
 * Wed Nov 23 2022 Sumedh Sharma <sumsharma@microsoft.com> - 1.20.4-2
 - Initial CBL Mariner import from Fedora 37 (license: MIT)
-- Enable check section
 - License verified
 
 * Thu Oct 13 2022 Wim Taymans <wtaymans@redhat.com> - 1.20.4-1
