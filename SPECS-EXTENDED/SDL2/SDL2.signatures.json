@@ -1,0 +1,7 @@
+{
+ "Signatures": {
+  "SDL2-2.24.0.tar.gz": "91e4c34b1768f92d399b078e171448c6af18cafda743987ed2064a28954d6d97",
+  "SDL_config.h": "daaeb60892524e39d2afe488172148e0f7032076fed59dd74b2b19304420da3f",
+  "SDL_revision.h": "e3f8e8fe66d527598c5d7fa925e104b2c03cb91e50f4d3cc1c7ae63bdf368e6a"
+ }
+}
