@@ -1,4 +1,3 @@
-%global         debug_package %{nil}
 %global         majorminor      1.0
 Summary:        GStreamer streaming media framework base plugins
 Name:           gstreamer1-plugins-base
@@ -145,6 +144,7 @@ EOF
 
 # Clean out files that should not be part of the rpm.
 find %{buildroot} -name '*.la' -exec rm -fv {} ';'
+%meson_fail
 
 %ldconfig_scriptlets
 
@@ -219,6 +219,7 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 %{_libdir}/gstreamer-%{majorminor}/libgstvorbis.so
 %{_libdir}/gstreamer-%{majorminor}/libgstximagesink.so
 %{_libdir}/gstreamer-%{majorminor}/libgstxvimagesink.so
+%{_tempdir}
 
 %files tools
 %{_bindir}/gst-discoverer-%{majorminor}
@@ -227,6 +228,7 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 %{_mandir}/man1/gst-discoverer-*
 %{_mandir}/man1/gst-play-*
 %{_mandir}/man1/gst-device-monitor-*
+%{_tempdir}
 
 %files devel
 %dir %{_includedir}/gstreamer-%{majorminor}/gst/allocators
