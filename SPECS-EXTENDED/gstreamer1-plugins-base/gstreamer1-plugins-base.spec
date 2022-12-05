@@ -95,6 +95,7 @@ for developing applications that use %{name}.
   -D tests=disabled \
   -D examples=disabled
 %meson_build
+%meson_fail
 
 %install
 %meson_install
@@ -144,6 +145,7 @@ EOF
 
 # Clean out files that should not be part of the rpm.
 find %{buildroot} -name '*.la' -exec rm -fv {} ';'
+%meson_fail
 
 %ldconfig_scriptlets
 
@@ -218,6 +220,7 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 %{_libdir}/gstreamer-%{majorminor}/libgstvorbis.so
 %{_libdir}/gstreamer-%{majorminor}/libgstximagesink.so
 %{_libdir}/gstreamer-%{majorminor}/libgstxvimagesink.so
+%{_tempdir}
 
 %files tools
 %{_bindir}/gst-discoverer-%{majorminor}
@@ -226,6 +229,7 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 %{_mandir}/man1/gst-discoverer-*
 %{_mandir}/man1/gst-play-*
 %{_mandir}/man1/gst-device-monitor-*
+%{_tempdir}
 
 %files devel
 %dir %{_includedir}/gstreamer-%{majorminor}/gst/allocators
@@ -404,6 +408,7 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 
 # pkg-config files
 %{_libdir}/pkgconfig/*.pc
+%{_tempdir}
 
 %changelog
 * Wed Nov 23 2022 Sumedh Sharma <sumsharma@microsoft.com> - 1.20.4-2
