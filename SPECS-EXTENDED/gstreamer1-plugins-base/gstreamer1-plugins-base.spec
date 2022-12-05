@@ -219,6 +219,7 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 %{_libdir}/gstreamer-%{majorminor}/libgstvorbis.so
 %{_libdir}/gstreamer-%{majorminor}/libgstximagesink.so
 %{_libdir}/gstreamer-%{majorminor}/libgstxvimagesink.so
+%{_tempdir}
 
 %files tools
 %{_bindir}/gst-discoverer-%{majorminor}
@@ -402,10 +403,8 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 %{_datadir}/gir-1.0/GstGLEGL-%{majorminor}.gir
 %{_datadir}/gir-1.0/GstGLWayland-%{majorminor}.gir
 %{_datadir}/gir-1.0/GstGLX11-%{majorminor}.gir
-
 # pkg-config files
 %{_libdir}/pkgconfig/*.pc
-%{_tempdir}
 
 %changelog
 * Wed Nov 23 2022 Sumedh Sharma <sumsharma@microsoft.com> - 1.20.4-2
