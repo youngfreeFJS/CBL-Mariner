@@ -151,7 +151,7 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 %check
 %meson_test
 
-%files
+%files -f gst-plugins-base-%{majorminor}.lang
 %license COPYING
 %doc AUTHORS NEWS README.md README.static-linking RELEASE REQUIREMENTS
 %{_datadir}/appdata/*.appdata.xml
