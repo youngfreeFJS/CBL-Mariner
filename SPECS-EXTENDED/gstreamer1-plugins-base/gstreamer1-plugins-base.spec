@@ -95,6 +95,7 @@ for developing applications that use %{name}.
   -D tests=disabled \
   -D examples=disabled
 %meson_build
+%meson_fail
 
 %install
 %meson_install
