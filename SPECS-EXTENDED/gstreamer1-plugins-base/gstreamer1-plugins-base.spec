@@ -220,14 +220,14 @@ find %{buildroot} -name '*.la' -exec rm -fv {} ';'
 %{_libdir}/gstreamer-%{majorminor}/libgstximagesink.so
 %{_libdir}/gstreamer-%{majorminor}/libgstxvimagesink.so
 
-#%files tools
-#%{_bindir}/gst-discoverer-%{majorminor}
-#%{_bindir}/gst-play-%{majorminor}
-#%{_bindir}/gst-device-monitor-%{majorminor}
-#%{_mandir}/man1/gst-discoverer-*
-#%{_mandir}/man1/gst-play-*
-#%{_mandir}/man1/gst-device-monitor-*
-#%{_tempdir}
+%files tools
+%{_bindir}/gst-discoverer-%{majorminor}
+%{_bindir}/gst-play-%{majorminor}
+%{_bindir}/gst-device-monitor-%{majorminor}
+%{_mandir}/man1/gst-discoverer-*
+%{_mandir}/man1/gst-play-*
+%{_mandir}/man1/gst-device-monitor-*
+%{_tempdir}
 
 %files devel
 %dir %{_includedir}/gstreamer-%{majorminor}/gst/allocators
