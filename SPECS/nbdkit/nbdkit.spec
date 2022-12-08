@@ -35,25 +35,36 @@ ExclusiveArch:  x86_64
 %global patches_touch_autotools %{nil}
 
 # The source directory.
-%global source_directory 1.20-stable
+%global source_directory 1.30-stable
 
 Name:           nbdkit
-Version:        1.20.7
-Release:        5%{?dist}
+Version:        1.30.10
+Release:        1%{?dist}
 Summary:        NBD server
 
 License:        BSD
 URL:            https://github.com/libguestfs/nbdkit
 
 Source0:        http://libguestfs.org/download/nbdkit/%{source_directory}/%{name}-%{version}.tar.gz
+Source1:        libguestfs.keyring
 
+# Maintainer script which helps with handling patches.
+Source2:        copy-patches.sh
+
+# For automatic RPM Provides generation.
+# See: https://rpm-software-management.github.io/rpm/manual/dependency_generators.html
+Source3:        nbdkit.attr
+Source4:        nbdkit-find-provides
+
+BuildRequires:  make
 %if 0%{patches_touch_autotools}
-BuildRequires: autoconf, automake, libtool
+BuildRequires:  autoconf, automake, libtool
 %endif
 
 %ifnarch %{complete_test_arches}
 BuildRequires:  autoconf, automake, libtool
 %endif
+BuildRequires:  gcc, gcc-c++
 BuildRequires:  /usr/bin/pod2man
 BuildRequires:  gnutls-devel
 BuildRequires:  libselinux-devel
@@ -64,18 +75,21 @@ BuildRequires:  libvirt-devel
 BuildRequires:  xz-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libcurl-devel
-BuildRequires:  libnbd-devel >= 0.9.8
+BuildRequires:  libnbd-devel >= 1.3.11
 BuildRequires:  libssh-devel
+BuildRequires:  libzstd-devel
 BuildRequires:  e2fsprogs, e2fsprogs-devel
-BuildRequires:  genisoimage
 BuildRequires:  bash-completion
 BuildRequires:  perl-devel
 BuildRequires:  perl(ExtUtils::Embed)
+BuildRequires:  python3-boto3
 BuildRequires:  python3-devel
+BuildRequires:  xorriso
 %if 0%{?have_ocaml}
 # Requires OCaml 4.02.2 which contains fix for
 # http://caml.inria.fr/mantis/view.php?id=6693
 BuildRequires:  ocaml >= 4.02.2
+BuildRequires:  ocaml-ocamldoc
 %endif
 %if %{with ruby}
 BuildRequires:  ruby-devel
@@ -84,13 +98,29 @@ BuildRequires:  tcl-devel
 BuildRequires:  lua-devel
 
 # Only for running the test suite:
+BuildRequires:  bc
 BuildRequires:  /usr/bin/certtool
+BuildRequires:  cut
+BuildRequires:  expect
+BuildRequires:  hexdump
+BuildRequires:  ip
 BuildRequires:  jq
+BuildRequires:  /usr/bin/nbcopy
+BuildRequires:  /usr/bin/nbdinfo
 BuildRequires:  /usr/bin/nbdsh
 BuildRequires:  /usr/bin/qemu-img
+BuildRequires:  /usr/bin/qemu-io
+BuildRequires:  /usr/bin/qemu-nbd
+BuildRequires:  /sbin/sfdisk
 BuildRequires:  /usr/bin/socat
 BuildRequires:  /sbin/ss
+BuildRequires:  /usr/bin/stat
 BuildRequires:  /usr/bin/ssh-keygen
+
+# This package has RPM rules that create the automatic Provides: for
+# nbdkit plugins and filters.  This means nbdkit build depends on
+# itself, but it's a simple noarch package so easy to install.
+BuildRequires:  nbdkit-srpm-macros >= 1.30.0
 
 # nbdkit is a metapackage pulling the server and a useful subset
 # of the plugins and filters.
@@ -151,13 +181,13 @@ Provides:       %{name}-floppy-plugin = %{version}-%{release}
 Provides:       %{name}-full-plugin = %{version}-%{release}
 Provides:       %{name}-info-plugin = %{version}-%{release}
 Provides:       %{name}-memory-plugin = %{version}-%{release}
+Provides:       %{name}-ondemand-plugin = %{version}-%{release}
 Provides:       %{name}-null-plugin = %{version}-%{release}
 Provides:       %{name}-pattern-plugin = %{version}-%{release}
 Provides:       %{name}-partitioning-plugin = %{version}-%{release}
 Provides:       %{name}-random-plugin = %{version}-%{release}
 Provides:       %{name}-sh-plugin = %{version}-%{release}
 Provides:       %{name}-split-plugin = %{version}-%{release}
-Provides:       %{name}-streaming-plugin = %{version}-%{release}
 Provides:       %{name}-zero-plugin = %{version}-%{release}
 
 
@@ -176,6 +206,8 @@ nbdkit-floppy-plugin       Create a virtual floppy disk from a directory.
 nbdkit-full-plugin         A virtual disk that returns ENOSPC errors.
 
 nbdkit-info-plugin         Serve client and server information.
+
+nbdkit-ondemand-plugin     Create filesystems on demand.
 
 nbdkit-memory-plugin       A virtual memory plugin.
 
@@ -212,6 +244,29 @@ This package contains example plugins for %{name}.
 # The plugins below have non-trivial dependencies are so are
 # packaged separately.
 
+%package cc-plugin
+Summary:        Write small inline C plugins and scripts for %{name}
+License:        BSD
+Requires:       %{name}-server%{?_isa} = %{version}-%{release}
+Requires:       gcc
+Requires:       %{_bindir}/cat
+
+%description cc-plugin
+This package contains support for writing inline C plugins and scripts
+for %{name}.  NOTE this is NOT the right package for writing plugins
+in C, install %{name}-devel for that.
+
+%package cdi-plugin
+Summary:        Containerized Data Import plugin for %{name}
+License:        BSD
+
+Requires:       %{name}-server%{?_isa} = %{version}-%{release}
+Requires:       jq
+Requires:       podman
+
+%description cdi-plugin
+This package contains Containerized Data Import support for %{name}.
+
 %package curl-plugin
 Summary:        HTTP/FTP (cURL) plugin for %{name}
 License:        BSD
@@ -234,17 +289,6 @@ Requires:       %{name}-server%{?_isa} = %{version}-%{release}
 %description guestfs-plugin
 This package is a libguestfs plugin for %{name}.
 %endif
-
-
-%package gzip-plugin
-Summary:        GZip file serving plugin for %{name}
-License:        BSD
-
-Requires:       %{name}-server%{?_isa} = %{version}-%{release}
-
-
-%description gzip-plugin
-This package is a gzip file serving plugin for %{name}.
 
 
 %package iso-plugin
@@ -428,6 +472,16 @@ Suggests:       xfsprogs, ntfsprogs, dosfstools
 This package is a remote temporary filesystem disk plugin for %{name}.
 
 
+%package torrent-plugin
+Summary:        BitTorrent plugin for %{name}
+License:        BSD
+Requires:       %{name}-server%{?_isa} = %{version}-%{release}
+
+
+%description torrent-plugin
+This package is a BitTorrent plugin for %{name}.
+
+
 %ifarch x86_64
 %package vddk-plugin
 Summary:        VMware VDDK plugin for %{name}
@@ -448,17 +502,22 @@ License:        BSD
 
 Requires:       %{name}-server%{?_isa} = %{version}-%{release}
 Provides:       %{name}-blocksize-filter = %{version}-%{release}
+Provides:       %{name}-blocksize-filter = %{version}-%{release}
+Provides:       %{name}-blocksize-policy-filter = %{version}-%{release}
 Provides:       %{name}-cache-filter = %{version}-%{release}
 Provides:       %{name}-cacheextents-filter = %{version}-%{release}
 Provides:       %{name}-cow-filter = %{version}-%{release}
 Provides:       %{name}-delay-filter = %{version}-%{release}
 Provides:       %{name}-error-filter = %{version}-%{release}
 Provides:       %{name}-exitlast-filter = %{version}-%{release}
+Provides:       %{name}-exitwhen-filter = %{version}-%{release}
+Provides:       %{name}-exportname-filter = %{version}-%{release}
 Provides:       %{name}-extentlist-filter = %{version}-%{release}
 Provides:       %{name}-fua-filter = %{version}-%{release}
 Provides:       %{name}-ip-filter = %{version}-%{release}
 Provides:       %{name}-limit-filter = %{version}-%{release}
 Provides:       %{name}-log-filter = %{version}-%{release}
+Provides:       %{name}-multi-conn-filter = %{version}-%{release}
 Provides:       %{name}-nocache-filter = %{version}-%{release}
 Provides:       %{name}-noextents-filter = %{version}-%{release}
 Provides:       %{name}-nofilter-filter = %{version}-%{release}
@@ -466,10 +525,15 @@ Provides:       %{name}-noparallel-filter = %{version}-%{release}
 Provides:       %{name}-nozero-filter = %{version}-%{release}
 Provides:       %{name}-offset-filter = %{version}-%{release}
 Provides:       %{name}-partition-filter = %{version}-%{release}
+Provides:       %{name}-pause-filter = %{version}-%{release}
+Provides:       %{name}-protect-filter = %{version}-%{release}
 Provides:       %{name}-rate-filter = %{version}-%{release}
 Provides:       %{name}-readahead-filter = %{version}-%{release}
 Provides:       %{name}-retry-filter = %{version}-%{release}
+Provides:       %{name}-retry-request-filter = %{version}-%{release}
 Provides:       %{name}-stats-filter = %{version}-%{release}
+Provides:       %{name}-swab-filter = %{version}-%{release}
+Provides:       %{name}-tls-fallback-filter = %{version}-%{release}
 Provides:       %{name}-truncate-filter = %{version}-%{release}
 
 
@@ -485,11 +549,17 @@ nbdkit-cacheextents-filter Cache extents.
 
 nbdkit-cow-filter          Copy-on-write overlay for read-only plugins.
 
+nbdkit-ddrescue-filter     Filter for serving from ddrescue dump.
+
 nbdkit-delay-filter        Inject read and write delays.
 
 nbdkit-error-filter        Inject errors.
 
 nbdkit-exitlast-filter     Exit on last client connection.
+
+nbdkit-exitwhen-filter     Exit gracefully when an event occurs.
+
+nbdkit-exportname-filter   Adjust export names between client and plugin.
 
 nbdkit-extentlist-filter   Place extent list over a plugin.
 
@@ -500,6 +570,8 @@ nbdkit-ip-filter           Filter clients by IP address.
 nbdkit-limit-filter        Limit nr clients that can connect concurrently.
 
 nbdkit-log-filter          Log all transactions to a file.
+
+nbdkit-multi-conn-filter   Enable, emulate or disable multi-conn.
 
 nbdkit-nocache-filter      Disable cache requests in the underlying plugin.
 
@@ -515,13 +587,23 @@ nbdkit-offset-filter       Serve an offset and range.
 
 nbdkit-partition-filter    Serve a single partition.
 
+nbdkit-pause-filter        Pause NBD requests.
+
+nbdkit-protect-filter      Write-protect parts of a plugin.
+
 nbdkit-rate-filter         Limit bandwidth by connection or server.
 
 nbdkit-readahead-filter    Prefetch data when reading sequentially.
 
 nbdkit-retry-filter        Reopen connection on error.
 
+nbdkit-retry-request-filter Retry single requests on error.
+
 nbdkit-stats-filter        Display statistics about operations.
+
+nbdkit-swab-filter         Filter for swapping byte order.
+
+nbdkit-tls-fallback-filter TLS protection filter.
 
 nbdkit-truncate-filter     Truncate, expand, round up or round down size.
 
@@ -540,6 +622,30 @@ Obsoletes:      %{name}-ext2-plugin <= %{version}-%{release}
 %description ext2-filter
 This package contains ext2, ext3 and ext4 filesystem support for
 %{name}.
+
+
+%package gzip-filter
+Summary:        GZip filter for %{name}
+License:        BSD
+
+Requires:       %{name}-server%{?_isa} = %{version}-%{release}
+
+
+%description gzip-filter
+This package is a gzip filter for %{name}.
+
+
+%package tar-filter
+Summary:        Tar archive filter for %{name}
+License:        BSD
+
+Requires:       %{name}-server%{?_isa} = %{version}-%{release}
+Requires:       tar
+Obsoletes:      %{name}-tar-plugin < 1.23.9-3
+
+
+%description tar-filter
+This package is a tar archive filter for %{name}.
 
 
 %package xz-filter
@@ -569,6 +675,17 @@ Requires:       pkgconfig
 This package contains development files and documentation
 for %{name}.  Install this package if you want to develop
 plugins for %{name}.
+
+
+%package srpm-macros
+Summary:       RPM Provides rules for %{name} plugins and filters
+License:       BSD
+BuildArch:     noarch
+
+
+%description srpm-macros
+This package contains RPM rules that create the automatic Provides:
+for %{name} plugins and filters found in the plugins directory.
 
 
 %package bash-completion
@@ -603,8 +720,10 @@ autoreconf -i
 # package into their vendor/ directory.
 %configure \
     PYTHON=%{_bindir}/python3 \
+    --with-extra='%{name}-%{version}-%{release}' \
     --disable-static \
     --disable-golang \
+    --disable-rust \
 %if !%{with ruby}
     --disable-ruby \
 %endif
@@ -640,6 +759,11 @@ rm -f $RPM_BUILD_ROOT%{_mandir}/man3/nbdkit-rust-plugin.3*
 # Remove the deprecated ext2 plugin (use ext2 filter instead).
 rm $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/nbdkit-ext2-plugin.so
 rm $RPM_BUILD_ROOT%{_mandir}/man1/nbdkit-ext2-plugin.1*
+
+# Install RPM dependency generator.
+mkdir -p $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/
+install -m 0644 %{SOURCE3} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/
+install -m 0755 %{SOURCE4} $RPM_BUILD_ROOT%{_rpmconfigdir}/
 
 
 %check
@@ -682,10 +806,13 @@ make %{?_smp_mflags} check
 %{_sbindir}/nbdkit
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/plugins
+%{_libdir}/%{name}/plugins/nbdkit-null-plugin.so
 %dir %{_libdir}/%{name}/filters
 %{_mandir}/man1/nbdkit.1*
 %{_mandir}/man1/nbdkit-captive.1*
+%{_mandir}/man1/nbdkit-client.1*
 %{_mandir}/man1/nbdkit-loop.1*
+%{_mandir}/man1/nbdkit-null-plugin.1*
 %{_mandir}/man1/nbdkit-probing.1*
 %{_mandir}/man1/nbdkit-protocol.1*
 %{_mandir}/man1/nbdkit-service.1*
@@ -703,13 +830,13 @@ make %{?_smp_mflags} check
 %{_libdir}/%{name}/plugins/nbdkit-full-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-info-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-memory-plugin.so
-%{_libdir}/%{name}/plugins/nbdkit-null-plugin.so
+%{_libdir}/%{name}/plugins/nbdkit-ondemand-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-partitioning-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-pattern-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-random-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-sh-plugin.so
+%{_libdir}/%{name}/plugins/nbdkit-sparse-random-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-split-plugin.so
-%{_libdir}/%{name}/plugins/nbdkit-streaming-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-zero-plugin.so
 %{_mandir}/man1/nbdkit-data-plugin.1*
 %{_mandir}/man1/nbdkit-eval-plugin.1*
@@ -718,13 +845,13 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/nbdkit-full-plugin.1*
 %{_mandir}/man1/nbdkit-info-plugin.1*
 %{_mandir}/man1/nbdkit-memory-plugin.1*
-%{_mandir}/man1/nbdkit-null-plugin.1*
+%{_mandir}/man1/nbdkit-ondemand-plugin.1*
 %{_mandir}/man1/nbdkit-partitioning-plugin.1*
 %{_mandir}/man1/nbdkit-pattern-plugin.1*
 %{_mandir}/man1/nbdkit-random-plugin.1*
 %{_mandir}/man3/nbdkit-sh-plugin.3*
+%{_mandir}/man1/nbdkit-sparse-random-plugin.1*
 %{_mandir}/man1/nbdkit-split-plugin.1*
-%{_mandir}/man1/nbdkit-streaming-plugin.1*
 %{_mandir}/man1/nbdkit-zero-plugin.1*
 
 
@@ -734,6 +861,20 @@ make %{?_smp_mflags} check
 %{_libdir}/%{name}/plugins/nbdkit-example*-plugin.so
 %{_libdir}/%{name}/plugins/nbdkit-example4-plugin
 %{_mandir}/man1/nbdkit-example*-plugin.1*
+
+
+%files cc-plugin
+%doc README
+%license LICENSE
+%{_libdir}/%{name}/plugins/nbdkit-cc-plugin.so
+%{_mandir}/man3/nbdkit-cc-plugin.3*
+
+
+%files cdi-plugin
+%doc README
+%license LICENSE
+%{_libdir}/%{name}/plugins/nbdkit-cdi-plugin.so
+%{_mandir}/man1/nbdkit-cdi-plugin.1*
 
 
 %files curl-plugin
@@ -750,13 +891,6 @@ make %{?_smp_mflags} check
 %{_libdir}/%{name}/plugins/nbdkit-guestfs-plugin.so
 %{_mandir}/man1/nbdkit-guestfs-plugin.1*
 %endif
-
-
-%files gzip-plugin
-%doc README
-%license LICENSE
-%{_libdir}/%{name}/plugins/nbdkit-gzip-plugin.so
-%{_mandir}/man1/nbdkit-gzip-plugin.1*
 
 
 %files iso-plugin
@@ -836,13 +970,6 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/nbdkit-ssh-plugin.1*
 
 
-%files tar-plugin
-%doc README
-%license LICENSE
-%{_libdir}/%{name}/plugins/nbdkit-tar-plugin
-%{_mandir}/man1/nbdkit-tar-plugin.1*
-
-
 %files tcl-plugin
 %doc README
 %license LICENSE
@@ -870,17 +997,23 @@ make %{?_smp_mflags} check
 %doc README
 %license LICENSE
 %{_libdir}/%{name}/filters/nbdkit-blocksize-filter.so
+%{_libdir}/%{name}/filters/nbdkit-blocksize-policy-filter.so
 %{_libdir}/%{name}/filters/nbdkit-cache-filter.so
 %{_libdir}/%{name}/filters/nbdkit-cacheextents-filter.so
+%{_libdir}/%{name}/filters/nbdkit-checkwrite-filter.so
 %{_libdir}/%{name}/filters/nbdkit-cow-filter.so
+%{_libdir}/%{name}/filters/nbdkit-ddrescue-filter.so
 %{_libdir}/%{name}/filters/nbdkit-delay-filter.so
 %{_libdir}/%{name}/filters/nbdkit-error-filter.so
 %{_libdir}/%{name}/filters/nbdkit-exitlast-filter.so
+%{_libdir}/%{name}/filters/nbdkit-exitwhen-filter.so
+%{_libdir}/%{name}/filters/nbdkit-exportname-filter.so
 %{_libdir}/%{name}/filters/nbdkit-extentlist-filter.so
 %{_libdir}/%{name}/filters/nbdkit-fua-filter.so
 %{_libdir}/%{name}/filters/nbdkit-ip-filter.so
 %{_libdir}/%{name}/filters/nbdkit-limit-filter.so
 %{_libdir}/%{name}/filters/nbdkit-log-filter.so
+%{_libdir}/%{name}/filters/nbdkit-multi-conn-filter.so
 %{_libdir}/%{name}/filters/nbdkit-nocache-filter.so
 %{_libdir}/%{name}/filters/nbdkit-noextents-filter.so
 %{_libdir}/%{name}/filters/nbdkit-nofilter-filter.so
@@ -888,23 +1021,34 @@ make %{?_smp_mflags} check
 %{_libdir}/%{name}/filters/nbdkit-nozero-filter.so
 %{_libdir}/%{name}/filters/nbdkit-offset-filter.so
 %{_libdir}/%{name}/filters/nbdkit-partition-filter.so
+%{_libdir}/%{name}/filters/nbdkit-pause-filter.so
+%{_libdir}/%{name}/filters/nbdkit-protect-filter.so
 %{_libdir}/%{name}/filters/nbdkit-rate-filter.so
 %{_libdir}/%{name}/filters/nbdkit-readahead-filter.so
 %{_libdir}/%{name}/filters/nbdkit-retry-filter.so
+%{_libdir}/%{name}/filters/nbdkit-retry-request-filter.so
 %{_libdir}/%{name}/filters/nbdkit-stats-filter.so
+%{_libdir}/%{name}/filters/nbdkit-swab-filter.so
+%{_libdir}/%{name}/filters/nbdkit-tls-fallback-filter.so
 %{_libdir}/%{name}/filters/nbdkit-truncate-filter.so
 %{_mandir}/man1/nbdkit-blocksize-filter.1*
+%{_mandir}/man1/nbdkit-blocksize-policy-filter.1*
 %{_mandir}/man1/nbdkit-cache-filter.1*
 %{_mandir}/man1/nbdkit-cacheextents-filter.1*
+%{_mandir}/man1/nbdkit-checkwrite-filter.1*
 %{_mandir}/man1/nbdkit-cow-filter.1*
+%{_mandir}/man1/nbdkit-ddrescue-filter.1*
 %{_mandir}/man1/nbdkit-delay-filter.1*
 %{_mandir}/man1/nbdkit-error-filter.1*
 %{_mandir}/man1/nbdkit-exitlast-filter.1*
+%{_mandir}/man1/nbdkit-exitwhen-filter.1*
+%{_mandir}/man1/nbdkit-exportname-filter.1*
 %{_mandir}/man1/nbdkit-extentlist-filter.1*
 %{_mandir}/man1/nbdkit-fua-filter.1*
 %{_mandir}/man1/nbdkit-ip-filter.1*
 %{_mandir}/man1/nbdkit-limit-filter.1*
 %{_mandir}/man1/nbdkit-log-filter.1*
+%{_mandir}/man1/nbdkit-multi-conn-filter.1*
 %{_mandir}/man1/nbdkit-nocache-filter.1*
 %{_mandir}/man1/nbdkit-noextents-filter.1*
 %{_mandir}/man1/nbdkit-nofilter-filter.1*
@@ -912,10 +1056,15 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/nbdkit-nozero-filter.1*
 %{_mandir}/man1/nbdkit-offset-filter.1*
 %{_mandir}/man1/nbdkit-partition-filter.1*
+%{_mandir}/man1/nbdkit-pause-filter.1*
+%{_mandir}/man1/nbdkit-protect-filter.1*
 %{_mandir}/man1/nbdkit-rate-filter.1*
 %{_mandir}/man1/nbdkit-readahead-filter.1*
 %{_mandir}/man1/nbdkit-retry-filter.1*
+%{_mandir}/man1/nbdkit-retry-request-filter.1*
 %{_mandir}/man1/nbdkit-stats-filter.1*
+%{_mandir}/man1/nbdkit-swab-filter.1*
+%{_mandir}/man1/nbdkit-tls-fallback-filter.1*
 %{_mandir}/man1/nbdkit-truncate-filter.1*
 
 
@@ -924,6 +1073,20 @@ make %{?_smp_mflags} check
 %license LICENSE
 %{_libdir}/%{name}/filters/nbdkit-ext2-filter.so
 %{_mandir}/man1/nbdkit-ext2-filter.1*
+
+
+%files gzip-filter
+%doc README
+%license LICENSE
+%{_libdir}/%{name}/filters/nbdkit-gzip-filter.so
+%{_mandir}/man1/nbdkit-gzip-filter.1*
+
+
+%files tar-filter
+%doc README
+%license LICENSE
+%{_libdir}/%{name}/filters/nbdkit-tar-filter.so
+%{_mandir}/man1/nbdkit-tar-filter.1*
 
 
 %files xz-filter
@@ -959,6 +1122,12 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/nbdkit.pc
 
 
+%files srpm-macros
+%license LICENSE
+%{_rpmconfigdir}/fileattrs/nbdkit.attr
+%{_rpmconfigdir}/nbdkit-find-provides
+
+
 %files bash-completion
 %license LICENSE
 %dir %{_datadir}/bash-completion/completions
@@ -966,6 +1135,9 @@ make %{?_smp_mflags} check
 
 
 %changelog
+* Thu Dec 08 2022 Ameya Usgaonkar <ausgaonkar@microsoft.com> - 1.30.10-1
+- New upstream version 1.30.10.
+
 * Thu Apr 21 2022 Muhammad Falak <mwani@microsoft.com> - 1.20.7-5
 - Avoid non-zero exit from `%check` section
 
