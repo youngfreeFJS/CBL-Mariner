@@ -7,7 +7,6 @@ Distribution:   Mariner
 
 
 
-
 %if 0%{?with_debug}
 %global _find_debuginfo_dwz_opts %{nil}
 %global _dwz_low_mem_die_limit 0
@@ -25,20 +24,20 @@ Distribution:   Mariner
 
 # Used for comparing with latest upstream tag
 # to decide whether to autobuild (non-rawhide only)
-%define built_tag v1.18.0
+%define built_tag v1.28.0
 %define built_tag_strip %(b=%{built_tag}; echo ${b:1})
 %define download_url https://%{import_path}/archive/%{built_tag}.tar.gz
 
 Name: %{repo}
-Version: 1.18.0
-Release: 6%{?dist}
+Version: 1.28.0
+Release: 1%{?dist}
 Summary: A command line tool used for creating OCI Images
 License: ASL 2.0
 URL: https://%{name}.io
 Source: %{download_url}#/%{name}-%{version}.tar.gz
 BuildRequires: device-mapper-devel
-BuildRequires: golang
-BuildRequires: git
+BuildRequires: golang >= 1.16.6
+BuildRequires: git-core
 BuildRequires: glib2-devel
 BuildRequires: glibc-static >= 2.35-3%{?dist}
 BuildRequires: go-md2man
@@ -46,6 +45,7 @@ BuildRequires: go-rpm-macros
 BuildRequires: gpgme-devel
 BuildRequires: libassuan-devel
 BuildRequires: make
+BuildRequires: shadow-utils-subid-devel
 Requires: containers-common
 # No ostree for centos 7
 
@@ -63,11 +63,38 @@ Requires: libseccomp >= 2.4.1-0
 Recommends: slirp4netns >= 0.3-0
 Recommends: fuse-overlayfs
 
-
-
-
-
-
+Provides: bundled(golang(github.com/containerd/containerd)) = v1.5.9
+Provides: bundled(golang(github.com/containernetworking/cni)) = v1.0.1
+Provides: bundled(golang(github.com/containers/common)) = v0.47.4
+Provides: bundled(golang(github.com/containers/image/v5)) = v5.19.1
+Provides: bundled(golang(github.com/containers/ocicrypt)) = v1.1.2
+Provides: bundled(golang(github.com/containers/storage)) = v1.38.2
+Provides: bundled(golang(github.com/docker/distribution)) = v2.8.0+incompatible
+Provides: bundled(golang(github.com/docker/docker)) = v20.10.12+incompatible
+Provides: bundled(golang(github.com/docker/go_units)) = v0.4.0
+Provides: bundled(golang(github.com/docker/libnetwork)) = v0.8.0_dev.2.0.20190625141545_5a177b73e316
+Provides: bundled(golang(github.com/fsouza/go_dockerclient)) = v1.7.8
+Provides: bundled(golang(github.com/ghodss/yaml)) = v1.0.0
+Provides: bundled(golang(github.com/hashicorp/go_multierror)) = v1.1.1
+Provides: bundled(golang(github.com/ishidawataru/sctp)) = v0.0.0_20210226210310_f2269e66cdee
+Provides: bundled(golang(github.com/konsorten/go_windows_terminal_sequences)) = v1.0.3
+Provides: bundled(golang(github.com/mattn/go_shellwords)) = v1.0.12
+Provides: bundled(golang(github.com/onsi/ginkgo)) = v1.16.5
+Provides: bundled(golang(github.com/onsi/gomega)) = v1.18.1
+Provides: bundled(golang(github.com/opencontainers/go_digest)) = v1.0.0
+Provides: bundled(golang(github.com/opencontainers/image_spec)) = v1.0.3_0.20211202193544_a5463b7f9c84
+Provides: bundled(golang(github.com/opencontainers/runc)) = v1.1.0
+Provides: bundled(golang(github.com/opencontainers/runtime_spec)) = v1.0.3_0.20210326190908_1c3f411f0417
+Provides: bundled(golang(github.com/opencontainers/runtime_tools)) = v0.9.0
+Provides: bundled(golang(github.com/opencontainers/selinux)) = v1.10.0
+Provides: bundled(golang(github.com/openshift/imagebuilder)) = v1.2.2
+Provides: bundled(golang(github.com/pkg/errors)) = v0.9.1
+Provides: bundled(golang(github.com/seccomp/libseccomp_golang)) = v0.9.2_0.20210429002308_3879420cc921
+Provides: bundled(golang(github.com/sirupsen/logrus)) = v1.8.1
+Provides: bundled(golang(github.com/spf13/cobra)) = v1.3.0
+Provides: bundled(golang(github.com/spf13/pflag)) = v1.0.5
+Provides: bundled(golang(github.com/stretchr/testify)) = v1.7.0
+Provides: bundled(golang(github.com/syndtr/gocapability)) = v0.0.0_20200815063812_42c35b437635
 
 
 %description
@@ -86,9 +113,11 @@ Requires: %{name} = %{version}-%{release}
 Requires: bats
 Requires: bzip2
 Requires: podman
+Requires: git-daemon
 Requires: golang
 Requires: jq
 Requires: httpd-tools
+Requires: nmap-ncat
 Requires: openssl
 
 %description tests
@@ -102,6 +131,16 @@ sed -i 's/GOMD2MAN =/GOMD2MAN ?=/' docs/Makefile
 sed -i '/docs install/d' Makefile
 
 %build
+%set_build_flags
+# These extra flags present in $CFLAGS have been skipped for now as they break the build
+CGO_CFLAGS=$(echo $CGO_CFLAGS | sed 's/-flto=auto//g')
+CGO_CFLAGS=$(echo $CGO_CFLAGS | sed 's/-Wp,D_GLIBCXX_ASSERTIONS//g')
+CGO_CFLAGS=$(echo $CGO_CFLAGS | sed 's/-specs=\/usr\/lib\/rpm\/redhat\/redhat-annobin-cc1//g')
+
+%ifarch x86_64
+export CGO_CFLAGS+=" -m64 -mtune=generic -fcf-protection=full"
+%endif
+
 mkdir _build
 pushd _build
 mkdir -p src/%{provider}.%{provider_tld}/%{project}
@@ -110,13 +149,19 @@ popd
 
 mv vendor src
 
+export CNI_VERSION=`grep '^# github.com/containernetworking/cni ' src/modules.txt | sed 's,.* ,,'`
+export LDFLAGS="-X main.buildInfo=`date +%s` -X main.cniVersion=${CNI_VERSION}"
+
 export GOPATH=$(pwd)/_build:$(pwd)
-export BUILDTAGS='seccomp selinux'
+export BUILDTAGS='seccomp exclude_graphdriver_devicemapper'
+export BUILDTAGS+=' libsubid selinux'
 %if 0%{?centos} >= 8
 export BUILDTAGS+=' exclude_graphdriver_btrfs'
 %endif
 %gobuild -o bin/%{name} %{import_path}/cmd/%{name}
 %gobuild -o imgtype %{import_path}/tests/imgtype
+%gobuild -o bin/copy %{import_path}/tests/copy
+%gobuild -o bin/tutorial %{import_path}/tests/tutorial
 GOMD2MAN=go-md2man %{__make} -C docs
 
 %install
@@ -126,7 +171,9 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} -C docs install
 
 install -d -p %{buildroot}/%{_datadir}/%{name}/test/system
 cp -pav tests/. %{buildroot}/%{_datadir}/%{name}/test/system
-cp imgtype %{buildroot}/%{_bindir}/%{name}-imgtype
+cp bin/imgtype %{buildroot}/%{_bindir}/%{name}-imgtype
+cp bin/copy    %{buildroot}/%{_bindir}/%{name}-copy
+cp bin/tutorial %{buildroot}/%{_bindir}/%{name}-tutorial
 
 #define license tag if not already defined
 %{!?_licensedir:%global license %doc}
@@ -143,9 +190,15 @@ cp imgtype %{buildroot}/%{_bindir}/%{name}-imgtype
 %files tests
 %license LICENSE
 %{_bindir}/%{name}-imgtype
+%{_bindir}/%{name}-copy
+%{_bindir}/%{name}-tutorial
 %{_datadir}/%{name}/test
 
 %changelog
+* Thu Dec 08 2022 Ameya Usgaonkar <ausgaonkar@microsoft.com> - 1.28.0-1
+- Upgrade to upstream version 1.28.0
+- Move to core packages
+
 * Tue Nov 01 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.18.0-6
 - Bump release to rebuild with go 1.18.8
 
