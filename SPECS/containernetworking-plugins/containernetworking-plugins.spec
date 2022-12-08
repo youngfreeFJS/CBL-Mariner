@@ -24,7 +24,7 @@
 
 Name:          %{project}-%{repo}
 Version:       1.1.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Libraries for writing CNI plugin
 License:       ASL 2.0 and BSD and MIT
 Vendor:        Microsoft Corporation
@@ -129,6 +129,9 @@ install -p plugins/ipam/dhcp/systemd/cni-dhcp.socket %{buildroot}%{_unitdir}
 %{_unitdir}/cni-dhcp.socket
 
 %changelog
+* Thu Dec 08 2022 Ameya Usgaonkar <ausgaonkar@microsoft.com> - 1.1.1-4
+- Move to core packages from extended
+
 * Tue Nov 01 2022 Olivia Crain <oliviacrain@microsoft.com> - 1.1.1-3
 - Bump release to rebuild with go 1.18.8
 
