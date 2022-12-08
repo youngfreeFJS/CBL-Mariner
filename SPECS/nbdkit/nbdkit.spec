@@ -76,13 +76,14 @@ BuildRequires:  xz-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libnbd-devel >= 1.3.11
-BuildRequires:  libssh-devel
+BuildRequires:  libssh2-devel
 BuildRequires:  libzstd-devel
 BuildRequires:  e2fsprogs, e2fsprogs-devel
 BuildRequires:  bash-completion
 BuildRequires:  perl-devel
 BuildRequires:  perl(ExtUtils::Embed)
-BuildRequires:  python3-boto3
+# python-boto3 is by AWS and we do not have any AWS plug-ins at this time
+# BuildRequires:  python3-boto3
 BuildRequires:  python3-devel
 BuildRequires:  xorriso
 %if 0%{?have_ocaml}
@@ -100,11 +101,11 @@ BuildRequires:  lua-devel
 # Only for running the test suite:
 BuildRequires:  bc
 BuildRequires:  /usr/bin/certtool
-BuildRequires:  cut
+BuildRequires:  /usr/bin/cut
 BuildRequires:  expect
-BuildRequires:  hexdump
-BuildRequires:  ip
-BuildRequires:  jq
+BuildRequires:  /usr/bin/hexdump
+BuildRequires:  /sbin/ip
+BuildRequires:  /usr/bin/jq
 BuildRequires:  /usr/bin/nbcopy
 BuildRequires:  /usr/bin/nbdinfo
 BuildRequires:  /usr/bin/nbdsh
