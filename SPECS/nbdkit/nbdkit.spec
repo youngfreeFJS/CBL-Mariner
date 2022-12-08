@@ -46,15 +46,15 @@ License:        BSD
 URL:            https://github.com/libguestfs/nbdkit
 
 Source0:        http://libguestfs.org/download/nbdkit/%{source_directory}/%{name}-%{version}.tar.gz
-Source1:        libguestfs.keyring
+#Source1:        libguestfs.keyring
 
 # Maintainer script which helps with handling patches.
-Source2:        copy-patches.sh
+#Source2:        copy-patches.sh
 
 # For automatic RPM Provides generation.
 # See: https://rpm-software-management.github.io/rpm/manual/dependency_generators.html
-Source3:        nbdkit.attr
-Source4:        nbdkit-find-provides
+#Source3:        nbdkit.attr
+#Source4:        nbdkit-find-provides
 
 BuildRequires:  make
 %if 0%{patches_touch_autotools}
@@ -761,9 +761,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/nbdkit-ext2-plugin.so
 rm $RPM_BUILD_ROOT%{_mandir}/man1/nbdkit-ext2-plugin.1*
 
 # Install RPM dependency generator.
-mkdir -p $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/
-install -m 0644 %{SOURCE3} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/
-install -m 0755 %{SOURCE4} $RPM_BUILD_ROOT%{_rpmconfigdir}/
+#mkdir -p $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/
+#install -m 0644 %{SOURCE3} $RPM_BUILD_ROOT%{_rpmconfigdir}/fileattrs/
+#install -m 0755 %{SOURCE4} $RPM_BUILD_ROOT%{_rpmconfigdir}/
 
 
 %check
