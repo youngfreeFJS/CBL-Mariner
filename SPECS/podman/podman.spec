@@ -32,11 +32,11 @@
 %global commit_gvproxy 4ee84d66bd86668f011733d8873989b5862bcd07
 %global shortcommit_gvproxy %(c=%{commit_gvproxy}; echo ${c:0:7})
 
-%global built_tag v4.1.1
+%global built_tag v4.3.1
 
 Name:           podman
 Version:        4.1.1
-Release:        5%{?dist}
+Release:        1%{?dist}
 License:        ASL 2.0 and BSD and ISC and MIT and MPLv2.0
 Summary:        Manage Pods, Containers and Container Images
 Vendor:         Microsoft Corporation
@@ -386,8 +386,9 @@ cp -pav test/system %{buildroot}/%{_datadir}/%{name}/test/
 
 # rhcontainerbot account currently managed by lsm5
 %changelog
-* Thu Dec 08 2022 Ameya Usgaonkar <ausgaonkar@microsoft.com> - 4.1.1-5
-- Move from extened to core packages
+* Thu Dec 08 2022 Ameya Usgaonkar <ausgaonkar@microsoft.com> - 4.3.1-1
+- Upgrade to upstream version
+- Move from extended to core packages
 
 * Tue Nov 01 2022 Olivia Crain <oliviacrain@microsoft.com> - 4.1.1-4
 - Bump release to rebuild with go 1.18.8
