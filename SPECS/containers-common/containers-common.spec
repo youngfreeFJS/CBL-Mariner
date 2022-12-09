@@ -1,7 +1,3 @@
-## START: Set by rpmautospec
-## (rpmautospec version 0.3.0)
-%define autorelease(e:s:pb:n) %{?-p:0.}%{lua:
-## END: Set by rpmautospec
 # Below definitions are used to deliver config files from a particular branch
 # of c/image, c/common, c/storage vendored in all of Buildah, Podman and Skopeo.
 # These vendored components must have the same version. If it is not the case,
@@ -17,8 +13,9 @@
 %global github_containers https://raw.githubusercontent.com/containers
 Summary:        Common configuration and documentation for containers
 Name:           containers-common
-Version:        1
-Release:        %autorelease
+Version:        4.1
+Release:        63%{?dist}
+#Release:        %autorelease
 Epoch:          4
 License:        Apache 2.0
 Vendor:         Microsoft Corporation
@@ -56,10 +53,6 @@ Requires:       (container-selinux >= 2:2.162.1 if selinux-policy)
 Recommends:     fuse-overlayfs
 Provides:       skopeo-containers = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
-    release_number = 62;
-    base_release_number = tonumber(rpm.expand("%{?-b*}%{!?-b:1}"));
-    print(release_number + base_release_number - 1);
-}%{?-e:.%{-e*}}%{?-s:.%{-s*}}%{!?-n:%{?dist}}
 
 %description
 This package contains common configuration files and documentation for container
