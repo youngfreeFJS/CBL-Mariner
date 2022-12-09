@@ -46,7 +46,7 @@ BuildRequires: gpgme-devel
 BuildRequires: libassuan-devel
 BuildRequires: make
 BuildRequires: shadow-utils-subid-devel
-Requires: containers-common
+Requires: containers-common-extra >= 4:1-62
 # No ostree for centos 7
 
 BuildRequires: ostree-devel
@@ -56,7 +56,6 @@ BuildRequires: ostree-devel
 BuildRequires: btrfs-progs-devel
 
 
-Requires: crun >= 0.10-1
 BuildRequires: libseccomp-static
 Recommends: container-selinux
 Requires: libseccomp >= 2.4.1-0
