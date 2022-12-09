@@ -45,7 +45,8 @@ Source19:       %{github_containers}/storage/%{storage_branch}/storage.conf
 #Source20:       RPM-GPG-KEY-redhat-release
 #Source21:       registry.access.redhat.com.yaml
 #Source22:       registry.redhat.io.yaml
-Source23:       %{github_containers}/common/%{common_branch}/docs/Containerfile.5.md
+#Source23:       %{github_containers}/common/%{common_branch}/docs/Containerfile.5.md
+Source23:       Containerfile.5.md
 Source24:       %{github_containers}/common/%{common_branch}/docs/containerignore.5.md
 Source25:       %{github_containers}/common/%{common_branch}/docs/links/.containerignore.5
 BuildRequires:  go-md2man
