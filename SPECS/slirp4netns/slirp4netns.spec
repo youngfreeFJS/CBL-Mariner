@@ -6,13 +6,13 @@ Distribution:   Mariner
 
 # Used for comparing with latest upstream tag
 # to decide whether to autobuild (non-rawhide only)
-%define built_tag v1.1.8
+%define built_tag v1.2.0
 %define built_tag_strip %(b=%{built_tag}; echo ${b:1})
 %define download_url %{git0}/archive/%{built_tag}.tar.gz
 
 Name: slirp4netns
-Version: 1.1.8
-Release: 2%{?dist}
+Version: 1.2.0
+Release: 1%{?dist}
 # no go-md2man in ppc64
 ExcludeArch: ppc64
 Summary: slirp for network namespaces
@@ -67,6 +67,10 @@ make DESTDIR=%{buildroot} install install-man
 %{_mandir}/man1/%{name}.1.gz
 
 %changelog
+* Thu Dec 08 2022 Ameya Usgaonkar <ausgaonkar@microsoft.com> - 1.2.0-1
+- Upgrade to upstream version
+- Move from extended to core packages
+
 * Fri Oct 15 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.1.8-2
 - Initial CBL-Mariner import from Fedora 32 (license: MIT).
 
