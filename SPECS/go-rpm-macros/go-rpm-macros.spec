@@ -27,9 +27,9 @@ Summary:   Build-stage rpm automation for Go packages
 
 License:   GPLv3+
 URL:       %{forgeurl}
-# Source:  https://pagure.io/go-rpm-macros/archive/3.0.9/go-rpm-macros-3.0.9.tar.gz
+# Source:  https://pagure.io/go-rpm-macros/archive/3.2.0/go-rpm-macros-3.2.0.tar.gz
 Source:    %{forgesource}
-Patch0:    fixing_ldflags_for_mariner.patch
+#Patch0:    fixing_ldflags_for_mariner.patch
 
 Requires:  go-srpm-macros = %{version}-%{release}
 Requires:  go-filesystem  = %{version}-%{release}
@@ -91,7 +91,7 @@ macros provided by go-rpm-macros to create Go packages.
 
 %prep
 %forgesetup
-%patch0 -p1
+#%patch0 -p1
 
 %writevars -f rpm/macros.d/macros.go-srpm golang_arches golang_arches_future gccgo_arches gopath
 for template in templates/rpm/*\.spec ; do
