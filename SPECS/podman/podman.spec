@@ -174,7 +174,7 @@ pages and %{name}.
 Summary:      Tests for %{name}
 
 Requires:     %{name} = %{version}-%{release}
-Requires:     bats
+#Requires:     bats
 Requires:     jq
 Requires:     skopeo
 Requires:     nmap-ncat
