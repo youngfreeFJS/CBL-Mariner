@@ -105,25 +105,6 @@ or
 * save container's root file system layer to create a new image
 * delete a working container or an image
 
-%package tests
-Summary: Tests for %{name}
-
-Requires: %{name} = %{version}-%{release}
-Requires: bats
-Requires: bzip2
-Requires: podman
-Requires: git-daemon
-Requires: golang
-Requires: jq
-Requires: httpd-tools
-Requires: nmap-ncat
-Requires: openssl
-
-%description tests
-%{summary}
-
-This package contains system tests for %{name}
-
 %prep
 %autosetup -Sgit -n %{name}-%{built_tag_strip}
 sed -i 's/GOMD2MAN =/GOMD2MAN ?=/' docs/Makefile
