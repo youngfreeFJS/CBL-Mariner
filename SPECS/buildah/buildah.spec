@@ -158,7 +158,7 @@ export BUILDTAGS+=' libsubid selinux'
 export BUILDTAGS+=' exclude_graphdriver_btrfs'
 %endif
 %gobuild -o bin/%{name} %{import_path}/cmd/%{name}
-%gobuild -o imgtype %{import_path}/tests/imgtype
+%gobuild -o bin/imgtype %{import_path}/tests/imgtype
 %gobuild -o bin/copy %{import_path}/tests/copy
 %gobuild -o bin/tutorial %{import_path}/tests/tutorial
 GOMD2MAN=go-md2man %{__make} -C docs
