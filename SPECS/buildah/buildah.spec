@@ -46,7 +46,7 @@ BuildRequires: gpgme-devel
 BuildRequires: libassuan-devel
 BuildRequires: make
 BuildRequires: shadow-utils-subid-devel
-Requires: containers-common
+#Requires: containers-common
 # No ostree for centos 7
 
 BuildRequires: ostree-devel
