@@ -1247,8 +1247,8 @@
         "type": "other",
         "other": {
           "name": "buildah",
-          "version": "1.18.0",
-          "downloadUrl": "https://github.com/containers/buildah/archive/v1.18.0.tar.gz"
+          "version": "1.28.0",
+          "downloadUrl": "https://github.com/containers/buildah/archive/v1.28.0.tar.gz"
         }
       }
     },
@@ -26017,7 +26017,7 @@
         "type": "other",
         "other": {
           "name": "slirp4netns",
-          "version": "1.1.8",
+          "version": "1.2.0",
           "downloadUrl": "https://github.com/rootless-containers/slirp4netns/archive/v1.1.8.tar.gz"
         }
       }
