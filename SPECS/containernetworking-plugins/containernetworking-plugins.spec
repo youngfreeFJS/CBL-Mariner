@@ -7,10 +7,6 @@
 %global debug_package   %{nil}
 %endif
 
-%if ! 0%{?gobuild:1}
-%define gobuild(o:) GO111MODULE=off go build -buildmode pie -compiler gc -tags="rpm_crashtraceback ${BUILDTAGS:-}" -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n') -extldflags 'now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld '" -a -v -x %{?**};
-%endif
-
 %global provider github
 %global provider_tld com
 %global project containernetworking
