@@ -4,7 +4,8 @@ Name: hunspell-ak
 Summary: Akan hunspell dictionaries
 Version: 0.9.1
 Release: 7%{?dist}
-Source: https://addons.mozilla.org/firefox/downloads/file/376172/akan_spelling_dictionary-0.9.1-typefix-fx.xpi
+#Source: https://addons.mozilla.org/firefox/downloads/file/376172/akan_spelling_dictionary-0.9.1-typefix-fx.xpi
+Source0: https://cblmarinerstorage.blob.core.windows.net/sources/core/akan_spelling_dictionary-0.9.1-typefix-fx.xpi
 URL: http://kasahorow.org/content/akan-nsɛmfuaasekyerɛ
 #https://addons.mozilla.org/en-US/firefox/versions/license/73122
 License: LGPLv3
