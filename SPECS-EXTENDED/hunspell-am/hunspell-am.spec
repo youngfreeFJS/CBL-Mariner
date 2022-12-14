@@ -5,7 +5,7 @@ Summary: Amharic hunspell dictionaries
 %global upstreamid 20090704
 Version: 0.%{upstreamid}
 Release: 20%{?dist}
-Source: https://www.cs.ru.nl/~biniam/geez/dict/am_ET.zip
+Source0: https://cblmarinerstorage.blob.core.windows.net/sources/core/am_ET.zip
 URL: http://www.cs.ru.nl/~biniam/geez/index.php
 License: GPL+
 BuildArch: noarch
