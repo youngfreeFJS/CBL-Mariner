@@ -33,8 +33,8 @@ BuildRequires: gcc-gfortran, swig, gcc-c++
 BuildRequires: qhull-devel
 BuildRequires: /usr/bin/pathfix.py
 
-BuildRequires:  pybind11-devel
-BuildRequires:  python3-pybind11 >= 2.4.0
+#BuildRequires:  pybind11-devel
+#BuildRequires:  python3-pybind11 >= 2.4.0
 BuildRequires:  python3-numpy, python3-devel, python3-numpy-f2py
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-Cython
