@@ -1,7 +1,7 @@
 {
   "Signatures": {
     "cbl-mariner-ca-20211013.pem": "5ef124b0924cb1047c111a0ecff1ae11e6ad7cac8d1d9b40f98f99334121f0b0",
-    "config": "f1a2b398c58ef1032a30311d6f12cdb3636be5bdfea4b69d588c22227b6112c2",
+    "config": "9025bc5365ec9a1c554c520c598b2fa9146bfe4d2891be3c1e1f9be412e2d000",
     "config_aarch64": "5d081eb30b4dce8dacc20741ea7d65e54d784da71d946acd241e05261156cd96",
     "sha512hmac-openssl.sh": "02ab91329c4be09ee66d759e4d23ac875037c3b56e5a598e32fd1206da06a27f",
     "kernel-5.15.82.1.tar.gz": "30a0059b18ea04469340c6e9e21d27786692faf05b3947e3eb13d62e25632b15"
