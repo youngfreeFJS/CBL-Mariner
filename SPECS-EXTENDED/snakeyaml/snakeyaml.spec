@@ -22,7 +22,7 @@ Distribution:   Mariner
 %bcond_with tests
 Name:           snakeyaml
 Version:        1.25
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        YAML parser and emitter for the Java programming language
 License:        Apache-2.0
 Group:          Development/Libraries/Java
@@ -41,6 +41,7 @@ Patch1:         0002-Replace-bundled-gdata-java-client-classes-with-commo.patch
 # Fix a broken test, change backported from upstream:
 # https://bitbucket.org/asomov/snakeyaml/commits/345408c
 Patch2:         0003-fix-broken-test.patch
+Patch3:         CVE-2022-25857.patch
 BuildRequires:  ant
 BuildRequires:  apache-commons-codec
 BuildRequires:  base64coder
@@ -146,6 +147,9 @@ cp -pr target/site/apidocs/* %{buildroot}%{_javadocdir}/%{name}/
 %{_javadocdir}/%{name}
 
 %changelog
+* Tue Dec 20 2022 Nan Liu <liunan@microsoft.com> - 1.25-3
+- Patched CVE-2022-25857.
+
 * Thu Oct 14 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.25-2
 - Converting the 'Release' tag to the '[number].[distribution]' format.
 
