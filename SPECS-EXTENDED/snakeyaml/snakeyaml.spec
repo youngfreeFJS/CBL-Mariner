@@ -85,9 +85,7 @@ This package contains %{summary}.
 %prep
 %setup -q -n asomov-%{name}-%{vertag}
 cp %{SOURCE1} build.xml
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autopatch -p1
 
 %pom_remove_plugin :cobertura-maven-plugin
 %pom_remove_plugin :maven-changes-plugin
