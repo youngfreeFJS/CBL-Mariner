@@ -5940,8 +5940,8 @@
         "type": "other",
         "other": {
           "name": "hyperv-daemons",
-          "version": "5.15.82.1",
-          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.82.1.tar.gz"
+          "version": "5.15.85.1",
+          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.85.1.tar.gz"
         }
       }
     },
@@ -7461,8 +7461,8 @@
         "type": "other",
         "other": {
           "name": "kernel",
-          "version": "5.15.82.1",
-          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.82.1.tar.gz"
+          "version": "5.15.85.1",
+          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.85.1.tar.gz"
         }
       }
     },
@@ -7471,8 +7471,8 @@
         "type": "other",
         "other": {
           "name": "kernel-hci",
-          "version": "5.15.82.1",
-          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.82.1.tar.gz"
+          "version": "5.15.85.1",
+          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.85.1.tar.gz"
         }
       }
     },
@@ -7481,8 +7481,8 @@
         "type": "other",
         "other": {
           "name": "kernel-headers",
-          "version": "5.15.82.1",
-          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.82.1.tar.gz"
+          "version": "5.15.85.1",
+          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.85.1.tar.gz"
         }
       }
     },
@@ -7701,8 +7701,8 @@
         "type": "other",
         "other": {
           "name": "kubevirt",
-          "version": "0.55.1",
-          "downloadUrl": "https://github.com/kubevirt/kubevirt/archive/refs/tags/v0.55.1.tar.gz"
+          "version": "0.58.0",
+          "downloadUrl": "https://github.com/kubevirt/kubevirt/archive/refs/tags/v0.58.0.tar.gz"
         }
       }
     },
@@ -9860,6 +9860,16 @@
       "component": {
         "type": "other",
         "other": {
+          "name": "libreport",
+          "version": "2.13.1",
+          "downloadUrl": "https://github.com/abrt/libreport/archive/2.13.1/libreport-2.13.1.tar.gz"
+        }
+      }
+    },
+    {
+      "component": {
+        "type": "other",
+        "other": {
           "name": "libreswan",
           "version": "4.7",
           "downloadUrl": "https://github.com/libreswan/libreswan/archive/refs/tags/v4.7.tar.gz"
@@ -10580,6 +10590,16 @@
       "component": {
         "type": "other",
         "other": {
+          "name": "libwpd",
+          "version": "0.10.3",
+          "downloadUrl": "https://downloads.sourceforge.net/libwpd/libwpd-0.10.3.tar.xz"
+        }
+      }
+    },
+    {
+      "component": {
+        "type": "other",
+        "other": {
           "name": "libwpe",
           "version": "1.12.0",
           "downloadUrl": "https://github.com/WebPlatformForEmbedded/libwpe/releases/download/1.12.0/libwpe-1.12.0.tar.xz"
@@ -11093,6 +11113,16 @@
           "name": "livepatch-5.15.82.1-1.cm2",
           "version": "1.0.0",
           "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.82.1.tar.gz"
+        }
+      }
+    },
+    {
+      "component": {
+        "type": "other",
+        "other": {
+          "name": "livepatch-5.15.85.1-1.cm2",
+          "version": "1.0.0",
+          "downloadUrl": "https://github.com/microsoft/CBL-Mariner-Linux-Kernel/archive/rolling-lts/mariner-2/5.15.85.1.tar.gz"
         }
       }
     },
