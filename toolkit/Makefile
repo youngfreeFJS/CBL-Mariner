@@ -52,6 +52,9 @@ HYDRATED_BUILD                  ?= n
 DELTA_BUILD                     ?= n
 TARGET_ARCH                     ?=
 
+# Alternative tool paths
+GO_COMMAND       ?= go
+
 # Folder defines
 toolkit_root     := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 TOOLS_DIR        ?= $(toolkit_root)/tools

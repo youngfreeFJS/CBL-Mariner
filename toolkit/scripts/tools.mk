@@ -83,8 +83,8 @@ else
 # Rebuild the go tools as needed
 $(TOOL_BINS_DIR)/%: $(go_common_files)
 	cd $(TOOLS_DIR)/$* && \
-		go test -covermode=atomic -coverprofile=$(BUILD_DIR)/tools/$*.test_coverage ./... && \
-		CGO_ENABLED=0 go build \
+		$(GO_COMMAND) test -covermode=atomic -coverprofile=$(BUILD_DIR)/tools/$*.test_coverage ./... && \
+		CGO_ENABLED=0 $(GO_COMMAND) build \
 			-ldflags="-X github.com/microsoft/CBL-Mariner/toolkit/tools/internal/exe.ToolkitVersion=$(RELEASE_VERSION)" \
 			-o $(TOOL_BINS_DIR)
 endif
@@ -92,7 +92,7 @@ endif
 # Runs tests for common components
 $(BUILD_DIR)/tools/internal.test_coverage: $(go_internal_files) $(go_imagegen_files)
 	cd $(TOOLS_DIR)/$* && \
-		go test -covermode=atomic -coverprofile=$@ ./...
+		$(GO_COMMAND) test -covermode=atomic -coverprofile=$@ ./...
 
 # Return a list of all directories inside tools/ which contains a *.go file in
 # the form of "go-fmt-<directory>"
@@ -100,17 +100,17 @@ go-tidy-all: go-mod-tidy go-fmt-all
 # Updates the go module file
 go-mod-tidy:
 	rm -f $(TOOLS_DIR)/go.sum
-	cd $(TOOLS_DIR) && go mod tidy
+	cd $(TOOLS_DIR) && $(GO_COMMAND) mod tidy
 # Runs go fmt inside each matching directory
 go-fmt-all:
-	cd $(TOOLS_DIR) && go fmt ./...
+	cd $(TOOLS_DIR) && $(GO_COMMAND) fmt ./...
 
 # Formats the test coverage for the tools
 .PHONY: $(BUILD_DIR)/tools/all_tools.coverage
 $(BUILD_DIR)/tools/all_tools.coverage: $(shell find $(TOOLS_DIR)/ -type f -name '*.go')
-	cd $(TOOLS_DIR) && go test -coverpkg=./... -covermode=atomic -coverprofile=$@ ./...
+	cd $(TOOLS_DIR) && $(GO_COMMAND) test -coverpkg=./... -covermode=atomic -coverprofile=$@ ./...
 $(test_coverage_report): $(BUILD_DIR)/tools/all_tools.coverage
-	cd $(TOOLS_DIR) && go tool cover -html=$(BUILD_DIR)/tools/all_tools.coverage -o $@
+	cd $(TOOLS_DIR) && $(GO_COMMAND) tool cover -html=$(BUILD_DIR)/tools/all_tools.coverage -o $@
 go-test-coverage: $(test_coverage_report)
 	@echo Coverage report available at: $(test_coverage_report)
 
