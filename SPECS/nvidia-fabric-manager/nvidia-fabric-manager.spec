@@ -36,7 +36,7 @@ Source0:        https://developer.download.nvidia.com/compute/cuda/redist/fabric
 
 Provides:       nvidia-fabricmanager = %{nvidia_driver_version}
 Provides:       nvidia-fabricmanager-%{branch} = %{nvidia_driver_version}
-Obsoletes:      nvidia-fabricmanager-branch < %{nvidia_driver_version}
+Obsoletes:      nvidia-fabricmanager-%{branch} < %{nvidia_driver_version}
 Obsoletes:      nvidia-fabricmanager
 
 %description
