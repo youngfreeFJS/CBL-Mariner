@@ -1,7 +1,7 @@
 Summary:        QEMU is a machine emulator and virtualizer
 Name:           qemu-kvm
 Version:        4.2.0
-Release:        48%{?dist}
+Release:        49%{?dist}
 License:        GPLv2 AND GPLv2+ AND CC-BY AND BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -138,6 +138,7 @@ sed -i "/LDFLAGS_NOPIE/d" configure
  --prefix="%{_prefix}" \
  --libdir="%{_libdir}" \
  --audio-drv-list=alsa \
+ --enable-sanitizers \
 %ifarch aarch64
  --extra-cflags="%{optflags} -fPIC" \
 %endif
@@ -221,6 +222,9 @@ fi
 %{_bindir}/qemu-nbd
 
 %changelog
+* Wed Jan 04 2023 Olivia Crain <oliviacrain@microsoft.com> - 4.2.0-49
+- ASAN test
+
 * Thu Dec 22 2022 Amrita Kohli <amritakohli@microsoft.com> - 4.2.0-48
 - Patch CVE-2021-4207
 
