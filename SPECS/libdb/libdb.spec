@@ -1,7 +1,7 @@
 Summary:        The Berkley DB database library for C
 Name:           libdb
 Version:        5.3.28
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        BSD
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -46,6 +46,7 @@ recovery. DB supports C, C++, Java and Perl APIs.
 %autosetup -p1 -n db-%{version}
 
 %build
+rm -rvf %{_libdir}/ccache/x86_64-pc-linux-gnu-cc
 cd build_unix
 ../dist/configure \
 	--host=%{_host} --build=%{_build} \
@@ -95,6 +96,9 @@ install -D -m755 README %{buildroot}/%{_datadir}/licenses/README
 %{_bindir}/db*_tuner
 
 %changelog
+* Fri Jan 06 2023 Andrew Phelps <anphel@microsoft.com> - 5.3.28-8
+- Remove ccache symlink
+
 * Tue Apr 12 2022 Nicolas Guibourge <nicolasg@microsoft.com> - 5.3.28-7
 - Align with CBL-Mariner 1.0 to address following CVEs:
 - Patch CVE-2019-2708
