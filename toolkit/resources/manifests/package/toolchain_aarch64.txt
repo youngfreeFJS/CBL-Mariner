@@ -547,6 +547,7 @@ sqlite-debuginfo-3.39.2-2.cm2.aarch64.rpm
 sqlite-devel-3.39.2-2.cm2.aarch64.rpm
 sqlite-libs-3.39.2-2.cm2.aarch64.rpm
 swig-4.0.2-4.cm2.aarch64.rpm
+swig-ccache-4.0.2-4.cm2.aarch64.rpm
 swig-debuginfo-4.0.2-4.cm2.aarch64.rpm
 systemd-bootstrap-250.3-10.cm2.aarch64.rpm
 systemd-bootstrap-debuginfo-250.3-10.cm2.aarch64.rpm
