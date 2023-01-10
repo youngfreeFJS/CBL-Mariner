@@ -47,6 +47,7 @@ recovery. DB supports C, C++, Java and Perl APIs.
 
 %build
 rm -rvf %{_libdir}/ccache/x86_64-pc-linux-gnu-cc
+rm -rvf %{_libdir}/ccache/aarch64-unknown-linux-gnu-cc
 cd build_unix
 ../dist/configure \
 	--host=%{_host} --build=%{_build} \
