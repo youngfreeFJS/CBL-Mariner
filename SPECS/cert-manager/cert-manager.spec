@@ -9,7 +9,7 @@ URL:            https://github.com/cert-manager/cert-manager
 Source0:        https://github.com/cert-manager/cert-manager/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 # Below is a manually created tarball, no download link.
 # We're using pre-populated GO dependencies from this tarball, since network is disabled during build time.
-#   1. wget https://github.com/cert-manager/cert-manager/archive/refs/tags/v%{version}.tar.gz -o %%{name}-%%{version}.tar.gz
+#   1. wget https://github.com/cert-manager/cert-manager/archive/refs/tags/v%%{version}.tar.gz -o %%{name}-%%{version}.tar.gz
 #   2. tar -xf %%{name}-%%{version}.tar.gz
 #   3. cd %%{name}-%%{version}
 #   4. go mod vendor
@@ -18,7 +18,7 @@ Source0:        https://github.com/cert-manager/cert-manager/archive/refs/tags/v
 #           --owner=0 --group=0 --numeric-owner \
 #           --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
 #           -cf %%{name}-%%{version}-govendor.tar.gz vendor
-#Source1:        %{name}-%{version}-govendor.tar.gz
+Source1:        %{name}-%{version}-govendor.tar.gz
 BuildRequires:  golang
 BuildRequires:  patch
 Requires:       %{name}-acmesolver
