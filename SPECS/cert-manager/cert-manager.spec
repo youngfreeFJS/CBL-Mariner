@@ -1,16 +1,15 @@
 Summary:        Automatically provision and manage TLS certificates in Kubernetes
 Name:           cert-manager
-Version:        1.7.3
-Release:        4%{?dist}
+Version:        1.11.0
+Release:        1%{?dist}
 License:        ASL 2.0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
-URL:            https://github.com/jetstack/cert-manager
-#Source0:       https://github.com/jetstack/%{name}/archive/refs/tags/v%{version}.tar.gz
-Source0:        %{name}-%{version}.tar.gz
+URL:            https://github.com/cert-manager/cert-manager
+Source0:        https://github.com/cert-manager/cert-manager/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 # Below is a manually created tarball, no download link.
 # We're using pre-populated GO dependencies from this tarball, since network is disabled during build time.
-#   1. wget https://github.com/jetstack/%{name}/archive/refs/tags/v%{version}.tar.gz -o %%{name}-%%{version}.tar.gz
+#   1. wget https://github.com/cert-manager/cert-manager/archive/refs/tags/v%{version}.tar.gz -o %%{name}-%%{version}.tar.gz
 #   2. tar -xf %%{name}-%%{version}.tar.gz
 #   3. cd %%{name}-%%{version}
 #   4. go mod vendor
@@ -19,7 +18,7 @@ Source0:        %{name}-%{version}.tar.gz
 #           --owner=0 --group=0 --numeric-owner \
 #           --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
 #           -cf %%{name}-%%{version}-govendor.tar.gz vendor
-Source1:        %{name}-%{version}-govendor.tar.gz
+#Source1:        %{name}-%{version}-govendor.tar.gz
 BuildRequires:  golang
 BuildRequires:  patch
 Requires:       %{name}-acmesolver
@@ -111,6 +110,9 @@ install -D -m0755 bin/webhook %{buildroot}%{_bindir}/
 %{_bindir}/webhook
 
 %changelog
+* Fri Jan 13 2023 Kanika Nema <kanikanema@microsoft.com> - 1.11.0-1
+- Bump release to v1.11.0 for CVE-2022-1996
+
 * Fri Dec 16 2022 Daniel McIlvaney <damcilva@microsoft.com> - 1.7.3-4
 - Bump release to rebuild with go 1.18.8 with patch for CVE-2022-41717
 
