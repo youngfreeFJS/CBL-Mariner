@@ -10,8 +10,8 @@ URL:            https://git-scm.com/
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
 BuildRequires:  curl-devel
 BuildRequires:  python3-devel
-BuildRequires:  perl(CGI)
-BuildRequires:  perl(DBD)
+BuildRequires:  perl-CGI
+BuildRequires:  perl-DBI
 BuildRequires:  subversion-perl
 Requires:       curl
 Requires:       expat
