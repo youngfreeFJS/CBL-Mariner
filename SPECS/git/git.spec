@@ -13,14 +13,14 @@ BuildRequires:  python3-devel
 BuildRequires:  perl-CGI
 BuildRequires:  perl-DBI
 BuildRequires:  subversion-perl
+BuildRequires:  perl-YAML
+BuildRequires:  perl-interpreter
 Requires:       curl
 Requires:       expat
 Requires:       less
 Requires:       openssh
 Requires:       openssl
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
-Requires:       perl-YAML
-Requires:       perl-interpreter
 Requires:       python3
 Provides:       git-core = %{version}-%{release}
 %if %{with_check}
