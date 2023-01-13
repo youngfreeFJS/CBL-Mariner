@@ -10,17 +10,18 @@ URL:            https://git-scm.com/
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
 BuildRequires:  curl-devel
 BuildRequires:  python3-devel
+BuildRequires:  perl(CGI)
+BuildRequires:  perl(DBD)
+BuildRequires:  subversion-perl
 Requires:       curl
 Requires:       expat
 Requires:       less
 Requires:       openssh
 Requires:       openssl
-Requires:       perl-CGI
-Requires:       perl-DBI
+Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires:       perl-YAML
 Requires:       perl-interpreter
 Requires:       python3
-Requires:       subversion-perl
 Provides:       git-core = %{version}-%{release}
 %if %{with_check}
 BuildRequires:  perl(Getopt::Long)
@@ -50,6 +51,7 @@ These are the additional language files of git.
 %global with_subtree 1
 %global with_svn 1
 %global with_email 0
+
 %if %{with_daemon}
 %package        daemon
 Summary:        Git protocol daemon
