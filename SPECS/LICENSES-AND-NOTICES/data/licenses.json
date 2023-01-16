@@ -133,6 +133,7 @@
                 "cpuid",
                 "criu",
                 "crontabs",
+                "crypto-policies",
                 "cryptsetup",
                 "cscope",
                 "ctags",
