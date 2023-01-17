@@ -2375,6 +2375,7 @@
                 "influxdb",
                 "isorelax",
                 "jakarta-taglibs-standard",
+                "jansi",
                 "jansi-native",
                 "jarjar",
                 "java-cup",
