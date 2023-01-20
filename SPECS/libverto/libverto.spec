@@ -1,33 +1,18 @@
-%global homepage https://github.com/latchset/libverto
-
-Name:           libverto
-Version:        0.3.0
-Release:        10%{?dist}
 Summary:        Main loop abstraction library
-
+Name:           libverto
+Version:        0.3.2
+Release:        1%{?dist}
 License:        MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
-URL:            %{homepage}
-Source0:        %{homepage}/releases/download/%{version}/%{name}-%{version}.tar.gz
-
-Patch0: Work-around-libev-not-being-c89-compliant.patch
-
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  libtool
-
+URL:            https://github.com/latchset/libverto
+Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.gz
+BuildRequires:  gcc
 BuildRequires:  glib2-devel
+BuildRequires:  libtool
 BuildRequires:  libevent-devel
-# BuildRequires:  libtevent-devel
-%if !0%{?rhel}
 BuildRequires:  libev-devel
-%endif
-
-BuildRequires:  git
-
-Obsoletes:      libverto-tevent < 0.3.0-2
-Obsoletes:      libverto-tevent-devel < 0.3.0-2
+BuildRequires:  make
 
 %description
 libverto provides a way for libraries to expose asynchronous interfaces
@@ -44,7 +29,7 @@ glib will support signal in the future.
 
 %package        devel
 Summary:        Development files for %{name}
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       pkgconfig
 
 %description    devel
@@ -53,17 +38,15 @@ developing applications that use %{name}.
 
 %package        glib
 Summary:        glib module for %{name}
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    glib
 Module for %{name} which provides integration with glib.
 
-This package does NOT yet provide %{name}-module-base.
-
 %package        glib-devel
 Summary:        Development files for %{name}-glib
-Requires:       %{name}-glib%{?_isa} = %{version}-%{release}
-Requires:       %{name}-devel%{?_isa} = %{version}-%{release}
+Requires:       %{name}-glib = %{version}-%{release}
+Requires:       %{name}-devel = %{version}-%{release}
 
 %description    glib-devel
 The %{name}-glib-devel package contains libraries and header files for
@@ -71,7 +54,7 @@ developing applications that use %{name}-glib.
 
 %package        libevent
 Summary:        libevent module for %{name}
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Provides:       %{name}-module-base = %{version}-%{release}
 
 %description    libevent
@@ -79,37 +62,16 @@ Module for %{name} which provides integration with libevent.
 
 %package        libevent-devel
 Summary:        Development files for %{name}-libevent
-Requires:       %{name}-libevent%{?_isa} = %{version}-%{release}
-Requires:       %{name}-devel%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libevent = %{version}-%{release}
+Requires:       %{name}-devel = %{version}-%{release}
 
 %description    libevent-devel
 The %{name}-libevent-devel package contains libraries and header files for
 developing applications that use %{name}-libevent.
 
-# %package        tevent
-# Summary:        tevent module for %{name}
-# Requires:       %{name}%{?_isa} = %{version}-%{release}
-# Provides:       %{name}-module-base = %{version}-%{release}
-
-# %description    tevent
-# Module for %{name} which provides integration with tevent.
-
-# This package provides %{name}-module-base since it supports io, timeout
-# and signal.
-
-# %package        tevent-devel
-# Summary:        Development files for %{name}-tevent
-# Requires:       %{name}-tevent%{?_isa} = %{version}-%{release}
-# Requires:       %{name}-devel%{?_isa} = %{version}-%{release}
-
-# %description    tevent-devel
-# The %{name}-tevent-devel package contains libraries and header files for
-# developing applications that use %{name}-tevent.
-
-%if !0%{?rhel}
 %package        libev
 Summary:        libev module for %{name}
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Provides:       %{name}-module-base = %{version}-%{release}
 
 %description    libev
@@ -120,40 +82,30 @@ and signal.
 
 %package        libev-devel
 Summary:        Development files for %{name}-libev
-Requires:       %{name}-libev%{?_isa} = %{version}-%{release}
-Requires:       %{name}-devel%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libev = %{version}-%{release}
+Requires:       %{name}-devel = %{version}-%{release}
 
 %description    libev-devel
 The %{name}-libev-devel package contains libraries and header files for
 developing applications that use %{name}-libev.
 
-This package provides %{name}-module-base since it supports io, timeout
-and signal.
-%endif
-
 %prep
-%autosetup -S git
+%autosetup
 
 %build
-autoreconf -fiv
 %configure --disable-static
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT
-find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
+%make_install
+find %{buildroot} -type f -name "*.la" -delete -print
 
 %ldconfig_scriptlets
 %ldconfig_scriptlets glib
 %ldconfig_scriptlets libevent
-#ldconfig_scriptlets tevent
-%if !0%{?rhel}
 %ldconfig_scriptlets libev
-%endif
 
 %files
-%{!?_licensedir:%global license %%doc}
 %license COPYING
 %doc AUTHORS ChangeLog NEWS README
 %{_libdir}/%{name}.so.*
@@ -180,15 +132,6 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_libdir}/%{name}-libevent.so
 %{_libdir}/pkgconfig/%{name}-libevent.pc
 
-# %files tevent
-# %{_libdir}/%{name}-tevent.so.*
-
-# %files tevent-devel
-# %{_includedir}/verto-tevent.h
-# %{_libdir}/%{name}-tevent.so
-# %{_libdir}/pkgconfig/%{name}-tevent.pc
-
-%if !0%{?rhel}
 %files libev
 %{_libdir}/%{name}-libev.so.*
 
@@ -196,9 +139,15 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_includedir}/verto-libev.h
 %{_libdir}/%{name}-libev.so
 %{_libdir}/pkgconfig/%{name}-libev.pc
-%endif
 
 %changelog
+* Fri Jan 20 2023 Olivia Crain <oliviacrain@microsoft.com> - 0.3.2-1
+- Update to latest upstream version
+- Package moved to toolchain
+- Confirm license tag is SPDX-compliant
+- Remove C89 compliance patch (upstreamed in 0.3.1)
+- Remove tevent support code (removed in 0.3.2)
+
 * Fri Oct 15 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 0.3.0-10
 - Initial CBL-Mariner import from Fedora 32 (license: MIT).
 
