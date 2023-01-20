@@ -100,6 +100,9 @@ developing applications that use %{name}-libev.
 %make_install
 find %{buildroot} -type f -name "*.la" -delete -print
 
+%check
+%make_build check
+
 %ldconfig_scriptlets
 %ldconfig_scriptlets glib
 %ldconfig_scriptlets libevent
@@ -147,6 +150,7 @@ find %{buildroot} -type f -name "*.la" -delete -print
 - Confirm license tag is SPDX-compliant
 - Remove C89 compliance patch (upstreamed in 0.3.1)
 - Remove tevent support code (removed in 0.3.2)
+- Add check section
 
 * Fri Oct 15 2021 Pawel Winogrodzki <pawelwi@microsoft.com> - 0.3.0-10
 - Initial CBL-Mariner import from Fedora 32 (license: MIT).
