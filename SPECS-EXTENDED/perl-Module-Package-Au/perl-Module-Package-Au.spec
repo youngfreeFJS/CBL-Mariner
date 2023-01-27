@@ -1,28 +1,27 @@
-Name:		perl-Module-Package-Au
-Version:	2
-Release:	18%{?dist}
-Summary:	Reusable Module::Install bits
-License:	CC0
+Summary:        Reusable Module::Install bits
+Name:           perl-Module-Package-Au
+Version:        2
+Release:        18%{?dist}
+License:        CC0
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
-URL:		https://metacpan.org/release/Module-Package-Au
-Source0:	https://cpan.metacpan.org/authors/id/A/AU/AUDREYT/Module-Package-Au-%{version}.tar.gz#/perl-Module-Package-Au-%{version}.tar.gz
-Patch0:		perl-Module-Package-Au-no-bundle.patch
-BuildArch:	noarch
-BuildRequires:	perl-generators
-BuildRequires:	perl(FindBin)
-BuildRequires:	perl(File::Remove)
-BuildRequires:	perl(Module::CoreList)
-BuildRequires:	perl(ExtUtils::MakeMaker)
-BuildRequires:	perl(Module::Install::AuthorTests)
-BuildRequires:	perl(Module::Install::GithubMeta)
-BuildRequires:	perl(Module::Install::ReadmeFromPod)
-BuildRequires:	perl(Module::Install::ReadmeMarkdownFromPod)
-BuildRequires:	perl(Module::Install::Repository)
-BuildRequires:	perl(Module::Package) >= 0.24
-BuildRequires:	perl(Pod::Markdown)
-Requires:	perl(:MODULE_COMPAT_%(eval "`perl -V:version`"; echo $version))
-
+URL:            https://metacpan.org/release/Module-Package-Au
+Source0:        https://cpan.metacpan.org/authors/id/A/AU/AUDREYT/Module-Package-Au-%{version}.tar.gz#/perl-Module-Package-Au-%{version}.tar.gz
+Patch0:         perl-Module-Package-Au-no-bundle.patch
+BuildRequires:  perl-generators
+BuildRequires:  perl(ExtUtils::MakeMaker)
+BuildRequires:  perl(File::Remove)
+BuildRequires:  perl(FindBin)
+BuildRequires:  perl(Module::CoreList)
+BuildRequires:  perl(Module::Install::AuthorTests)
+BuildRequires:  perl(Module::Install::GithubMeta)
+BuildRequires:  perl(Module::Install::ReadmeFromPod)
+BuildRequires:  perl(Module::Install::ReadmeMarkdownFromPod)
+BuildRequires:  perl(Module::Install::Repository)
+BuildRequires:  perl(Module::Package) >= 0.24
+BuildRequires:  perl(Pod::Markdown)
+Requires:       perl(:MODULE_COMPAT_%(eval "`perl -V:version`"; echo $version))
+BuildArch:      noarch
 # Don't "provide" private Perl libs
 %{?perl_default_filter}
 
