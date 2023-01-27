@@ -1,100 +1,17 @@
-Vendor:         Microsoft Corporation
-Distribution:   Mariner
-Name:          perl-Net-DNS
-Version:       1.21
-Release:       4%{?dist}
-Summary:       DNS resolver modules for Perl
+Summary:        DNS resolver modules for Perl
+Name:           perl-Net-DNS
+Version:        1.21
+Release:        4%{?dist}
 # Other files:          MIT
 # demo/mresolv:         GPL+ or Artistic
 ## Not in a binary package
 # contrib/find_zonecut: GPL+ or Artistic
 # contrib/check_soa:    GPL+ or Artistic
-License:       (GPL+ or Artistic) and MIT
-URL:           https://metacpan.org/release/Net-DNS
-Source0:       https://cpan.metacpan.org/authors/id/N/NL/NLNETLABS/Net-DNS-%{version}.tar.gz#/perl-Net-DNS-%{version}.tar.gz
-BuildArch:     noarch
-# Build
-BuildRequires: coreutils
-BuildRequires: findutils
-BuildRequires: glibc-common
-BuildRequires: make
-BuildRequires: sed
-BuildRequires: perl-generators
-BuildRequires: perl-interpreter
-BuildRequires: perl(ExtUtils::MakeMaker) >= 6.76
-BuildRequires: perl(Getopt::Long)
-BuildRequires: perl(IO::Socket)
-# Runtime
-BuildRequires: perl(base)
-BuildRequires: perl(Carp)
-# Config not used
-BuildRequires: perl(constant)
-BuildRequires: perl(Data::Dumper)
-%if ! (0%{?rhel} >= 7)
-# Digest::BubbleBabble is optional
-BuildRequires: perl(Digest::BubbleBabble)
-%endif
-# Digest::GOST is optional and intentionally unavailable
-# Digest::GOST::CryptoPro is optional and intentionally unavailable
-BuildRequires: perl(Digest::HMAC) >= 1.03
-BuildRequires: perl(Digest::MD5) >= 2.13
-BuildRequires: perl(Digest::SHA) >= 5.23
-BuildRequires: perl(Encode)
-BuildRequires: perl(Exporter)
-BuildRequires: perl(File::Spec)
-BuildRequires: perl(FileHandle)
-BuildRequires: perl(integer)
-BuildRequires: perl(IO::File)
-# IO::Select is not used
-# Prefer IO::Socket::IP over IO::Socket::INET for IPv6 support
-BuildRequires: perl(IO::Socket::IP) >= 0.32
-BuildRequires: perl(MIME::Base64) >= 2.13
-# Prefer Net::LibIDN2 over Net::LibIDN, both are optional
-BuildRequires: perl(Net::LibIDN2) >= 1
-BuildRequires: perl(overload)
-# PerlIO is optional
-# Scalar::Util is optional
-BuildRequires: perl(Socket)
-BuildRequires: perl(strict)
-BuildRequires: perl(Time::Local)
-BuildRequires: perl(warnings)
-# Win32::IPHelper is not needed
-# Win32::TieRegistry is not needed
-# Tests only
-BuildRequires: perl(File::Find)
-BuildRequires: perl(Test::Builder)
-BuildRequires: perl(Test::More)
-# Optional tests:
-BuildRequires: perl(Test::Pod) >= 1.45
-%if !%{defined perl_bootstrap}
-# Build cycle: perl-Net-DNS-SEC → perl-Net-DNS
-BuildRequires: perl(Net::DNS::SEC)
-BuildRequires: perl(Net::DNS::SEC::RSA)
-%endif
-Requires:      perl(:MODULE_COMPAT_%(eval "$(perl -V:version)"; echo $version))
-Suggests:      perl(Config)
-Requires:      perl(Data::Dumper)
-# Digest::GOST not available
-Requires:      perl(Digest::HMAC) >= 1.03
-Requires:      perl(Digest::MD5) >= 2.13
-Requires:      perl(Digest::SHA) >= 5.23
-Requires:      perl(Encode)
-# Prefer IO::Socket::IP over IO::Socket::INET for IPv6 support
-Recommends:    perl(IO::Socket::IP) >= 0.32
-Requires:      perl(MIME::Base64) >= 2.13
-# Net::DNS::Extlang not available
-Suggests:      perl(Net::DNS::SEC::DSA)
-# Net::DNS::SEC::ECCGOST not available
-Suggests:      perl(Net::DNS::SEC::ECDSA)
-Suggests:      perl(Net::DNS::SEC::EdDSA)
-Suggests:      perl(Net::DNS::SEC::Private)
-Suggests:      perl(Net::DNS::SEC::RSA)
-# Prefer Net::LibIDN2 over Net::LibIDN, both are optional
-Suggests:      perl(Net::LibIDN2) >= 1
-Suggests:      perl(Scalar::Util) >= 1.25
-
-%{?perl_default_filter}
-
+License:        (GPL+ OR Artistic) AND MIT
+Vendor:         Microsoft Corporation
+Distribution:   Mariner
+URL:            https://metacpan.org/release/Net-DNS
+Source0:        https://cpan.metacpan.org/authors/id/N/NL/NLNETLABS/Net-DNS-%{version}.tar.gz#/perl-Net-DNS-%{version}.tar.gz
 # Do not export under-specified dependencies
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}^perl\\(Digest::HMAC\\)$
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}^perl\\(Digest::MD5\\)$
@@ -105,6 +22,78 @@ Suggests:      perl(Scalar::Util) >= 1.25
 # Do not export under-specified provides
 %global __provides_exclude %{?__provides_exclude:%__provides_exclude|}^perl\\((Net::DNS::Text)\\)$
 %global __provides_exclude %{?__provides_exclude:%__provides_exclude|}^perl\\((Net::DNS::RR::OPT)\\)$
+# Build
+BuildRequires:  coreutils
+BuildRequires:  findutils
+BuildRequires:  glibc-common
+BuildRequires:  make
+BuildRequires:  perl-generators
+BuildRequires:  perl-interpreter
+BuildRequires:  sed
+BuildRequires:  perl(Carp)
+BuildRequires:  perl(Data::Dumper)
+# Digest::GOST is optional and intentionally unavailable
+# Digest::GOST::CryptoPro is optional and intentionally unavailable
+BuildRequires:  perl(Digest::HMAC) >= 1.03
+BuildRequires:  perl(Digest::MD5) >= 2.13
+BuildRequires:  perl(Digest::SHA) >= 5.23
+BuildRequires:  perl(Encode)
+BuildRequires:  perl(Exporter)
+BuildRequires:  perl(ExtUtils::MakeMaker) >= 6.76
+# Win32::IPHelper is not needed
+# Win32::TieRegistry is not needed
+# Tests only
+BuildRequires:  perl(File::Find)
+BuildRequires:  perl(File::Spec)
+BuildRequires:  perl(FileHandle)
+BuildRequires:  perl(Getopt::Long)
+BuildRequires:  perl(IO::File)
+BuildRequires:  perl(IO::Socket)
+# IO::Select is not used
+# Prefer IO::Socket::IP over IO::Socket::INET for IPv6 support
+BuildRequires:  perl(IO::Socket::IP) >= 0.32
+BuildRequires:  perl(MIME::Base64) >= 2.13
+# Prefer Net::LibIDN2 over Net::LibIDN, both are optional
+BuildRequires:  perl(Net::LibIDN2) >= 1
+# PerlIO is optional
+# Scalar::Util is optional
+BuildRequires:  perl(Socket)
+BuildRequires:  perl(Test::Builder)
+BuildRequires:  perl(Test::More)
+# Optional tests:
+BuildRequires:  perl(Test::Pod) >= 1.45
+BuildRequires:  perl(Time::Local)
+# Runtime
+BuildRequires:  perl(base)
+# Config not used
+BuildRequires:  perl(constant)
+BuildRequires:  perl(integer)
+BuildRequires:  perl(overload)
+BuildRequires:  perl(strict)
+BuildRequires:  perl(warnings)
+Requires:       perl(:MODULE_COMPAT_%(eval "$(perl -V:version)"; echo $version))
+Requires:       perl(Data::Dumper)
+# Digest::GOST not available
+Requires:       perl(Digest::HMAC) >= 1.03
+Requires:       perl(Digest::MD5) >= 2.13
+Requires:       perl(Digest::SHA) >= 5.23
+Requires:       perl(Encode)
+# Prefer IO::Socket::IP over IO::Socket::INET for IPv6 support
+Requires:       perl(MIME::Base64) >= 2.13
+BuildArch:      noarch
+# Net::DNS::Extlang not available
+# Net::DNS::SEC::ECCGOST not available
+# Prefer Net::LibIDN2 over Net::LibIDN, both are optional
+%{?perl_default_filter}
+%if ! (0%{?rhel} >= 7)
+# Digest::BubbleBabble is optional
+BuildRequires:  perl(Digest::BubbleBabble)
+%endif
+%if !%{defined perl_bootstrap}
+# Build cycle: perl-Net-DNS-SEC → perl-Net-DNS
+BuildRequires:  perl(Net::DNS::SEC)
+BuildRequires:  perl(Net::DNS::SEC::RSA)
+%endif
 
 %description
 Net::DNS is a collection of Perl modules that act as a Domain Name System
@@ -117,15 +106,14 @@ its various sections. See RFC 1035 or DNS and BIND (Albitz & Liu) for details.
 %package Nameserver
 Summary:        DNS server for Perl
 License:        MIT
-Recommends:     perl(IO::Socket::IP) >= 0.32
 
 %description Nameserver
 Instances of the "Net::DNS::Nameserver" class represent DNS server objects.
 
 %prep
-%setup -q -n Net-DNS-%{version} 
+%setup -q -n Net-DNS-%{version}
 chmod -x demo/*
-sed -i -e '1 s,^#!/usr/local/bin/perl,#!%{__perl},' demo/*
+sed -i -e '1 s,^#!%{_prefix}/local/bin/perl,#!perl,' demo/*
 for i in Changes; do
     iconv -f iso8859-1 -t utf-8 "$i" > "${i}.conv"
     touch -r "$i" "${i}.iconv"
@@ -547,4 +535,3 @@ make test
 
 * Sat Jun 15 2002 cturner@redhat.com
 - Specfile autogenerated
-
