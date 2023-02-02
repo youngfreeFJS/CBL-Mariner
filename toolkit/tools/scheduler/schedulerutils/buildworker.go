@@ -198,9 +198,10 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 
 	logBaseName := filepath.Base(srpmFile) + ".log"
 	logger.Log.Debugf("osamatest: with check is (%t)", agent.Config().RunCheck)
+	maxAttempts := 3
 	numAttempts := buildAttempts
-	if agent.Config().RunCheck && buildAttempts < 3 {
-		numAttempts = 3
+	if agent.Config().RunCheck && buildAttempts < maxAttempts {
+		numAttempts = maxAttempts
 	}
 	wg := new(sync.WaitGroup)
 	for numAttempts > 0 {
@@ -222,7 +223,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 				if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
 					logger.Log.Debugf("osamatest: failed tests")
 					err = errors.New(currLine)
-					if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, 3 - numAttempts)) != nil {
+					if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, maxAttempts-numAttempts)) != nil {
 						logger.Log.Debugf("logfile rename failed")
 					}
 					break
