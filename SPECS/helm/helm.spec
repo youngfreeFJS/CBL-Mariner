@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:          helm
-Version:       3.9.4
+Version:       3.10.3
 Release:       2%{?dist}
 Summary:       The Kubernetes Package Manager
 Group:         Applications/Networking
@@ -25,7 +25,7 @@ Source0:       %{name}-%{version}.tar.gz
 #           -cf %%{name}-%%{version}-vendor.tar.gz vendor
 #
 Source1:       %{name}-%{version}-vendor.tar.gz
-BuildRequires: golang >= 1.15.5
+BuildRequires: golang <= 1.18.8
 
 %description
 Helm is a tool that streamlines installing and managing Kubernetes applications. Think of it like apt/yum/homebrew for Kubernetes.
@@ -51,7 +51,25 @@ install -m 755 ./helm %{buildroot}%{_bindir}
 %{_bindir}/helm
 
 
+%check
+go test -v ./cmd/helm
+
 %changelog
+* Wed Jan 18 2023 CBL-Mariner Servicing Account <cblmargh@microsoft.com> - 3.10.3-2
+- - Set golang <= 1.18.8 build requires
+
+* Wed Jan 04 2023 CBL-Mariner Servicing Account <cblmargh@microsoft.com> - 3.10.3-1
+- Auto-upgrade to 3.10.3 - to fix CVE-2022-23524
+
+* Thu Dec 22 2022 Nan Liu <liunan@microsoft.com> - 3.9.4-5
+- Enable the check tests
+
+* Wed Dec 21 2022 Nan Liu <liunan@microsoft.com> - 3.9.4-4
+- Patch CVE-2022-23525, CVE-2022-23526
+
+* Fri Dec 16 2022 Daniel McIlvaney <damcilva@microsoft.com> - 3.9.4-3
+- Bump release to rebuild with go 1.18.8 with patch for CVE-2022-41717
+
 * Tue Nov 01 2022 Olivia Crain <oliviacrain@microsoft.com> - 3.9.4-2
 - Bump release to rebuild with go 1.18.8
 
