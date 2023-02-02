@@ -196,7 +196,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 	)
 
 	logBaseName := filepath.Base(srpmFile) + ".log"
-	const maxAttempts := 3
+	const maxAttempts = 3
 	numAttempts := buildAttempts
 	if agent.Config().RunCheck && buildAttempts < maxAttempts {
 		numAttempts = maxAttempts
