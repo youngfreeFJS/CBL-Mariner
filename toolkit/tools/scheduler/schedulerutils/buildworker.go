@@ -153,28 +153,6 @@ func buildBuildNode(node *pkggraph.PkgNode, pkgGraph *pkggraph.PkgGraph, graphMu
 
 	logger.Log.Infof("Building %s", baseSrpmName)
 	builtFiles, logFile, err = buildSRPMFile(agent, buildAttempts, node.SrpmPath, node.Architecture, dependencies)
-	// logger.Log.Debugf("osamatest: runCheck is (%t)", agent.Config().RunCheck)
-	// numAttempts := 2
-	// for agent.Config().RunCheck && err == nil && numAttempts > 0 {
-	// 	logger.Log.Debugf("osamatest: logfile is (%s)", logFile)
-	// 	file, logError := os.Open(logFile)
-	// 	if logError != nil {
-	// 		logger.Log.Debug("osamatest: logfile error")
-	// 	}
-	// 	defer file.Close()
-	// 	scanner := bufio.NewScanner(file)
-	// 	for scanner.Scan() {
-	// 		currLine := scanner.Text()
-	// 		if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-	// 			err = errors.New(currLine)
-	// 			break
-	// 		}
-	// 	}
-	// 	if err == nil {
-	// 		builtFiles, logFile, err = buildSRPMFile(agent, buildAttempts, node.SrpmPath, node.Architecture, dependencies)
-	// 		numAttempts--
-	// 	}
-	// }
 	return
 }
 
@@ -256,29 +234,6 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		}
 		wg.Done()
 	}
-
-	// err = retry.Run(func() (buildErr error) {
-	// 	builtFiles, logFile, buildErr = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
-	// 	if buildErr == nil {
-	// 		logger.Log.Debugf("osamatest: logfile is (%s)", logFile)
-	// 		file, err := os.Open(logFile)
-	// 		if err != nil {
-	// 			logger.Log.Debug("osamatest: logfile error")
-	// 		}
-	// 		defer file.Close()
-
-	// 		scanner := bufio.NewScanner(file)
-	// 		for scanner.Scan() {
-	// 			currLine := scanner.Text()
-	// 			if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-	// 				buildErr = errors.New(currLine)
-	// 				break
-	// 			}
-	// 		}
-	// 	}
-	// 	return
-	// }, buildAttempts, retryDuration)
-
 	return
 }
 
