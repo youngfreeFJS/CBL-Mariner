@@ -15,7 +15,6 @@ import (
 
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/logger"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/pkggraph"
-	// "github.com/microsoft/CBL-Mariner/toolkit/tools/internal/retry"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/sliceutils"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/scheduler/buildagents"
 	"gonum.org/v1/gonum/graph"
@@ -197,8 +196,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 	)
 
 	logBaseName := filepath.Base(srpmFile) + ".log"
-	logger.Log.Debugf("osamatest: with check is (%t)", agent.Config().RunCheck)
-	maxAttempts := 3
+	const maxAttempts := 3
 	numAttempts := buildAttempts
 	if agent.Config().RunCheck && buildAttempts < maxAttempts {
 		numAttempts = maxAttempts
@@ -210,25 +208,23 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		numAttempts--
 		builtFiles, logFile, err = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
 		if err == nil {
-			logger.Log.Debugf("osamatest: logfile is (%s)", logFile)
 			file, logErr := os.Open(logFile)
 			if logErr != nil {
-				logger.Log.Debug("osamatest: logfile error")
-			}
-			defer file.Close()
-
-			scanner := bufio.NewScanner(file)
-			for scanner.Scan() {
-				currLine := scanner.Text()
-				if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-					logger.Log.Debugf("osamatest: failed tests")
-					err = errors.New(currLine)
-					if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, maxAttempts-numAttempts)) != nil {
-						logger.Log.Debugf("logfile rename failed")
+				err = logErr
+			} else {
+				scanner := bufio.NewScanner(file)
+				for scanner.Scan() {
+					currLine := scanner.Text()
+					if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
+						err = errors.New(currLine)
+						if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, maxAttempts-numAttempts)) != nil {
+							logger.Log.Debugf("Log file rename failed")
+						}
+						break
 					}
-					break
-				}
+				}	
 			}
+			file.Close()
 		}
 		if err == nil {
 			break
