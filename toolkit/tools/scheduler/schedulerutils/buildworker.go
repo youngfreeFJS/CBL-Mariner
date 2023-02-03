@@ -198,7 +198,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		builtFiles, logFile, buildErr = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
 		logger.Log.Debugf("osamatest: finishing retry.run for %s", srpmFile)
 		return
-	}, buildAttempts, retryDuration)
+	}, 3, retryDuration)
 
 	return
 }
