@@ -255,7 +255,6 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		// 	break
 		// }
 		// wg.Done()
-	}
 	return
 }
 
