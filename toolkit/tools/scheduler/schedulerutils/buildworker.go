@@ -201,35 +201,60 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 	if agent.Config().RunCheck && buildAttempts < maxAttempts {
 		numAttempts = maxAttempts
 	}
-	wg := new(sync.WaitGroup)
-	for numAttempts > 0 {
-		wg.Wait()
-		wg.Add(1)
-		numAttempts--
-		builtFiles, logFile, err = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
-		if err == nil {
+	err = retry.Run(func() (buildErr error) {
+		logger.Log.Debug("osamatest: start")
+		builtFiles, logFile, buildErr = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
+		if buildErr == nil {
 			file, logErr := os.Open(logFile)
 			if logErr != nil {
-				err = logErr
+				buildErr = logErr
 			} else {
 				scanner := bufio.NewScanner(file)
 				for scanner.Scan() {
 					currLine := scanner.Text()
 					if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-						err = errors.New(currLine)
-						if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, maxAttempts-numAttempts)) != nil {
-							logger.Log.Debugf("Log file rename failed")
-						}
+						buildErr = errors.New(currLine)
+						// if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, maxAttempts-numAttempts)) != nil {
+						// 	logger.Log.Debugf("Log file rename failed")
+						// }
 						break
 					}
 				}
 			}
 			file.Close()
 		}
-		if err == nil {
-			break
-		}
-		wg.Done()
+		logger.Log.Debug("osamatest: end")
+		return
+	}, 3, retryDuration)
+	// wg := new(sync.WaitGroup)
+	// for numAttempts > 0 {
+		// wg.Wait()
+		// wg.Add(1)
+		// numAttempts--
+		// builtFiles, logFile, err = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
+		// if err == nil {
+		// 	file, logErr := os.Open(logFile)
+		// 	if logErr != nil {
+		// 		err = logErr
+		// 	} else {
+		// 		scanner := bufio.NewScanner(file)
+		// 		for scanner.Scan() {
+		// 			currLine := scanner.Text()
+		// 			if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
+		// 				err = errors.New(currLine)
+		// 				if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, maxAttempts-numAttempts)) != nil {
+		// 					logger.Log.Debugf("Log file rename failed")
+		// 				}
+		// 				break
+		// 			}
+		// 		}
+		// 	}
+		// 	file.Close()
+		// }
+		// if err == nil {
+		// 	break
+		// }
+		// wg.Done()
 	}
 	return
 }
