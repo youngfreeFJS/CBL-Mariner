@@ -18715,7 +18715,7 @@
         "other": {
           "name": "perl-Razor-Agent",
           "version": "2.85",
-          "downloadUrl": "http://dl.sourceforge.net/razor/razor-agents-2.85.tar.bz2"
+          "downloadUrl": "https://cblmarinerstorage.blob.core.windows.net/sources/core/razor-agents-2.85.tar.bz2"
         }
       }
     },
