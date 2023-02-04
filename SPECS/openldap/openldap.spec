@@ -15,9 +15,11 @@ Patch1:         openldap-2.4.44-consolidated-2.patch
 Patch2:         CVE-2015-3276.patch
 Patch3:         CVE-2021-27212.patch
 Patch4:         CVE-2022-29155.patch
+BuildRequires:  cyrus-sasl-bootstrap-devel >= 2.1
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  groff
 BuildRequires:  openssl-devel >= 1.0.1
+Requires:       cyrus-sasl-bootstrap-lib >= 2.1
 Requires:       openssl >= 1.0.1
 Provides:       %{name}-clients = %{version}-%{release}
 Provides:       %{name}-compat = %{version}-%{release}
@@ -44,8 +46,7 @@ export CPPFLAGS="${CPPFLAGS} -D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D
         --enable-dynamic    \
         --disable-debug     \
         --disable-slapd     \
-        --with-tls=openssl  \
-        --without-cyrus-sasl
+        --with-tls=openssl
 %make_build depend
 %make_build
 
