@@ -197,15 +197,15 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 	)
 
 	logBaseName := filepath.Base(srpmFile) + ".log"
-	// const maxAttempts = 3
-	// numAttempts := buildAttempts
-	// if agent.Config().RunCheck && buildAttempts < maxAttempts {
-	// 	numAttempts = maxAttempts
-	// }
+	const checkAttempts = 3
+	totalAttempts := buildAttempts
+	if agent.Config().RunCheck && totalAttempts < checkAttempts {
+		totalAttempts = checkAttempts
+	}
 	err = retry.Run(func() (buildErr error) {
 		logger.Log.Debug("osamatest: start")
 		builtFiles, logFile, buildErr = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
-		if buildErr == nil {
+		if buildErr == nil && agent.Config().RunCheck {
 			file, logErr := os.Open(logFile)
 			if logErr != nil {
 				buildErr = logErr
@@ -226,7 +226,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		}
 		logger.Log.Debug("osamatest: end")
 		return
-	}, 3, retryDuration)
+	}, totalAttempts, retryDuration)
 	return
 }
 
