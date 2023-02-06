@@ -215,9 +215,9 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 					currLine := scanner.Text()
 					if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
 						buildErr = errors.New(currLine)
-						// if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, maxAttempts-numAttempts)) != nil {
-						// 	logger.Log.Debugf("Log file rename failed")
-						// }
+						if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, time.Now())) != nil {
+							logger.Log.Debugf("Log file rename failed")
+						}
 						break
 					}
 				}
@@ -227,35 +227,6 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		logger.Log.Debug("osamatest: end")
 		return
 	}, 3, retryDuration)
-	// wg := new(sync.WaitGroup)
-	// for numAttempts > 0 {
-		// wg.Wait()
-		// wg.Add(1)
-		// numAttempts--
-		// builtFiles, logFile, err = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
-		// if err == nil {
-		// 	file, logErr := os.Open(logFile)
-		// 	if logErr != nil {
-		// 		err = logErr
-		// 	} else {
-		// 		scanner := bufio.NewScanner(file)
-		// 		for scanner.Scan() {
-		// 			currLine := scanner.Text()
-		// 			if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-		// 				err = errors.New(currLine)
-		// 				if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, maxAttempts-numAttempts)) != nil {
-		// 					logger.Log.Debugf("Log file rename failed")
-		// 				}
-		// 				break
-		// 			}
-		// 		}
-		// 	}
-		// 	file.Close()
-		// }
-		// if err == nil {
-		// 	break
-		// }
-		// wg.Done()
 	return
 }
 
