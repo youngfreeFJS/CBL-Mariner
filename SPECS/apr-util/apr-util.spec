@@ -1,14 +1,14 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
-Version:    1.6.1
-Release:        4%{?dist}
+Version:    1.6.2
+Release:        1%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha1 %{name}=5bae4ff8f1dad3d7091036d59c1c0b2e76903bf4
+%define sha1 %{name}=dd0a15542dda288ae3d18d4e25cee485c7e88365
 %define     apuver    1
 
 BuildRequires:   apr-devel
@@ -122,6 +122,9 @@ rm -rf %{buildroot}
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Mon Feb 06 2023 Dan Streetman <ddstreet@microsoft.com> - 1.6.2-1
+- Update to version 1.6.2
+- CVE-2022-25147
 * Sat May 09 2020 Nick Samson <nisamson@microsoft.com> - 1.6.1-4
 - Added %%license line automatically
 
