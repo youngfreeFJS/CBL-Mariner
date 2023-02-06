@@ -215,7 +215,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 					currLine := scanner.Text()
 					if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
 						buildErr = errors.New(currLine)
-						if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, time.Now())) != nil {
+						if os.Rename(logFile, fmt.Sprintf("%sfail%d", logFile, time.Now().UnixMilli())) != nil {
 							logger.Log.Debugf("Log file rename failed")
 						}
 						break
