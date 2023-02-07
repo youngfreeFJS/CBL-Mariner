@@ -217,7 +217,7 @@ Obsoletes: %{name}-system-unicore32-core <= %{version}-%{release}
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 Version:        6.2.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        BSD AND CC-BY AND GPLv2+ AND LGPLv2+ AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -1680,12 +1680,6 @@ rm -rf %{buildroot}%{_datadir}/%{name}/openbios-sparc32
 rm -rf %{buildroot}%{_datadir}/%{name}/openbios-sparc64
 # Provided by package SLOF
 rm -rf %{buildroot}%{_datadir}/%{name}/slof.bin
-
-%ifarch aarch64
-rm -rf %{buildroot}%{_datadir}/%{name}/pxe*rom
-rm -rf %{buildroot}%{_datadir}/%{name}/efi*rom
-%endif
-
 # Provided by package seavgabios
 rm -rf %{buildroot}%{_datadir}/%{name}/vgabios*bin
 # Provided by package seabios
@@ -2099,6 +2093,8 @@ useradd -r -u 107 -g qemu -G kvm -d / -s %{_sbindir}/nologin \
 %{_bindir}/qemu-system-aarch64
 %{_datadir}/systemtap/tapset/qemu-system-aarch64*.stp
 %{_mandir}/man1/qemu-system-aarch64.1*
+%{_datadir}/%{name}/pxe*rom
+%{_datadir}/%{name}/efi*rom
 
 %ifarch x86_64
 %files system-x86
@@ -2298,6 +2294,9 @@ useradd -r -u 107 -g qemu -G kvm -d / -s %{_sbindir}/nologin \
 
 
 %changelog
+* Tue Feb 07 2023 Vince Perri <viperri@microsoft.com> - 6.2.0-14
+- Ship efi*rom & pxe*rom rom files for aarch64
+
 * Tue Dec 20 2022 Nan Liu <liunan@microsoft.com> - 6.2.0-13
 - Address CVE-2021-3929, CVE-2021-4207
 
