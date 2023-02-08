@@ -215,7 +215,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 			// If we can't open the log file, that's a build error.
 			if logErr != nil {
 				logger.Log.Errorf("Failed to open log file '%s' while checking package test results. Error: %v", logfile, logErr)
-				buildErr = logErr				
+				buildErr = logErr
 				return
 			}
 			defer file.Close()
