@@ -218,8 +218,8 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 				return
 			}
 			defer file.Close()
-
-			for scanner := bufio.NewScanner(file); scanner.Scan() {
+			scanner := bufio.NewScanner(file)
+			for scanner.Scan() {
 				currLine := scanner.Text()
 				// Anything besides 0 is a failed test
 				if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
