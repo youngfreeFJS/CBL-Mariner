@@ -233,8 +233,8 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 					break
 				}
 			}
-			return
 		}
+		return
 	}, totalAttempts, retryDuration)
 	return
 }
