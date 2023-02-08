@@ -196,7 +196,8 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		retryDuration = time.Second
 	)
 
-	logBaseName := filepath.Base(srpmFile) + ".log"
+	srpmBase := filepath.Base(srpmFile)
+	logBaseName := srpmBase + ".log"
 	const checkAttempts = 3
 	totalAttempts := buildAttempts
 	if agent.Config().RunCheck && totalAttempts < checkAttempts {
@@ -223,7 +224,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 				currLine := scanner.Text()
 				// Anything besides 0 is a failed test
 				if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-					failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", filepath.Base(srpmFile), time. Now().UnixMilli())
+					failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", srpmBase, time.Now().UnixMilli())
 					buildErr = os.Rename(logfile, failedLogFile)
 					if buildErr != nil {
 						logger.Log.Errorf("Log file rename failed. Error: %v", buildErr)
