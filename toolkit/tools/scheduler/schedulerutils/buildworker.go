@@ -189,6 +189,35 @@ func getBuildDependencies(node *pkggraph.PkgNode, pkgGraph *pkggraph.PkgGraph, g
 	return
 }
 
+func parseCheckSection(srpmBase string, logFile StringMatch) (checkErr error) {
+	file, logErr := os.Open(logFile)
+	// If we can't open the log file, that's a build error.
+	if logErr != nil {
+		logger.Log.Errorf("Failed to open log file '%s' while checking package test results. Error: %v", logFile, logErr)
+		checkErr = logErr
+		return
+	}
+	defer file.Close()
+	for scanner := bufio.NewScanner(file); scanner.Scan(); {
+		currLine := scanner.Text()
+		// Anything besides 0 is a failed test
+		if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
+			failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", srpmBase, time.Now().UnixMilli())
+			checkErr = os.Rename(logFile, failedLogFile)
+			if checkErr != nil {
+				logger.Log.Errorf("Log file rename failed. Error: %v", checkErr)
+				return
+			}
+			checkErr = fmt.Errorf("Package test failed. Test status line: %s", currLine)
+			return
+		}
+		if strings.Contains(currLine, "CHECK DONE") && strings.Contains(currLine, "EXIT STATUS 0") {
+			return
+		}
+	}
+	return
+}
+
 // buildSRPMFile sends an SRPM to a build agent to build.
 func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, outArch string, dependencies []string) (builtFiles []string, logFile string, err error) {
 	const (
@@ -197,11 +226,6 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 
 	srpmBase := filepath.Base(srpmFile)
 	logBaseName := srpmBase + ".log"
-	const checkAttempts = 3
-	totalAttempts := buildAttempts
-	if agent.Config().RunCheck && totalAttempts < checkAttempts {
-		totalAttempts = checkAttempts
-	}
 	err = retry.Run(func() (buildErr error) {
 		builtFiles, logFile, buildErr = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
 		// If the package builds with no errors and RUN_CHECK=y, check logs to see if the %check section passed, and if not, return as the build error.
@@ -210,32 +234,10 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		}
 
 		if agent.Config().RunCheck {
-			file, logErr := os.Open(logFile)
-			// If we can't open the log file, that's a build error.
-			if logErr != nil {
-				logger.Log.Errorf("Failed to open log file '%s' while checking package test results. Error: %v", logFile, logErr)
-				buildErr = logErr
-				return
-			}
-			defer file.Close()
-			for scanner := bufio.NewScanner(file); scanner.Scan(); {
-				currLine := scanner.Text()
-				// Anything besides 0 is a failed test
-				if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-					failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", srpmBase, time.Now().UnixMilli())
-					buildErr = os.Rename(logFile, failedLogFile)
-					if buildErr != nil {
-						logger.Log.Errorf("Log file rename failed. Error: %v", buildErr)
-						return
-					}
-
-					buildErr = fmt.Errorf("Package test failed. Test status line: %s", currLine)
-					break
-				}
-			}
+			buildErr = parseCheckSection(srpmBase, logFile)
 		}
 		return
-	}, totalAttempts, retryDuration)
+	}, buildAttempts, retryDuration)
 	return
 }
 
