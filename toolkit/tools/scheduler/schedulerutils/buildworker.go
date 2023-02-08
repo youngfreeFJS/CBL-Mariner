@@ -5,7 +5,6 @@ package schedulerutils
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -214,24 +213,23 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 			file, logErr := os.Open(logFile)
 			// If we can't open the log file, that's a build error.
 			if logErr != nil {
-				logger.Log.Errorf("Failed to open log file '%s' while checking package test results. Error: %v", logfile, logErr)
+				logger.Log.Errorf("Failed to open log file '%s' while checking package test results. Error: %v", logFile, logErr)
 				buildErr = logErr
 				return
 			}
 			defer file.Close()
-			scanner := bufio.NewScanner(file)
-			for scanner.Scan() {
+			for scanner := bufio.NewScanner(file); scanner.Scan(); {
 				currLine := scanner.Text()
 				// Anything besides 0 is a failed test
 				if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
 					failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", srpmBase, time.Now().UnixMilli())
-					buildErr = os.Rename(logfile, failedLogFile)
+					buildErr = os.Rename(logFile, failedLogFile)
 					if buildErr != nil {
 						logger.Log.Errorf("Log file rename failed. Error: %v", buildErr)
 						return
 					}
 
-					buildErr = fmt.Errorf("package test failed. Test status line: %s", currLine)
+					buildErr = fmt.Errorf("Package test failed. Test status line: %s", currLine)
 					break
 				}
 			}
