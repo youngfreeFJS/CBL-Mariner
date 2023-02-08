@@ -205,27 +205,35 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 	err = retry.Run(func() (buildErr error) {
 		builtFiles, logFile, buildErr = agent.BuildPackage(srpmFile, logBaseName, outArch, dependencies)
 		// If the package builds with no errors and RUN_CHECK=y, check logs to see if the %check section passed, and if not, return as the build error.
-		if buildErr == nil && agent.Config().RunCheck {
+		if buildErr != nil {
+			return
+		}
+
+		if agent.Config().RunCheck {
 			file, logErr := os.Open(logFile)
-			// If we can't open the log file, that's the build error.
+			// If we can't open the log file, that's a build error.
 			if logErr != nil {
-				buildErr = logErr
-			} else {
-				scanner := bufio.NewScanner(file)
-				for scanner.Scan() {
-					currLine := scanner.Text()
-					// Anything besides 0 is failed tests
-					if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-						buildErr = errors.New(currLine)
-						if os.Rename(logFile, fmt.Sprintf("%s-fail-%d.log", filepath.Base(srpmFile), time.Now().UnixMilli())) != nil {
-							logger.Log.Debugf("Log file rename failed")
-						}
-						break
+				logger.Log.Errorf("Failed to open log file '%s' while checking package test results. Error: %v", logfile, logErr)
+				buildErr = logErr				
+				return
+			}
+			defer file.Close()
+
+			for scanner := bufio.NewScanner(file); scanner.Scan() {
+				currLine := scanner.Text()
+				// Anything besides 0 is a failed test
+				if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
+					failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", filepath.Base(srpmFile), time. Now().UnixMilli())
+					buildErr = os.Rename(logfile, failedLogFile)
+					if buildErr != nil {
+						logger.Log.Errorf("Log file rename failed. Error: %v", buildErr)
+						return
 					}
+
+					buildErr = fmt.Errorf("package test failed. Test status line: %s", currLine)
+					break
 				}
 			}
-			file.Close()
-		}
 		return
 	}, totalAttempts, retryDuration)
 	return
