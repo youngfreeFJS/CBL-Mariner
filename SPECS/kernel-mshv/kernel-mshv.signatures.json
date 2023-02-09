@@ -1,7 +1,7 @@
 {
  "Signatures": {
   "config": "6120b68c1b10fb8f37fc8aab00ce52c8ab050b3d752fc1f2a126c84d5285a88b",
-  "kernel-mshv-5.15.90.mshv2.tar.gz": "eb542314bf7ca29effad8696b6ce1ad0cccbba5339d23f1dc3ec55abf47088c3",
+  "kernel-mshv-5.15.90.mshv2.tar.gz": "b7957350eba1b51c83e071f6856aa6b42fc8483dcadc762221afb97eb415e5bc",
   "cbl-mariner-ca-20211013.pem": "5ef124b0924cb1047c111a0ecff1ae11e6ad7cac8d1d9b40f98f99334121f0b0"
  }
 }
