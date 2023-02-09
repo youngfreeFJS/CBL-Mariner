@@ -189,12 +189,11 @@ func getBuildDependencies(node *pkggraph.PkgNode, pkgGraph *pkggraph.PkgGraph, g
 	return
 }
 
-func parseCheckSection(logFile string) (checkErr error) {
-	file, logErr := os.Open(logFile)
+func parseCheckSection(logFile string) (err error) {
+	file, err := os.Open(logFile)
 	// If we can't open the log file, that's a build error.
-	if logErr != nil {
-		logger.Log.Errorf("Failed to open log file '%s' while checking package test results. Error: %v", logFile, logErr)
-		checkErr = logErr
+	if err != nil {
+		logger.Log.Errorf("Failed to open log file '%s' while checking package test results. Error: %v", logFile, err)
 		return
 	}
 	defer file.Close()
@@ -203,12 +202,12 @@ func parseCheckSection(logFile string) (checkErr error) {
 		// Anything besides 0 is a failed test
 		if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
 			failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", logFile[:strings.Index(logFile, ".log")], time.Now().UnixMilli())
-			checkErr = os.Rename(logFile, failedLogFile)
-			if checkErr != nil {
-				logger.Log.Errorf("Log file rename failed. Error: %v", checkErr)
+			err = os.Rename(logFile, failedLogFile)
+			if err != nil {
+				logger.Log.Errorf("Log file rename failed. Error: %v", err)
 				return
 			}
-			checkErr = fmt.Errorf("Package test failed. Test status line: %s", currLine)
+			err = fmt.Errorf("Package test failed. Test status line: %s", currLine)
 			return
 		}
 		if strings.Contains(currLine, "CHECK DONE") && strings.Contains(currLine, "EXIT STATUS 0") {
