@@ -189,7 +189,7 @@ func getBuildDependencies(node *pkggraph.PkgNode, pkgGraph *pkggraph.PkgGraph, g
 	return
 }
 
-func parseCheckSection(srpmBase string, logFile StringMatch) (checkErr error) {
+func parseCheckSection(srpmBase string, logFile string) (checkErr error) {
 	file, logErr := os.Open(logFile)
 	// If we can't open the log file, that's a build error.
 	if logErr != nil {
