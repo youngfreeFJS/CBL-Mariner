@@ -76,7 +76,7 @@ Requires:       audit
 This package contains the 'perf' performance analysis tools for MSHV kernel.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n linux-dom0
 
 make mrproper
 
