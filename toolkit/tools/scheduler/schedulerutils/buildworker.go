@@ -189,7 +189,7 @@ func getBuildDependencies(node *pkggraph.PkgNode, pkgGraph *pkggraph.PkgGraph, g
 	return
 }
 
-func parseCheckSection(srpmBase string, logFile string) (checkErr error) {
+func parseCheckSection(logFile string) (checkErr error) {
 	file, logErr := os.Open(logFile)
 	// If we can't open the log file, that's a build error.
 	if logErr != nil {
@@ -202,7 +202,7 @@ func parseCheckSection(srpmBase string, logFile string) (checkErr error) {
 		currLine := scanner.Text()
 		// Anything besides 0 is a failed test
 		if strings.Contains(currLine, "CHECK DONE") && !strings.Contains(currLine, "EXIT STATUS 0") {
-			failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", srpmBase, time.Now().UnixMilli())
+			failedLogFile := fmt.Sprintf("%s-FAILED_TEST-%d.log", logFile[:strings.Index(logFile, ".log")], time.Now().UnixMilli())
 			checkErr = os.Rename(logFile, failedLogFile)
 			if checkErr != nil {
 				logger.Log.Errorf("Log file rename failed. Error: %v", checkErr)
@@ -234,7 +234,7 @@ func buildSRPMFile(agent buildagents.BuildAgent, buildAttempts int, srpmFile, ou
 		}
 
 		if agent.Config().RunCheck {
-			buildErr = parseCheckSection(srpmBase, logFile)
+			buildErr = parseCheckSection(logFile)
 		}
 		return
 	}, buildAttempts, retryDuration)
